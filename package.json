@@ -1,0 +1,29 @@
+{
+  "name": "e-reader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/e-reader.js",
+  "scripts": {
+    "build": "rsbuild build",
+    "dev": "rsbuild dev --open",
+    "preview": "rsbuild preview",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@xstate/solid": "^2.0.0",
+    "solid-js": "^1.9.9",
+    "xstate": "^5.21.0"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.5.0",
+    "@rsbuild/plugin-babel": "^1.0.6",
+    "@rsbuild/plugin-solid": "^1.0.6",
+    "@types/node": "^24.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.36.0",
+    "eslint-plugin-solid": "^0.14.5",
+    "typescript": "^5.9.2"
+  }
+}
