@@ -4,6 +4,7 @@ html, body {
 }
 
 body {
+    overflow: hidden;
     margin: 0;
     color: #fff;
     font-family: Inter, Avenir, Helvetica, Arial, sans-serif;

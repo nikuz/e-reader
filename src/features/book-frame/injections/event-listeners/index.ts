@@ -1,41 +1,85 @@
-export class EventObserver {
+import { bookFrameStateMachineActor } from '../../state';
+
+export class FrameEventObserver {
     constructor(iframe: HTMLIFrameElement) {
         this.window = iframe.contentWindow;
         this.document = iframe.contentDocument;
-
-
     }
 
     window: Window | null;
     document: Document | null;
 
     subscribe = () => {
-        this.document?.addEventListener('touchstart', this.touchEventHandler);
-        this.document?.addEventListener('touchmove', this.touchEventHandler);
-        this.document?.addEventListener('touchend', this.touchEventHandler);
-        this.document?.addEventListener('touchcancel', this.touchEventHandler);
+        if (!this.window) {
+            return;
+        }
 
-        this.document?.addEventListener('mousedown', this.mouseEventHandler);
-        this.document?.addEventListener('mousemove', this.mouseEventHandler);
-        this.document?.addEventListener('mouseup', this.mouseEventHandler);
+        if ('ontouchstart' in this.window) {
+            this.window.addEventListener('touchstart', this.touchStartEventHandler);
+            this.window.addEventListener('touchmove', this.touchMoveEventHandler);
+            this.window.addEventListener('touchend', this.touchEndEventHandler);
+            this.window.addEventListener('touchcancel', this.touchCancelEventHandler);
+        } else {
+            this.window.addEventListener('mousedown', this.mouseDownEventHandler);
+            this.window.addEventListener('mouseup', this.mouseUpEventHandler);
+        }
+
+        this.window.addEventListener('beforeunload', this.unsubscribe);
     };
 
     unsubscribe = () => {
-        this.document?.removeEventListener('touchstart', this.touchEventHandler);
-        this.document?.removeEventListener('touchmove', this.touchEventHandler);
-        this.document?.removeEventListener('touchend', this.touchEventHandler);
-        this.document?.removeEventListener('touchcancel', this.touchEventHandler);
+        if (!this.window) {
+            return;
+        }
 
-        this.document?.removeEventListener('mousedown', this.mouseEventHandler);
-        this.document?.removeEventListener('mousemove', this.mouseEventHandler);
-        this.document?.removeEventListener('mouseup', this.mouseEventHandler);
+        if ('ontouchstart' in this.window) {
+            this.window.removeEventListener('touchstart', this.touchStartEventHandler);
+            this.window.removeEventListener('touchmove', this.touchMoveEventHandler);
+            this.window.removeEventListener('touchend', this.touchEndEventHandler);
+            this.window.removeEventListener('touchcancel', this.touchCancelEventHandler);
+        } else {
+            this.window.removeEventListener('mousedown', this.mouseDownEventHandler);
+            this.window.removeEventListener('mouseup', this.mouseUpEventHandler);
+        }
     };
 
-    touchEventHandler = (event: TouchEvent) => {
-        console.log(event);
+    touchStartEventHandler = () => {
+        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_START' }));
+    };
+    
+    touchMoveEventHandler = () => {
+        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_MOVE' }));
+    };
+    
+    touchEndEventHandler = (event: TouchEvent) => {
+        const touches = event.changedTouches;
+        if (touches.length > 1) {
+            return;
+        }
+        bookFrameStateMachineActor.send(({
+            type: 'FRAME_TOUCH_END',
+            position: {
+                x: touches[0].pageX,
+                y: touches[0].pageY,
+            }
+        }));
     };
 
-    mouseEventHandler = (event: MouseEvent) => {
-        console.log(event);
+    touchCancelEventHandler = () => {
+        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_CANCEL' }));
+    };
+
+    mouseDownEventHandler = () => {
+        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_START' }));
+    };
+
+    mouseUpEventHandler = (event: MouseEvent) => {
+        bookFrameStateMachineActor.send(({
+            type: 'FRAME_TOUCH_END',
+            position: {
+                x: event.pageX,
+                y: event.pageY,
+            }
+        }));
     };
 }

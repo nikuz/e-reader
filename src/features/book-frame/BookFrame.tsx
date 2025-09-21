@@ -1,5 +1,5 @@
-import { createMemo, createEffect, onCleanup, Show } from 'solid-js';
-import { injectStyle, EventObserver } from './injections';
+import { createEffect, onCleanup, Show } from 'solid-js';
+import { injectStyle, FrameEventObserver } from './injections';
 import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
@@ -12,26 +12,22 @@ interface Props {
  }
 
 export default function BookFrame(props: Props) {
-    const bookAttributes = useBookFrameStateSelect('book');
+    const bookSettings = useBookFrameStateSelect('settings');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
     const bookIsLoading = useBookFrameStateMatch(['LOADING_BOOK']);
-    let eventObserver: EventObserver;
+    let eventObserver: FrameEventObserver;
     
-    const firstPage = createMemo<string>(() => {
-        const spine = bookAttributes()?.spine;
-        if (spine) {
-            const key = Array.from(spine.keys())[0];
-            return spine.get(key) as string;
-        }
-        return '';
-    });
-
     const frameContentLoadHandler = (event: Event) => {
-        const iframe = event.target as HTMLIFrameElement;
-        injectStyle(iframe);
-
-        eventObserver = new EventObserver(iframe);
+        const iframeEl = event.target as HTMLIFrameElement;
+        injectStyle(iframeEl);
+        
+        eventObserver = new FrameEventObserver(iframeEl);
         eventObserver.subscribe();
+
+        bookFrameStateMachineActor.send({
+            type: 'CHAPTER_LOAD',
+            iframeEl,
+        });
     };
 
     createEffect(() => {
@@ -55,13 +51,12 @@ export default function BookFrame(props: Props) {
             {bookLoadErrorMessage() && (
                 <p class="book-error">{bookLoadErrorMessage()}</p>
             )}
-            <Show when={bookAttributes()}>
+            <Show when={bookSettings().chapterUrl !== ''}>
                 <iframe
-                    src={`${bookAttributes()?.dirname}/${firstPage()}`}
+                    src={bookSettings().chapterUrl}
                     class="book-frame"
                     sandbox="allow-same-origin allow-scripts"
                     onLoad={frameContentLoadHandler}
-                    // onMessage={() => {}}
                 />
             </Show>
         </div>

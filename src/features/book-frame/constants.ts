@@ -1,0 +1,1 @@
+export const PAGE_TURN_TOUCH_DELAY = 300; // ms
