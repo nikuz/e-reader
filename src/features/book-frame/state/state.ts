@@ -8,6 +8,7 @@ import {
     frameTouchStartAction,
     frameTouchEndAction,
     frameTouchCancelAction,
+    selectTextAction,
 } from './actions';
 import type {
     BookFrameStateContext,
@@ -83,6 +84,9 @@ export const bookFrameStateMachine = setup({
                 },
                 PAGE_TURN_PREV: {
                     actions: enqueueActions(pageTurnPrevAction),
+                },
+                SELECT_TEXT: {
+                    actions: enqueueActions(selectTextAction),
                 },
             },
         },

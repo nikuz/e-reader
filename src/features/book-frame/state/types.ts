@@ -36,6 +36,11 @@ interface PageTurnNextEvent { type: 'PAGE_TURN_NEXT' }
 
 interface PageTurnPrevEvent { type: 'PAGE_TURN_PREV' }
 
+export interface SelectTextEvent {
+    type: 'SELECT_TEXT',
+    position: Position,
+}
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | ChapterLoadEvent
@@ -44,4 +49,5 @@ export type BookFrameStateEvents =
     | FrameTouchEndEvent
     | FrameTouchCancelEvent
     | PageTurnNextEvent
-    | PageTurnPrevEvent;
+    | PageTurnPrevEvent
+    | SelectTextEvent;

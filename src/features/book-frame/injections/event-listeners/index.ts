@@ -24,6 +24,10 @@ export class FrameEventObserver {
             this.window.addEventListener('mouseup', this.mouseUpEventHandler);
         }
 
+        // disable default text selection contextual menu
+        this.window.addEventListener('contextmenu', this.suppressContextMenu);
+        
+        // unsubscribe from all events on iframe content change
         this.window.addEventListener('beforeunload', this.unsubscribe);
     };
 
@@ -41,6 +45,9 @@ export class FrameEventObserver {
             this.window.removeEventListener('mousedown', this.mouseDownEventHandler);
             this.window.removeEventListener('mouseup', this.mouseUpEventHandler);
         }
+
+        this.window.removeEventListener('contextmenu', this.suppressContextMenu);
+        this.window.removeEventListener('beforeunload', this.unsubscribe);
     };
 
     touchStartEventHandler = () => {
@@ -81,5 +88,9 @@ export class FrameEventObserver {
                 y: event.pageY,
             }
         }));
+    };
+
+    suppressContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
     };
 }

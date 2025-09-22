@@ -15,14 +15,16 @@ export function frameTouchEndAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const frameInteractionStartTime = props.context.frameInteractionStartTime;
+    const iframeDocument = iframeEl?.contentDocument;
 
-    if (!iframeEl || !iframeEl.contentDocument || frameInteractionStartTime === undefined) {
+    if (!iframeEl || !iframeDocument || frameInteractionStartTime === undefined) {
         return;
     }
 
+    const position = props.event.position;
+
     if (performance.now() - frameInteractionStartTime < PAGE_TURN_TOUCH_DELAY) {
-        const position = props.event.position;
-        const docRect = iframeEl.contentDocument.documentElement.getBoundingClientRect();
+        const docRect = iframeDocument.documentElement.getBoundingClientRect();
 
         // left side touch
         if (position.x < docRect.width / 100 * 30) {
@@ -32,6 +34,11 @@ export function frameTouchEndAction(props: {
         else if (position.x > docRect.width / 100 * 70) {
             props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
         }
+    } else {
+        props.enqueue.raise(({
+            type: 'SELECT_TEXT',
+            position,
+        }));
     }
 
     props.enqueue.assign({
