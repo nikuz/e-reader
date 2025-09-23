@@ -7,6 +7,7 @@ export interface BookFrameStateContext {
     iframeEl?: HTMLIFrameElement,
 
     frameInteractionStartTime?: number,
+    prevChapter?: number,
 
     errorMessage?: string,
 }
@@ -24,6 +25,8 @@ export interface ChapterLoadEvent {
 interface FrameTouchStartEvent { type: 'FRAME_TOUCH_START' }
 
 interface FrameTouchMoveEvent { type: 'FRAME_TOUCH_MOVE' }
+
+interface FrameResizeEvent { type: 'FRAME_RESIZE' }
 
 export interface FrameTouchEndEvent {
     type: 'FRAME_TOUCH_END',
@@ -46,6 +49,7 @@ export type BookFrameStateEvents =
     | ChapterLoadEvent
     | FrameTouchStartEvent
     | FrameTouchMoveEvent
+    | FrameResizeEvent
     | FrameTouchEndEvent
     | FrameTouchCancelEvent
     | PageTurnNextEvent

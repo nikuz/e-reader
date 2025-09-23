@@ -15,23 +15,25 @@ export function frameTouchEndAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const frameInteractionStartTime = props.context.frameInteractionStartTime;
+    const contentWindow = iframeEl?.contentWindow;
     const iframeDocument = iframeEl?.contentDocument;
 
-    if (!iframeEl || !iframeDocument || frameInteractionStartTime === undefined) {
+    if (!iframeEl || !contentWindow || !iframeDocument || frameInteractionStartTime === undefined) {
         return;
     }
 
     const position = props.event.position;
 
     if (performance.now() - frameInteractionStartTime < PAGE_TURN_TOUCH_DELAY) {
-        const docRect = iframeDocument.documentElement.getBoundingClientRect();
+        const bodyRect = iframeDocument.body.getBoundingClientRect();
+        const x = position.x - contentWindow.scrollX;
 
         // left side touch
-        if (position.x < docRect.width / 100 * 30) {
+        if (x < bodyRect.width / 100 * 30) {
             props.enqueue.raise(({ type: 'PAGE_TURN_PREV' }));
         }
         // right side touch
-        else if (position.x > docRect.width / 100 * 70) {
+        else if (x > bodyRect.width / 100 * 70) {
             props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
         }
     } else {

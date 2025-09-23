@@ -8,6 +8,7 @@ import {
     frameTouchStartAction,
     frameTouchEndAction,
     frameTouchCancelAction,
+    frameResizeAction,
     selectTextAction,
 } from './actions';
 import type {
@@ -78,6 +79,9 @@ export const bookFrameStateMachine = setup({
                 },
                 FRAME_TOUCH_CANCEL: {
                     actions: enqueueActions(frameTouchCancelAction),
+                },
+                FRAME_RESIZE: {
+                    actions: enqueueActions(frameResizeAction),
                 },
                 PAGE_TURN_NEXT: {
                     actions: enqueueActions(pageTurnNextAction),
