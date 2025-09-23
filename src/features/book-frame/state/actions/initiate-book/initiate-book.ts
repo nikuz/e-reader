@@ -10,14 +10,13 @@ export function initiateBookAction(props: {
     const book = props.event.output;
     const initialChapter = 0;
     const key = Array.from(book.spine.keys())[initialChapter];
-    const chapterUrl = book.spine.get(key) as string;
 
     props.enqueue.assign({
         book,
         settings: {
             ...props.context.settings,
             chapter: initialChapter,
-            chapterUrl: `${book.dirname}/${chapterUrl}`,
         },
+        chapterContent: book.spine.get(key),
     });
 }

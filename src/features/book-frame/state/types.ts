@@ -7,6 +7,8 @@ export interface BookFrameStateContext {
     iframeEl?: HTMLIFrameElement,
 
     frameInteractionStartTime?: number,
+    
+    chapterContent?: string,
     prevChapter?: number,
 
     errorMessage?: string,

@@ -31,13 +31,12 @@ export function pageTurnNextAction(props: {
         const chapters = Array.from(book.spine.keys());
         const nextChapter = Math.min(settings.chapter + 1, chapters.length - 1);
         const key = chapters[nextChapter];
-        const chapterUrl = book.spine.get(key) as string;
 
         contextUpdate.settings = {
             page: 0,
             chapter: nextChapter,
-            chapterUrl: `${book.dirname}/${chapterUrl}`,
         };
+        contextUpdate.chapterContent = book.spine.get(key);
         contextUpdate.prevChapter = settings.chapter;
     }
 

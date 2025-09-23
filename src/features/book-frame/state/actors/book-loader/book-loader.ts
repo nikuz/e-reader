@@ -1,4 +1,9 @@
 import { fromPromise } from 'xstate';
+import injectedCss from '../../../injections/style/main.css?raw';
+import {
+    retrieveBookAttributes,
+    retrieveStaticContent,
+} from '../../../utils';
 import type { BookAttributes } from '../../../types';
 
 export const bookLoaderActor = fromPromise(async (props: {
@@ -8,59 +13,41 @@ export const bookLoaderActor = fromPromise(async (props: {
 }): Promise<BookAttributes> => {
     const { src } = props.input;
 
-    if (!src.endsWith('opf')) {
-        throw new Error('SRC should point to an OPF file');
-    }
+    const bookAttributes = await retrieveBookAttributes(src);
+    const spine = bookAttributes.spine;
+    const staticMapping: Map<string, string> = new Map();
 
-    const response = await fetch(src);
-
-    if (!response.ok) {
-        throw new Error('Can\'t load OPF file');
-    }
-
-    const content = await response.text();
-
-    const xmlDoc = new DOMParser().parseFromString(content, 'text/xml');
-    const metadataNode = xmlDoc.querySelector('metadata');
-    const manifestNode = xmlDoc.querySelector('manifest');
-    const spineNode = xmlDoc.querySelector('spine');
-
-    if (!metadataNode || !manifestNode || !spineNode) {
-        throw new Error('OPF should contain "metadata", "manifest", and "spine" nodes');
-    }
-
-    const navigation = manifestNode.querySelector('item[properties="nav"]');
-    
-    if (!navigation) {
-        throw new Error('OPF manifest doesn\'t contain navigation');
-    }
-    
-    const eisbn = metadataNode.querySelector('#eisbn');
-    const creator = metadataNode.getElementsByTagName('dc:creator')[0];
-    const language = metadataNode.getElementsByTagName('dc:language')[0];
-    const spine = new Map();
-
-    const spineItems = spineNode.querySelectorAll('itemref');
-
-    spineItems?.forEach((item) => {
-        const idRef = item.getAttribute('idref');
-        const manifestItem = manifestNode.querySelector(`#${idRef}`);
-        const value = manifestItem?.getAttribute('href');
-        
-        if (value) {
-            spine.set(idRef, value);
+    for (const chapter of spine) {
+        const src = `${bookAttributes.dirname}/${chapter[1]}`;
+        const response = await fetch(src);
+        if (!response.ok) {
+            continue;
         }
-    });
 
-    const lastSlashIndex = src.lastIndexOf('/');
+        const content = await response.text();
+        const xmlDoc = new DOMParser().parseFromString(content, 'text/xml');
 
-    return {
-        eisbn: eisbn?.textContent ?? '',
-        creator: creator?.textContent ?? '',
-        language: language?.textContent ?? '',
-        navigation: navigation?.getAttribute('href') ?? '',
-        dirname: src.substring(0, lastSlashIndex),
+        const chapterDirname = src.slice(0, src.lastIndexOf('/'));
+        
+        await retrieveStaticContent({
+            xmlDoc,
+            chapterDirname,
+            staticMapping,
+        });
 
-        spine,
-    };
+        const styleEl = xmlDoc.createElement('style');
+        styleEl.textContent = injectedCss;
+
+        xmlDoc.head.appendChild(styleEl);
+
+        const serializer = new XMLSerializer();
+        const modifiedContent = serializer.serializeToString(xmlDoc);
+        const blob = new Blob([modifiedContent], { type: 'text/html' });
+        const blobUrl = URL.createObjectURL(blob);
+        
+        spine.set(chapter[0], blobUrl);
+        // spine.set(chapter[0], modifiedContent);
+    }
+
+    return bookAttributes;
 });

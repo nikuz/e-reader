@@ -1,5 +1,5 @@
 import { createEffect, onCleanup, Show } from 'solid-js';
-import { injectStyle, FrameEventObserver } from './injections';
+import { FrameEventObserver } from './injections';
 import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
@@ -12,14 +12,13 @@ interface Props {
  }
 
 export default function BookFrame(props: Props) {
-    const bookSettings = useBookFrameStateSelect('settings');
+    const chapterContent = useBookFrameStateSelect('chapterContent');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
     const bookIsLoading = useBookFrameStateMatch(['LOADING_BOOK']);
     let eventObserver: FrameEventObserver;
     
     const frameContentLoadHandler = (event: Event) => {
         const iframeEl = event.target as HTMLIFrameElement;
-        injectStyle(iframeEl);
         
         eventObserver = new FrameEventObserver(iframeEl);
         eventObserver.subscribe();
@@ -51,9 +50,10 @@ export default function BookFrame(props: Props) {
             {bookLoadErrorMessage() && (
                 <p class="book-error">{bookLoadErrorMessage()}</p>
             )}
-            <Show when={bookSettings().chapterUrl !== ''}>
+            <Show when={chapterContent()}>
                 <iframe
-                    src={bookSettings().chapterUrl}
+                    src={chapterContent()}
+                    // srcdoc={chapterContent()}
                     class="book-frame"
                     sandbox="allow-same-origin allow-scripts"
                     onLoad={frameContentLoadHandler}

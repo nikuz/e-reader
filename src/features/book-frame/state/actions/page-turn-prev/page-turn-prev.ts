@@ -30,13 +30,12 @@ export function pageTurnPrevAction(props: {
     else {
         const prevChapter = Math.max(settings.chapter - 1, 0);
         const key = Array.from(book.spine.keys())[prevChapter];
-        const chapterUrl = book.spine.get(key) as string;
 
         contextUpdate.settings = {
             ...props.context.settings,
             chapter: prevChapter,
-            chapterUrl: `${book.dirname}/${chapterUrl}`,
         };
+        contextUpdate.chapterContent = book.spine.get(key);
         contextUpdate.prevChapter = settings.chapter;
     }
 

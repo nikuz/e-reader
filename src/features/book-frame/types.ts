@@ -10,7 +10,6 @@ export interface BookAttributes {
 
 export interface BookSettings {
     chapter: number,
-    chapterUrl: string,
     page: number,
 }
 
