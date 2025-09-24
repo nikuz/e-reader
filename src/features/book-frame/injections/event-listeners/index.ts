@@ -4,10 +4,13 @@ export class FrameEventObserver {
     constructor(iframe: HTMLIFrameElement) {
         this.window = iframe.contentWindow;
         this.document = iframe.contentDocument;
+        this.bodyResizeObserver = new ResizeObserver(this.bodyResizeHandler);
     }
 
     window: Window | null;
     document: Document | null;
+
+    bodyResizeObserver: ResizeObserver | null;
 
     subscribe = () => {
         if (!this.window) {
@@ -28,6 +31,10 @@ export class FrameEventObserver {
         this.window.addEventListener('contextmenu', this.contextMenuHandler);
 
         this.window.addEventListener('resize', this.windowResizeHandler);
+
+        if (this.document?.body) {
+            this.bodyResizeObserver?.observe(this.document.body);
+        }
         
         // unsubscribe from all events on iframe content change
         this.window.addEventListener('beforeunload', this.unsubscribe);
@@ -50,6 +57,11 @@ export class FrameEventObserver {
 
         this.window.removeEventListener('contextmenu', this.contextMenuHandler);
         this.window.removeEventListener('resize', this.windowResizeHandler);
+
+        if (this.document?.body) {
+            this.bodyResizeObserver?.unobserve(this.document.body);
+        }
+
         this.window.removeEventListener('beforeunload', this.unsubscribe);
     };
 
@@ -99,5 +111,18 @@ export class FrameEventObserver {
     
     windowResizeHandler = () => {
         bookFrameStateMachineActor.send(({ type: 'FRAME_RESIZE' }));
+    };
+    
+    bodyResizeHandler = (entries: ResizeObserverEntry[]) => {
+        const target = entries[0]?.target;
+
+        if (!target) {
+            return;
+        }
+
+        bookFrameStateMachineActor.send(({
+            type: 'FRAME_BODY_RESIZE',
+            rect: new DOMRect(0, 0, target.scrollWidth, target.clientHeight),
+        }));
     };
 }

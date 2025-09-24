@@ -6,17 +6,20 @@ export function pageTurnPrevAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const window = iframeEl?.contentWindow;
-    const bodyEl = iframeEl?.contentDocument?.body;
     const book = props.context.book;
 
-    if (!window || !bodyEl || !book) {
+    if (!window || !book) {
         return;
     }
 
     const contextUpdate: Partial<BookFrameStateContext> = {};
     const settings = props.context.settings;
+    const screenRect = props.context.screenRect;
+    const chapterRect = props.context.chapterRect;
+    const pagesAmount = Math.round(chapterRect.width / screenRect.width);
+    const scrollStep = Math.ceil(chapterRect.width / pagesAmount);
     const prevPage = settings.page - 1;
-    const prevScrollPosition = window.innerWidth * prevPage;
+    const prevScrollPosition = scrollStep * prevPage;
     
     // scroll within the chapter
     if (prevScrollPosition >= 0) {
@@ -25,6 +28,7 @@ export function pageTurnPrevAction(props: {
             ...settings,
             page: prevPage,
         };
+        contextUpdate.scrollPosition = prevScrollPosition;
     }
     // change the chapter
     else {

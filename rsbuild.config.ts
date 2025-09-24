@@ -11,12 +11,12 @@ const config: RsbuildConfig = {
     ],
 };
 
-if (process.env.NODE_ENV === 'production') {
-    config.server = {
-        publicDir: {
-            copyOnBuild: false,
-        }
-    };
-}
+// if (process.env.NODE_ENV === 'production') {
+//     config.server = {
+//         publicDir: {
+//             copyOnBuild: false,
+//         }
+//     };
+// }
 
 export default defineConfig(config);

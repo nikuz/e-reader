@@ -34,6 +34,15 @@ export const bookFrameStateMachine = setup({
             chapterUrl: '',
             page: 0,
         },
+        scrollPosition: 0,
+        screenRect: {
+            width: 0,
+            height: 0,
+        },
+        chapterRect: {
+            width: 0,
+            height: 0,
+        },
     },
 
     initial: 'IDLE',
@@ -82,6 +91,11 @@ export const bookFrameStateMachine = setup({
                 },
                 FRAME_RESIZE: {
                     actions: enqueueActions(frameResizeAction),
+                },
+                FRAME_BODY_RESIZE: {
+                    actions: assign(({ event }) => ({
+                        chapterRect: event.rect,
+                    })),
                 },
                 PAGE_TURN_NEXT: {
                     actions: enqueueActions(pageTurnNextAction),

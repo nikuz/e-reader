@@ -13,8 +13,19 @@ export function frameResizeAction(props: {
     }
 
     const settings = props.context.settings;
+    const newScrollPosition = window.innerWidth * settings.page;
 
-    window.scrollTo({
-        left: window.innerWidth * settings.page,
+    window.scrollTo({ left: newScrollPosition });
+
+    props.enqueue.assign({
+        screenRect: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+        },
+        chapterRect: {
+            width: bodyEl.scrollWidth,
+            height: window.innerHeight,
+        },
+        scrollPosition: newScrollPosition,
     });
 }

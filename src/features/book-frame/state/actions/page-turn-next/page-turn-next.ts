@@ -6,25 +6,29 @@ export function pageTurnNextAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const window = iframeEl?.contentWindow;
-    const bodyEl = iframeEl?.contentDocument?.body;
     const book = props.context.book;
     
-    if (!window || !bodyEl || !book) {
+    if (!window || !book) {
         return;
     }
     
     const contextUpdate: Partial<BookFrameStateContext> = {};
     const settings = props.context.settings;
+    const screenRect = props.context.screenRect;
+    const chapterRect = props.context.chapterRect;
+    const pagesAmount = Math.round(chapterRect.width / screenRect.width);
+    const scrollStep = Math.ceil(chapterRect.width / pagesAmount);
     const nextPage = settings.page + 1;
-    const nextScrollPosition = window.innerWidth * nextPage;
+    const nextScrollPosition = scrollStep * nextPage;
 
     // scroll within the chapter
-    if (nextScrollPosition < bodyEl.scrollWidth) {
+    if (nextScrollPosition < chapterRect.width) {
         window.scrollTo({ left: nextScrollPosition });
         contextUpdate.settings = {
             ...settings,
             page: nextPage,
         };
+        contextUpdate.scrollPosition = nextScrollPosition;
     }
     // change the chapter
     else {
@@ -38,6 +42,7 @@ export function pageTurnNextAction(props: {
         };
         contextUpdate.chapterContent = book.spine.get(key);
         contextUpdate.prevChapter = settings.chapter;
+        contextUpdate.scrollPosition = 0;
     }
 
     props.enqueue.assign(contextUpdate);

@@ -7,7 +7,7 @@ import globals from 'globals';
 export default [
     js.configs.recommended,
     {
-        ignores: ['**/dist/'],
+        ignores: ['**/dist/', '**/android/', 'capacitor.config.ts'],
     },
     {
         files: ['**/*.{ts,tsx}'],

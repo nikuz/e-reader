@@ -8,6 +8,8 @@
     "build": "rsbuild build",
     "dev": "rsbuild dev --open",
     "preview": "rsbuild preview",
+    "copy": "npx cap copy",
+    "android": "npx cap copy && npx cap open android",
     "lint": "eslint ."
   },
   "dependencies": {

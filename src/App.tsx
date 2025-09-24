@@ -1,5 +1,6 @@
 import { createSignal } from 'solid-js';
 import BookFrame from './features/book-frame';
+import Debug from './features/debug';
 import './App.css';
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
             <BookFrame
                 src={bookUrl()}
             />
+            <Debug />
         </div>
     );
 };
