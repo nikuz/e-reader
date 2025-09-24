@@ -6,5 +6,6 @@ export function frameTouchCancelAction(props: {
 }) {
     props.enqueue.assign({
         frameInteractionStartTime: undefined,
+        frameInteractionStartPosition: undefined,
     });
 }

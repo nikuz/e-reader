@@ -65,12 +65,32 @@ export class FrameEventObserver {
         this.window.removeEventListener('beforeunload', this.unsubscribe);
     };
 
-    touchStartEventHandler = () => {
-        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_START' }));
+    touchStartEventHandler = (event: TouchEvent) => {
+        const touches = event.changedTouches;
+        if (touches.length > 1) {
+            return;
+        }
+        bookFrameStateMachineActor.send(({
+            type: 'FRAME_TOUCH_START',
+            position: {
+                x: touches[0].pageX,
+                y: touches[0].pageY,
+            },
+        }));
     };
     
-    touchMoveEventHandler = () => {
-        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_MOVE' }));
+    touchMoveEventHandler = (event: TouchEvent) => {
+        const touches = event.changedTouches;
+        if (touches.length > 1) {
+            return;
+        }
+        bookFrameStateMachineActor.send(({
+            type: 'FRAME_TOUCH_MOVE',
+            position: {
+                x: touches[0].pageX,
+                y: touches[0].pageY,
+            },
+        }));
     };
     
     touchEndEventHandler = (event: TouchEvent) => {
@@ -83,7 +103,7 @@ export class FrameEventObserver {
             position: {
                 x: touches[0].pageX,
                 y: touches[0].pageY,
-            }
+            },
         }));
     };
 
@@ -91,8 +111,14 @@ export class FrameEventObserver {
         bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_CANCEL' }));
     };
 
-    mouseDownEventHandler = () => {
-        bookFrameStateMachineActor.send(({ type: 'FRAME_TOUCH_START' }));
+    mouseDownEventHandler = (event: MouseEvent) => {
+        bookFrameStateMachineActor.send(({
+            type: 'FRAME_TOUCH_START',
+            position: {
+                x: event.pageX,
+                y: event.pageY,
+            },
+        }));
     };
 
     mouseUpEventHandler = (event: MouseEvent) => {

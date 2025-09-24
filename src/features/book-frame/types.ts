@@ -12,8 +12,3 @@ export interface BookSettings {
     chapter: number,
     page: number,
 }
-
-export interface Position {
-    x: number,
-    y: number,
-}

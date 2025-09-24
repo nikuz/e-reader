@@ -1,5 +1,5 @@
-import type { Size } from 'src/types';
-import type { BookAttributes, BookSettings, Position } from '../types';
+import type { Size, Position } from 'src/types';
+import type { BookAttributes, BookSettings } from '../types';
 
 export interface BookFrameStateContext {
     book?: BookAttributes,
@@ -10,6 +10,7 @@ export interface BookFrameStateContext {
     screenRect: Size,
 
     frameInteractionStartTime?: number,
+    frameInteractionStartPosition?: Position,
     
     chapterContent?: string,
     prevChapter?: number,
@@ -28,9 +29,15 @@ export interface ChapterLoadEvent {
     iframeEl: HTMLIFrameElement,
 }
 
-interface FrameTouchStartEvent { type: 'FRAME_TOUCH_START' }
+export interface FrameTouchStartEvent {
+    type: 'FRAME_TOUCH_START',
+    position: Position,
+}
 
-interface FrameTouchMoveEvent { type: 'FRAME_TOUCH_MOVE' }
+export interface FrameTouchMoveEvent {
+    type: 'FRAME_TOUCH_MOVE',
+    position: Position,
+}
 
 interface FrameResizeEvent { type: 'FRAME_RESIZE' }
 

@@ -6,6 +6,7 @@ import {
     pageTurnNextAction,
     pageTurnPrevAction,
     frameTouchStartAction,
+    frameTouchMoveAction,
     frameTouchEndAction,
     frameTouchCancelAction,
     frameResizeAction,
@@ -81,7 +82,7 @@ export const bookFrameStateMachine = setup({
                     actions: enqueueActions(frameTouchStartAction),
                 },
                 FRAME_TOUCH_MOVE: {
-                    actions: enqueueActions(frameTouchCancelAction),
+                    actions: enqueueActions(frameTouchMoveAction),
                 },
                 FRAME_TOUCH_END: {
                     actions: enqueueActions(frameTouchEndAction),

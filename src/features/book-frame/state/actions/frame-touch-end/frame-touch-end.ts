@@ -48,5 +48,6 @@ export function frameTouchEndAction(props: {
 
     props.enqueue.assign({
         frameInteractionStartTime: undefined,
+        frameInteractionStartPosition: undefined,
     });
 }
