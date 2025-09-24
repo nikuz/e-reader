@@ -23,21 +23,26 @@ export function frameTouchEndAction(props: {
         return;
     }
 
+    const selection = iframeDocument.getSelection();
     const position = props.event.position;
 
     if (performance.now() - frameInteractionStartTime < PAGE_TURN_TOUCH_DELAY) {
-        const bodyRect = iframeDocument.body.getBoundingClientRect();
-        const x = position.x - contentWindow.scrollX;
-
-        // left side touch
-        if (x < bodyRect.width / 100 * 30) {
-            props.enqueue.raise(({ type: 'PAGE_TURN_PREV' }));
-        }
-        // right side touch
-        else if (x > bodyRect.width / 100 * 70) {
-            props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
+        if (selection?.toString().length) {
+            selection?.removeAllRanges();
         } else {
-            statusBarStateMachineActor.send({ type: 'TOGGLE' });
+            const bodyRect = iframeDocument.body.getBoundingClientRect();
+            const x = position.x - contentWindow.scrollX;
+
+            // left side touch
+            if (x < bodyRect.width / 100 * 30) {
+                props.enqueue.raise(({ type: 'PAGE_TURN_PREV' }));
+            }
+            // right side touch
+            else if (x > bodyRect.width / 100 * 70) {
+                props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
+            } else {
+                statusBarStateMachineActor.send({ type: 'TOGGLE' });
+            }
         }
     } else {
         props.enqueue.raise(({
