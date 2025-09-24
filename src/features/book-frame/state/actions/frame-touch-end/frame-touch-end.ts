@@ -1,3 +1,4 @@
+import { statusBarStateMachineActor } from 'src/features/status-bar/state';
 import { PAGE_TURN_TOUCH_DELAY } from '../../../constants';
 import type {
     BookFrameStateContext,
@@ -35,6 +36,8 @@ export function frameTouchEndAction(props: {
         // right side touch
         else if (x > bodyRect.width / 100 * 70) {
             props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
+        } else {
+            statusBarStateMachineActor.send({ type: 'TOGGLE' });
         }
     } else {
         props.enqueue.raise(({
