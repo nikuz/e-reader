@@ -18,8 +18,10 @@ body {
 }
 
 ::selection {
-    background-color: yellow;
-    color: #000;
+    background-color: transparent;
+    color: #FFF;
+    text-decoration: underline 3px orange;
+    text-decoration-skip-ink: none;
 }
 
 @media (min-width: 1000px) {
