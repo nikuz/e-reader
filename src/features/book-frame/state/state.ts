@@ -1,5 +1,6 @@
-import { setup, createActor, assign, enqueueActions } from 'xstate';
-import { bookLoaderActor } from './actors';
+import { setup, createActor, assign, enqueueActions, sendTo } from 'xstate';
+import { bookLoaderStateMachine } from '../loader/state';
+import { TEXT_SELECT_DELAY } from '../constants';
 import {
     initiateBookAction,
     chapterLoadAction,
@@ -15,12 +16,11 @@ import {
 import type {
     BookFrameStateContext,
     BookFrameStateEvents,
-    LoadBookEvent,
 } from './types';
 
 export const bookFrameStateMachine = setup({
     actors: {
-        bookLoaderActor,
+        bookLoaderStateMachine,
     },
     types: {
         context: {} as BookFrameStateContext,
@@ -32,7 +32,6 @@ export const bookFrameStateMachine = setup({
     context: {
         settings: {
             chapter: 0,
-            chapterUrl: '',
             page: 0,
         },
         scrollPosition: 0,
@@ -46,57 +45,32 @@ export const bookFrameStateMachine = setup({
         },
     },
 
+    entry: [
+        assign({
+            loaderMachineRef: ({ spawn }) => spawn('bookLoaderStateMachine', { id: 'loader' }),
+        }),
+    ],
+
     initial: 'IDLE',
 
     states: {
         IDLE: {
             on: {
-                LOAD_BOOK: 'LOADING_BOOK',
-            },
-        },
-
-        LOADING_BOOK: {
-            invoke: {
-                src: 'bookLoaderActor',
-                input: ({ event }) => event as LoadBookEvent,
-                onDone: {
-                    target: 'LOADED',
+                LOAD_BOOK: {
+                    actions: sendTo('loader', ({ event }) => event),
+                },
+                BOOK_LOAD_SUCCESS: {
                     actions: enqueueActions(initiateBookAction),
                 },
-                onError: {
-                    target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        errorMessage: event.error?.toString(),
-                    })),
+                BOOK_LOAD_ERROR: {
+                    actions: assign(({ event }) => ({ errorMessage: event.errorMessage })),
                 },
-            },
-        },
-
-        LOADED: {
-            on: {
-                LOAD_BOOK: 'LOADING_BOOK',
                 CHAPTER_LOAD: {
                     actions: enqueueActions(chapterLoadAction),
                 },
                 FRAME_TOUCH_START: {
+                    target: 'TOUCHED',
                     actions: enqueueActions(frameTouchStartAction),
-                },
-                FRAME_TOUCH_MOVE: {
-                    actions: enqueueActions(frameTouchMoveAction),
-                },
-                FRAME_TOUCH_END: {
-                    actions: enqueueActions(frameTouchEndAction),
-                },
-                FRAME_TOUCH_CANCEL: {
-                    actions: enqueueActions(frameTouchCancelAction),
-                },
-                FRAME_RESIZE: {
-                    actions: enqueueActions(frameResizeAction),
-                },
-                FRAME_BODY_RESIZE: {
-                    actions: assign(({ event }) => ({
-                        chapterRect: event.rect,
-                    })),
                 },
                 PAGE_TURN_NEXT: {
                     actions: enqueueActions(pageTurnNextAction),
@@ -104,10 +78,42 @@ export const bookFrameStateMachine = setup({
                 PAGE_TURN_PREV: {
                     actions: enqueueActions(pageTurnPrevAction),
                 },
-                SELECT_TEXT: {
+            },
+        },
+
+        TOUCHED: {
+            after: {
+                [TEXT_SELECT_DELAY]: {
                     actions: enqueueActions(selectTextAction),
                 },
             },
+            on: {
+                FRAME_TOUCH_MOVE: {
+                    actions: enqueueActions(frameTouchMoveAction),
+                },
+                FRAME_TOUCH_END: {
+                    target: 'IDLE',
+                    actions: enqueueActions(frameTouchEndAction),
+                },
+                FRAME_TOUCH_CANCEL: {
+                    target: 'IDLE',
+                    actions: enqueueActions(frameTouchCancelAction),
+                },
+                SET_TEXT_SELECTION: {
+                    actions: assign(({ event }) => ({ textSelection: event.textSelection })),
+                },
+            },
+        },
+    },
+
+    on: {
+        FRAME_RESIZE: {
+            actions: enqueueActions(frameResizeAction),
+        },
+        FRAME_BODY_RESIZE: {
+            actions: assign(({ event }) => ({
+                chapterRect: event.rect,
+            })),
         },
     },
 });

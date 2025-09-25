@@ -2,7 +2,7 @@ import { createEffect, onCleanup, Show } from 'solid-js';
 import { FrameEventObserver } from './injections';
 import {
     useBookFrameStateSelect,
-    useBookFrameStateMatch,
+    useBookLoaderStateMatch,
     bookFrameStateMachineActor,
 } from './state';
 import './style.css';
@@ -14,7 +14,7 @@ interface Props {
 export default function BookFrame(props: Props) {
     const chapterContent = useBookFrameStateSelect('chapterContent');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
-    const bookIsLoading = useBookFrameStateMatch(['LOADING_BOOK']);
+    const bookIsLoading = useBookLoaderStateMatch(['LOADING_BOOK']);
     let eventObserver: FrameEventObserver;
     
     const frameContentLoadHandler = (event: Event) => {

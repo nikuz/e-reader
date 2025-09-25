@@ -1,4 +1,4 @@
-import type { BookAttributes } from '../../types';
+import type { BookAttributes } from '../../../types';
 
 export async function retrieveBookAttributes(src: string): Promise<BookAttributes> {
     if (!src.endsWith('opf')) {

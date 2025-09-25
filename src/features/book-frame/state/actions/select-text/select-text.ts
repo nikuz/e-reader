@@ -1,21 +1,20 @@
-import type { BookFrameStateContext, SelectTextEvent } from '../../types';
+import type { BookFrameStateContext } from '../../types';
 
 export function selectTextAction(props: {
-    event: SelectTextEvent,
     context: BookFrameStateContext,
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
     const iframeEl = props.context.iframeEl;
     const iframeDocument = iframeEl?.contentDocument;
     const iframeWindow = iframeEl?.contentWindow;
-
-    if (!iframeEl || !iframeDocument || !iframeWindow) {
+    const frameInteractionStartPosition = props.context.frameInteractionStartPosition;
+    
+    if (!iframeEl || !iframeDocument || !iframeWindow || !frameInteractionStartPosition) {
         return;
     }
 
-    const position = props.event.position;
-    const x = position.x - iframeWindow.scrollX;
-    const y = position.y;
+    const x = frameInteractionStartPosition.x - iframeWindow.scrollX;
+    const y = frameInteractionStartPosition.y;
     let textNode;
     let offset;
 
@@ -60,10 +59,17 @@ export function selectTextAction(props: {
     selectionRange.setStart(textNode, start);
     selectionRange.setEnd(textNode, end);
 
-    // Clear any previous selections
     const selection = iframeDocument.getSelection();
+
+    // Clear any previous selections
     selection?.removeAllRanges();
 
     // Add the new range to the selection
     selection?.addRange(selectionRange);
+
+    if (selection) {
+        props.enqueue.assign({
+            textSelection: selection,
+        });
+    }
 }

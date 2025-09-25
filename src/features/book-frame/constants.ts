@@ -1,2 +1,1 @@
-export const PAGE_TURN_TOUCH_DELAY = 300; // ms
-export const PAGE_TURN_TOUCH_MIN_SHIFT = 10; // px
+export const TEXT_SELECT_DELAY = 150; // ms

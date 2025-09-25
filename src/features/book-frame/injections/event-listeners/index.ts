@@ -133,6 +133,14 @@ export class FrameEventObserver {
 
     contextMenuHandler = (event: MouseEvent) => {
         event.preventDefault();
+        const selection = this.document?.getSelection();
+
+        if (selection) {
+            bookFrameStateMachineActor.send(({
+                type: 'SET_TEXT_SELECTION',
+                textSelection: selection,
+            }));
+        }
     };
     
     windowResizeHandler = () => {

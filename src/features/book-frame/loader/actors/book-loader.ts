@@ -1,10 +1,10 @@
 import { fromPromise } from 'xstate';
-import injectedCss from '../../../injections/style/main.css?raw';
+import injectedCss from '../../injections/style/main.css?raw';
+import type { BookAttributes } from '../../types';
 import {
     retrieveBookAttributes,
     retrieveStaticContent,
-} from '../../../utils';
-import type { BookAttributes } from '../../../types';
+} from '../utils';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {

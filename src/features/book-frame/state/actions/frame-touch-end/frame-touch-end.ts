@@ -1,5 +1,4 @@
 import { statusBarStateMachineActor } from 'src/features/status-bar/state';
-import { PAGE_TURN_TOUCH_DELAY } from '../../../constants';
 import type {
     BookFrameStateContext,
     BookFrameStateEvents,
@@ -23,32 +22,25 @@ export function frameTouchEndAction(props: {
         return;
     }
 
-    const selection = iframeDocument.getSelection();
-    const position = props.event.position;
+    const textSelection = props.context.textSelection;
+    
+    if (!textSelection?.toString().length) {
+        const position = props.event.position;
+        const bodyRect = iframeDocument.body.getBoundingClientRect();
+        const x = position.x - contentWindow.scrollX;
 
-    if (performance.now() - frameInteractionStartTime < PAGE_TURN_TOUCH_DELAY) {
-        if (selection?.toString().length) {
-            selection?.removeAllRanges();
-        } else {
-            const bodyRect = iframeDocument.body.getBoundingClientRect();
-            const x = position.x - contentWindow.scrollX;
-
-            // left side touch
-            if (x < bodyRect.width / 100 * 30) {
-                props.enqueue.raise(({ type: 'PAGE_TURN_PREV' }));
-            }
-            // right side touch
-            else if (x > bodyRect.width / 100 * 70) {
-                props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
-            } else {
-                statusBarStateMachineActor.send({ type: 'TOGGLE' });
-            }
+        // left side touch
+        if (x < bodyRect.width / 100 * 30) {
+            props.enqueue.raise(({ type: 'PAGE_TURN_PREV' }));
         }
-    } else {
-        props.enqueue.raise(({
-            type: 'SELECT_TEXT',
-            position,
-        }));
+        // right side touch
+        else if (x > bodyRect.width / 100 * 70) {
+            props.enqueue.raise(({ type: 'PAGE_TURN_NEXT' }));
+        }
+        // middle screen touch
+        else {
+            statusBarStateMachineActor.send({ type: 'TOGGLE' });
+        }
     }
 
     props.enqueue.assign({

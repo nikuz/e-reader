@@ -1,4 +1,6 @@
+import type { ActorRefFrom } from 'xstate';
 import type { Size, Position } from 'src/types';
+import { bookLoaderStateMachine } from '../loader/state';
 import type { BookAttributes, BookSettings } from '../types';
 
 export interface BookFrameStateContext {
@@ -16,12 +18,26 @@ export interface BookFrameStateContext {
     prevChapter?: number,
     chapterRect: Size,
 
+    textSelection?: Selection,
+
     errorMessage?: string,
+
+    loaderMachineRef?: ActorRefFrom<typeof bookLoaderStateMachine>,
 }
 
 export interface LoadBookEvent {
     type: 'LOAD_BOOK',
     src: string,
+}
+
+export interface BookLoadSuccessEvent {
+    type: 'BOOK_LOAD_SUCCESS',
+    book: BookAttributes,
+}
+
+export interface BookLoadErrorEvent {
+    type: 'BOOK_LOAD_ERROR',
+    errorMessage?: string,
 }
 
 export interface ChapterLoadEvent {
@@ -57,13 +73,15 @@ interface PageTurnNextEvent { type: 'PAGE_TURN_NEXT' }
 
 interface PageTurnPrevEvent { type: 'PAGE_TURN_PREV' }
 
-export interface SelectTextEvent {
-    type: 'SELECT_TEXT',
-    position: Position,
+export interface SetTextSelectionEvent {
+    type: 'SET_TEXT_SELECTION',
+    textSelection: Selection,
 }
 
 export type BookFrameStateEvents =
     | LoadBookEvent
+    | BookLoadSuccessEvent
+    | BookLoadErrorEvent
     | ChapterLoadEvent
     | FrameTouchStartEvent
     | FrameTouchMoveEvent
@@ -73,4 +91,4 @@ export type BookFrameStateEvents =
     | FrameTouchCancelEvent
     | PageTurnNextEvent
     | PageTurnPrevEvent
-    | SelectTextEvent;
+    | SetTextSelectionEvent;
