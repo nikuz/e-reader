@@ -1,4 +1,6 @@
-import { createEffect, onCleanup, Show } from 'solid-js';
+import { onMount, onCleanup, Show } from 'solid-js';
+import { useSearchParams, useNavigate } from '@solidjs/router';
+import { Routes } from 'src/types';
 import { FrameEventObserver } from './injections';
 import {
     useBookFrameStateSelect,
@@ -7,16 +9,14 @@ import {
 } from './state';
 import './style.css';
 
-interface Props {
-    src: string,
- }
-
-export default function BookFrame(props: Props) {
+export default function BookFrame() {
+    const [searchParams] = useSearchParams<{ bookSrc: string }>();
+    const navigate = useNavigate();
     const chapterContent = useBookFrameStateSelect('chapterContent');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
     const bookIsLoading = useBookLoaderStateMatch(['LOADING_BOOK']);
     let eventObserver: FrameEventObserver;
-    
+
     const frameContentLoadHandler = (event: Event) => {
         const iframeEl = event.target as HTMLIFrameElement;
         
@@ -29,11 +29,15 @@ export default function BookFrame(props: Props) {
         });
     };
 
-    createEffect(() => {
-        if (props.src) {
+    const navigateToLibraryHandler = () => {
+        navigate(Routes.LIBRARY);
+    };
+
+    onMount(() => {
+        if (searchParams.bookSrc) {
             bookFrameStateMachineActor.send({
                 type: 'LOAD_BOOK',
-                src: props.src,
+                src: searchParams.bookSrc,
             });
         }
     });
@@ -44,6 +48,17 @@ export default function BookFrame(props: Props) {
 
     return (
         <div class="book-frame-container">
+            {!searchParams.bookSrc && (
+                <p class="flex flex-col">
+                    Select book to display
+                    <button
+                        class="btn block mt-2"
+                        onClick={navigateToLibraryHandler}
+                    >
+                        Go to Library
+                    </button>
+                </p>
+            )}
             {bookIsLoading() && (
                 <div class="book-loading">loading...</div>
             )}
@@ -53,7 +68,6 @@ export default function BookFrame(props: Props) {
             <Show when={chapterContent()}>
                 <iframe
                     src={chapterContent()}
-                    // srcdoc={chapterContent()}
                     class="book-frame"
                     sandbox="allow-same-origin allow-scripts"
                     onLoad={frameContentLoadHandler}
