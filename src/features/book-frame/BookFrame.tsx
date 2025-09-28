@@ -52,7 +52,7 @@ export default function BookFrame() {
                 <p class="flex flex-col">
                     Select book to display
                     <button
-                        class="btn block mt-2"
+                        class="btn block rounded-lg mt-2"
                         onClick={navigateToLibraryHandler}
                     >
                         Go to Library

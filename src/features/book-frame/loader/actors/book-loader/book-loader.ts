@@ -1,10 +1,10 @@
 import { fromPromise } from 'xstate';
-import injectedCss from '../../injections/style/main.css?raw';
-import type { BookAttributes } from '../../types';
+import injectedCss from '../../../injections/style/main.css?raw';
+import type { BookAttributes } from '../../../types';
 import {
     retrieveBookAttributes,
     retrieveStaticContent,
-} from '../utils';
+} from '../../utils';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {
@@ -46,7 +46,6 @@ export const bookLoaderActor = fromPromise(async (props: {
         const blobUrl = URL.createObjectURL(blob);
         
         spine.set(chapter[0], blobUrl);
-        // spine.set(chapter[0], modifiedContent);
     }
 
     return bookAttributes;

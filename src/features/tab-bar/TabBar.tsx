@@ -14,7 +14,7 @@ export default function TabBar() {
     };
 
     return (
-        <div class="dock">
+        <div class="dock z-9999">
             <button
                 classList={{ 'dock-active': location.pathname === Routes.LIBRARY }}
                 onClick={[navigateHandler, Routes.LIBRARY]}

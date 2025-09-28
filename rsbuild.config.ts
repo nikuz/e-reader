@@ -9,6 +9,9 @@ const config: RsbuildConfig = {
         }),
         pluginSolid(),
     ],
+    html: {
+        template: 'public/index.html',
+    },
 };
 
 // if (process.env.NODE_ENV === 'production') {
