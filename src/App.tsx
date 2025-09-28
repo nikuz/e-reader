@@ -1,4 +1,4 @@
-import { JSX } from 'solid-js';
+import type { JSX } from 'solid-js';
 import Debug from './features/debug';
 import TabBar from './features/tab-bar';
 import './App.css';
