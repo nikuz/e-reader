@@ -1,19 +1,7 @@
-import type { BookAttributes } from '../../../types';
+import type { BookAttributes } from 'src/types';
 
-export async function retrieveBookAttributes(src: string): Promise<BookAttributes> {
-    if (!src.endsWith('opf')) {
-        throw new Error('SRC should point to an OPF file');
-    }
-
-    const response = await fetch(src);
-
-    if (!response.ok) {
-        throw new Error('Can\'t load OPF file');
-    }
-
-    const content = await response.text();
-
-    const xmlDoc = new DOMParser().parseFromString(content, 'text/xml');
+export async function retrieveBookAttributes(opfFileContent: string): Promise<BookAttributes> {
+    const xmlDoc = new DOMParser().parseFromString(opfFileContent, 'text/xml');
     const metadataNode = xmlDoc.querySelector('metadata');
     const manifestNode = xmlDoc.querySelector('manifest');
     const spineNode = xmlDoc.querySelector('spine');
@@ -29,9 +17,10 @@ export async function retrieveBookAttributes(src: string): Promise<BookAttribute
     }
 
     const eisbn = metadataNode.querySelector('#eisbn');
-    const creator = metadataNode.getElementsByTagName('dc:creator')[0];
+    const title = metadataNode.getElementsByTagName('dc:title')[0];
+    const author = metadataNode.getElementsByTagName('dc:creator')[0];
     const language = metadataNode.getElementsByTagName('dc:language')[0];
-    const spine = new Map();
+    const spine: Record<string, string> = {};
 
     const spineItems = spineNode.querySelectorAll('itemref');
 
@@ -40,19 +29,18 @@ export async function retrieveBookAttributes(src: string): Promise<BookAttribute
         const manifestItem = manifestNode.querySelector(`#${idRef}`);
         const value = manifestItem?.getAttribute('href');
 
-        if (value) {
-            spine.set(idRef, value);
+        if (idRef && value) {
+            spine[idRef] = value;
         }
     });
 
-    const lastSlashIndex = src.lastIndexOf('/');
-
     return {
         eisbn: eisbn?.textContent ?? '',
-        creator: creator?.textContent ?? '',
+        title: title?.textContent ?? '',
+        author: author?.textContent ?? '',
         language: language?.textContent ?? '',
         navigation: navigation?.getAttribute('href') ?? '',
-        dirname: src.substring(0, lastSlashIndex),
+        dirname: '',
 
         spine,
     };

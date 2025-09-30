@@ -1,6 +1,11 @@
 import { fromPromise } from 'xstate';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import JSZip from 'jszip';
+import { pathUtils } from 'src/utils';
+import {
+    retrieveBookAttributes,
+    generateFakeIsbn,
+} from '../../../utils';
 import { libraryDirectory } from '../../../constants';
 
 export const fileOpenerActor = fromPromise(async (props: {
@@ -14,35 +19,54 @@ export const fileOpenerActor = fromPromise(async (props: {
     const fileContent = await readFileAsArrayBuffer(file);
     const unwrappedContent = await zip.loadAsync(fileContent);
 
-    // console.log(unwrappedContent.files);
     const opfFile = unwrappedContent.file(/\.opf/)[0];
-
     if (!opfFile) {
         throw new Error('Book doesn\'t have .OPF file');
     }
 
     const opfContent = await opfFile.async('text');
-    console.log(opfContent);
+    const bookAttributes = await retrieveBookAttributes(opfContent);
 
-    // create libraryDirectory if it doesn't exist yet
-    try {
-        await Filesystem.stat({
-            path: libraryDirectory,
-            directory: Directory.Documents,
-        });
-    } catch {
-        await Filesystem.mkdir({
-            path: libraryDirectory,
-            directory: Directory.Documents,
-        });    
+    if (!bookAttributes.eisbn) {
+        bookAttributes.eisbn = generateFakeIsbn(bookAttributes.author, bookAttributes.title);
     }
 
-    // await Filesystem.writeFile({
-    //     path: "secrets/text.txt",
-    //     data: "This is a test",
-    //     directory: Directory.Documents,
-    //     encoding: Encoding.UTF8,
-    // });
+    const bookDirectory = pathUtils.join([libraryDirectory, bookAttributes.eisbn]);
+    bookAttributes.dirname = bookDirectory;
+
+    // if book directory already exists, don't proceed
+    try {
+        const bookDirectoryStats = await Filesystem.stat({
+            path: bookDirectory,
+            directory: Directory.Documents,
+        });
+        if (bookDirectoryStats) {
+            // recreate directory in dev only
+            if (import.meta.env.DEV) {
+                await Filesystem.rmdir({
+                    path: bookDirectory,
+                    directory: Directory.Documents,
+                    recursive: true,
+                });
+                await Filesystem.mkdir({
+                    path: bookDirectory,
+                    directory: Directory.Documents,
+                });
+                console.log('Book directory recreated');
+            } else {
+                return;
+            }
+        }
+    } catch {
+        await Filesystem.mkdir({
+            path: bookDirectory,
+            directory: Directory.Documents,
+        });
+    }
+
+    for (const fileName in unwrappedContent.files) {
+        await saveFileFrom(unwrappedContent.files[fileName], bookDirectory);
+    }
 });
 
 async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
@@ -58,5 +82,21 @@ async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
         };
 
         reader.readAsArrayBuffer(file);
+    });
+}
+
+async function saveFileFrom(file: JSZip.JSZipObject, bookDirectory: string): Promise<void> {
+    if (file.dir) {
+        return;
+    }
+
+    const filePath = pathUtils.join([bookDirectory, file.name]);
+    
+    await Filesystem.writeFile({
+        path: filePath,
+        data: await file.async('blob'),
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+        recursive: true,
     });
 }

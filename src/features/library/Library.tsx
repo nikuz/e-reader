@@ -8,7 +8,7 @@ import {
 } from './state';
 
 export default function Library() {
-    const isOpeningFile = useLibraryStateMatch(['OPENING_FILE']);
+    const isOpeningFile = useLibraryStateMatch(['INITIATING', 'OPENING_FILE']);
     const errorMessage = useLibraryStateSelect('errorMessage');
 
     const closeErrorHandler = () => {
@@ -26,8 +26,15 @@ export default function Library() {
 
             <Show when={errorMessage()}>
                 <Toast
-                    message="File loading error"
+                    message={
+                        <span>
+                            File loading error
+                            <br />
+                            {errorMessage()}
+                        </span>
+                    }
                     type="error"
+                    class="mt-10"
                     onClose={closeErrorHandler}
                 />
             </Show>

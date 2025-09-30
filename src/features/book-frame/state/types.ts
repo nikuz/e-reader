@@ -1,7 +1,6 @@
 import type { ActorRefFrom } from 'xstate';
-import type { Size, Position } from 'src/types';
+import type { BookAttributes, BookSettings, Size, Position } from 'src/types';
 import { bookLoaderStateMachine } from '../loader/state';
-import type { BookAttributes, BookSettings } from '../types';
 
 export interface BookFrameStateContext {
     book?: BookAttributes,

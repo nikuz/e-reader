@@ -1,9 +1,11 @@
+import type { JSX } from 'solid-js';
 import { AiOutlineClose } from 'solid-icons/ai';
 import './style.css';
 
 export interface Props {
-    message: string,
+    message: JSX.Element,
     type: 'info' | 'warn' | 'error',
+    class?: string,
     onClose?: () => void,
 }
 
@@ -13,7 +15,7 @@ export function Toast(props: Props) {
     };
 
     return (
-        <div class="toast toast-top toast-center">
+        <div class={`toast toast-top toast-center ${props.class ?? ''}`}>
             <div
                 class="alert"
                 classList={{

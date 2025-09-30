@@ -1,5 +1,5 @@
 import { setup, createActor, assign } from 'xstate';
-import { fileOpenerActor } from './actors';
+import { initiatorActor, fileOpenerActor } from './actors';
 import type {
     LibraryStateContext,
     LibraryStateEvents,
@@ -8,6 +8,7 @@ import type {
 
 export const libraryStateMachine = setup({
     actors: {
+        initiatorActor,
         fileOpenerActor,
     },
     types: {
@@ -21,7 +22,7 @@ export const libraryStateMachine = setup({
         
     },
 
-    initial: 'IDLE',
+    initial: 'INITIATING',
 
     states: {
         IDLE: {
@@ -29,6 +30,21 @@ export const libraryStateMachine = setup({
                 OPEN_FILE: 'OPENING_FILE',
                 CLOSE_ERROR_TOAST: {
                     actions: assign(() => ({ errorMessage: undefined })),
+                },
+            },
+        },
+
+        INITIATING: {
+            invoke: {
+                src: 'initiatorActor',
+                onDone: {
+                    target: 'IDLE',
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: assign(({ event }) => ({
+                        errorMessage: event.error?.toString(),
+                    })),
                 },
             },
         },

@@ -1,11 +1,12 @@
 export interface BookAttributes {
     eisbn: string,
+    title: string,
+    author: string,
     language: string,
-    creator: string,
     navigation: string,
     dirname: string,
 
-    spine: Map<string, string>,
+    spine: Record<string, string>,
 }
 
 export interface BookSettings {
