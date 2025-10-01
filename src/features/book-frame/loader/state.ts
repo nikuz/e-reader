@@ -30,7 +30,7 @@ export const bookLoaderStateMachine = setup({
                     target: 'IDLE',
                     actions: sendParent(({ event }): BookLoadSuccessEvent => ({
                         type: 'BOOK_LOAD_SUCCESS',
-                        book: event.output,
+                        bookAttributes: event.output,
                     })),
                 },
                 onError: {

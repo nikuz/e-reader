@@ -1,6 +1,7 @@
 import { Show } from 'solid-js';
 import { Toast, Spinner } from 'src/components';
 import { AddBookButton } from './components';
+import { StateSupplier } from './daemons';
 import {
     libraryStateMachineActor,
     useLibraryStateMatch,
@@ -38,6 +39,8 @@ export default function Library() {
                     onClose={closeErrorHandler}
                 />
             </Show>
+
+            <StateSupplier />
         </div>
     );
 }

@@ -6,9 +6,9 @@ export function pageTurnNextAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const window = iframeEl?.contentWindow;
-    const book = props.context.book;
+    const bookAttributes = props.context.bookAttributes;
     
-    if (!window || !book) {
+    if (!window || !bookAttributes) {
         return;
     }
     
@@ -32,7 +32,7 @@ export function pageTurnNextAction(props: {
     }
     // change the chapter
     else {
-        const chapters = Array.from(book.spine.keys());
+        const chapters = Object.keys(bookAttributes.spine);
         const nextChapter = Math.min(settings.chapter + 1, chapters.length - 1);
         const key = chapters[nextChapter];
 
@@ -40,7 +40,7 @@ export function pageTurnNextAction(props: {
             page: 0,
             chapter: nextChapter,
         };
-        contextUpdate.chapterContent = book.spine.get(key);
+        contextUpdate.chapterContent = bookAttributes.spine[key];
         contextUpdate.prevChapter = settings.chapter;
         contextUpdate.scrollPosition = 0;
     }

@@ -6,9 +6,9 @@ export function pageTurnPrevAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const window = iframeEl?.contentWindow;
-    const book = props.context.book;
+    const bookAttributes = props.context.bookAttributes;
 
-    if (!window || !book) {
+    if (!window || !bookAttributes) {
         return;
     }
 
@@ -33,13 +33,13 @@ export function pageTurnPrevAction(props: {
     // change the chapter
     else {
         const prevChapter = Math.max(settings.chapter - 1, 0);
-        const key = Array.from(book.spine.keys())[prevChapter];
+        const key = Object.keys(bookAttributes.spine)[prevChapter];
 
         contextUpdate.settings = {
             ...props.context.settings,
             chapter: prevChapter,
         };
-        contextUpdate.chapterContent = book.spine.get(key);
+        contextUpdate.chapterContent = bookAttributes.spine[key];
         contextUpdate.prevChapter = settings.chapter;
     }
 

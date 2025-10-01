@@ -1,5 +1,6 @@
-import { setup, createActor, assign } from 'xstate';
+import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { initiatorActor, fileOpenerActor } from './actors';
+import { selectBookAction } from './actions';
 import type {
     LibraryStateContext,
     LibraryStateEvents,
@@ -31,6 +32,9 @@ export const libraryStateMachine = setup({
                 CLOSE_ERROR_TOAST: {
                     actions: assign(() => ({ errorMessage: undefined })),
                 },
+                SELECT_BOOK: {
+                    actions: enqueueActions(selectBookAction),
+                },
             },
         },
 
@@ -55,6 +59,7 @@ export const libraryStateMachine = setup({
                 input: ({ event }) => event as OpenFileEvent,
                 onDone: {
                     target: 'IDLE',
+                    actions: enqueueActions(selectBookAction),
                 },
                 onError: {
                     target: 'IDLE',
@@ -65,6 +70,12 @@ export const libraryStateMachine = setup({
             },
         },
     },
+
+    on: {
+        SET_NAVIGATOR: {
+            actions: assign(({ event }) => ({ navigator: event.navigator })),
+        },
+    }
 });
 
 export const libraryStateMachineActor = createActor(libraryStateMachine).start();

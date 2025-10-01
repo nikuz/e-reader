@@ -1,5 +1,6 @@
-import { onMount, onCleanup, Show } from 'solid-js';
-import { useSearchParams, useNavigate } from '@solidjs/router';
+import { onCleanup, Show } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+import { Toast, Spinner } from 'src/components';
 import { Routes } from 'src/types';
 import { FrameEventObserver } from './injections';
 import {
@@ -10,8 +11,8 @@ import {
 import './style.css';
 
 export default function BookFrame() {
-    const [searchParams] = useSearchParams<{ bookSrc: string }>();
     const navigate = useNavigate();
+    const book = useBookFrameStateSelect('bookAttributes');
     const chapterContent = useBookFrameStateSelect('chapterContent');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
     const bookIsLoading = useBookLoaderStateMatch(['LOADING_BOOK']);
@@ -33,14 +34,9 @@ export default function BookFrame() {
         navigate(Routes.LIBRARY);
     };
 
-    onMount(() => {
-        if (searchParams.bookSrc) {
-            bookFrameStateMachineActor.send({
-                type: 'LOAD_BOOK',
-                src: searchParams.bookSrc,
-            });
-        }
-    });
+    const closeErrorHandler = () => {
+        bookFrameStateMachineActor.send({ type: 'CLOSE_BOOK_LOAD_ERROR' });
+    };
 
     onCleanup(() => {
         eventObserver?.unsubscribe();
@@ -48,7 +44,7 @@ export default function BookFrame() {
 
     return (
         <div class="book-frame-container">
-            {!searchParams.bookSrc && (
+            {!book() && !bookLoadErrorMessage() && (
                 <p class="flex flex-col">
                     Select book to display
                     <button
@@ -60,11 +56,22 @@ export default function BookFrame() {
                 </p>
             )}
             {bookIsLoading() && (
-                <div class="book-loading">loading...</div>
+                <Spinner size="xl" color="accent" blocker />
             )}
-            {bookLoadErrorMessage() && (
-                <p class="book-error">{bookLoadErrorMessage()}</p>
-            )}
+            <Show when={bookLoadErrorMessage()}>
+                <Toast
+                    message={
+                        <span>
+                            Book rendering error
+                            <br />
+                            {bookLoadErrorMessage()}
+                        </span>
+                    }
+                    type="error"
+                    class="mt-10"
+                    onClose={closeErrorHandler}
+                />
+            </Show>
             <Show when={chapterContent()}>
                 <iframe
                     src={chapterContent()}

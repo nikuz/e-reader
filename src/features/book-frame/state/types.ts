@@ -3,7 +3,7 @@ import type { BookAttributes, BookSettings, Size, Position } from 'src/types';
 import { bookLoaderStateMachine } from '../loader/state';
 
 export interface BookFrameStateContext {
-    book?: BookAttributes,
+    bookAttributes?: BookAttributes,
     settings: BookSettings,
 
     iframeEl?: HTMLIFrameElement,
@@ -26,18 +26,20 @@ export interface BookFrameStateContext {
 
 export interface LoadBookEvent {
     type: 'LOAD_BOOK',
-    src: string,
+    bookAttributes: BookAttributes,
 }
 
 export interface BookLoadSuccessEvent {
     type: 'BOOK_LOAD_SUCCESS',
-    book: BookAttributes,
+    bookAttributes: BookAttributes,
 }
 
 export interface BookLoadErrorEvent {
     type: 'BOOK_LOAD_ERROR',
     errorMessage?: string,
 }
+
+export interface CloseBookLoadErrorEvent { type: 'CLOSE_BOOK_LOAD_ERROR' }
 
 export interface ChapterLoadEvent {
     type: 'CHAPTER_LOAD',
@@ -81,6 +83,7 @@ export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
     | BookLoadErrorEvent
+    | CloseBookLoadErrorEvent
     | ChapterLoadEvent
     | FrameTouchStartEvent
     | FrameTouchMoveEvent

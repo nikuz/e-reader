@@ -14,6 +14,7 @@ export default function AppRouter() {
                 <Route path={Routes.BOOK} component={BookFrame} />
                 <Route path={Routes.DICTIONARY} component={Dictionary} />
                 <Route path={Routes.SETTINGS} component={Settings} />
+                <Route path="*404" component={() => null} />
             </Route>
         </Router>
     );

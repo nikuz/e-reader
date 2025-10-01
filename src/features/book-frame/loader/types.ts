@@ -1,6 +1,8 @@
+import type { BookAttributes } from 'src/types';
+
 interface LoadBookEvent {
     type: 'LOAD_BOOK',
-    src: string,
+    bookAttributes: BookAttributes,
 }
 
 export type BookLoaderStateEvents =

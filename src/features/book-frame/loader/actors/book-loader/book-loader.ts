@@ -1,53 +1,84 @@
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { fromPromise } from 'xstate';
+import { pathUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
-// import injectedCss from '../../../injections/style/main.css?raw';
-// import {
-//     retrieveBookAttributes,
-//     retrieveStaticContent,
-// } from '../../utils';
+import { INJECTED_CSS_PLACEHOLDER } from '../../../constants';
+import injectedCss from '../../../injections/style/main.css?raw';
+import { retrieveStaticContent } from '../../utils';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {
-        src: string,
+        bookAttributes: BookAttributes,
     },
 }): Promise<BookAttributes> => {
-    const { src } = props.input;
-    console.log(src);
+    const { bookAttributes } = props.input;
+    const spine = bookAttributes.spine;
 
-    // const bookAttributes = await retrieveBookAttributes(src);
-    // const spine = bookAttributes.spine;
-    // const staticMapping: Map<string, string> = new Map();
+    if (Capacitor.isNativePlatform()) {
+        const jobs: Promise<void>[] = [];
+        for (const chapterName in spine) {
+            jobs.push(new Promise((resolve) => {
+                const chapterPath = spine[chapterName];
+                const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
 
-    // for (const chapter of spine) {
-    //     const src = `${bookAttributes.dirname}/${chapter[1]}`;
-    //     const response = await fetch(src);
-    //     if (!response.ok) {
-    //         continue;
-    //     }
+                Filesystem.readFile({
+                    path: chapterFullPath,
+                    directory: Directory.Documents,
+                    encoding: Encoding.UTF8,
+                }).then(((fileReadResponse) => {
+                    let fileContent = fileReadResponse.data as string;
+                    fileContent = fileContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
 
-    //     const content = await response.text();
-    //     const xmlDoc = new DOMParser().parseFromString(content, 'text/xml');
+                    const blob = new Blob([fileContent], { type: 'text/html' });
+                    const blobUrl = URL.createObjectURL(blob);
 
-    //     const chapterDirname = src.slice(0, src.lastIndexOf('/'));
-        
-    //     await retrieveStaticContent({
-    //         xmlDoc,
-    //         chapterDirname,
-    //         staticMapping,
-    //     });
+                    spine[chapterName] = blobUrl;
+                    resolve();
+                }));
+            }));
+        }
 
-    //     const styleEl = xmlDoc.createElement('style');
-    //     styleEl.textContent = injectedCss;
+        await Promise.all(jobs);
+    }
+    // web platform requires reading every file and generating object URLs for linked static content
+    else {
+        const staticMapping: Map<string, string> = new Map();
+        for (const chapterName in spine) {
+            const chapterPath = spine[chapterName];
+            const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
 
-    //     xmlDoc.head.appendChild(styleEl);
+            const fileReadResponse = await Filesystem.readFile({
+                path: chapterFullPath,
+                directory: Directory.Documents,
+                encoding: Encoding.UTF8,
+            });
 
-    //     const serializer = new XMLSerializer();
-    //     const modifiedContent = serializer.serializeToString(xmlDoc);
-    //     const blob = new Blob([modifiedContent], { type: 'text/html' });
-    //     const blobUrl = URL.createObjectURL(blob);
-        
-    //     spine.set(chapter[0], blobUrl);
-    // }
+            let fileContent = fileReadResponse.data;
+            if (fileContent instanceof Blob) {
+                fileContent = await fileContent.text();
+            }
 
-    return {} as BookAttributes;
+            const xmlDoc = new DOMParser().parseFromString(fileContent, 'text/xml');
+
+            await retrieveStaticContent({
+                xmlDoc,
+                staticMapping,
+            });
+
+            const styleEl = xmlDoc.createElement('style');
+            styleEl.textContent = injectedCss;
+
+            xmlDoc.head.appendChild(styleEl);
+
+            const serializer = new XMLSerializer();
+            const modifiedContent = serializer.serializeToString(xmlDoc);
+            const blob = new Blob([modifiedContent], { type: 'text/html' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            spine[chapterName] = blobUrl;
+        }
+    }
+
+    return bookAttributes;
 });

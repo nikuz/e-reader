@@ -5,16 +5,16 @@ export function initiateBookAction(props: {
     context: BookFrameStateContext,
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
-    const book = props.event.book;
+    const bookAttributes = props.event.bookAttributes;
     const initialChapter = 0;
-    const key = Array.from(book.spine.keys())[initialChapter];
+    const key = Object.keys(bookAttributes.spine)[initialChapter];
 
     props.enqueue.assign({
-        book,
+        bookAttributes,
         settings: {
             ...props.context.settings,
             chapter: initialChapter,
         },
-        chapterContent: book.spine.get(key),
+        chapterContent: bookAttributes.spine[key],
     });
 }

@@ -1,0 +1,1 @@
+export * from './replace-static-content-urls';

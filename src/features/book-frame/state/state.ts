@@ -65,6 +65,9 @@ export const bookFrameStateMachine = setup({
                 BOOK_LOAD_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.errorMessage })),
                 },
+                CLOSE_BOOK_LOAD_ERROR: {
+                    actions: assign(() => ({ errorMessage: undefined })),
+                },
                 CHAPTER_LOAD: {
                     actions: enqueueActions(chapterLoadAction),
                 },
