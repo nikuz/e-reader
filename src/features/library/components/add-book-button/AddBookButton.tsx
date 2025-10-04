@@ -3,6 +3,8 @@ import { RiSystemAddFill } from 'solid-icons/ri';
 import { libraryStateMachineActor } from '../../state';
 
 export function AddBookButton() {
+    let fileFieldRef: HTMLInputElement | undefined;
+
     const selectFileHandler: JSX.EventHandler<HTMLInputElement, Event> = async (event) => {
         const file = (event.currentTarget as HTMLInputElement).files?.[0];
         if (file) {
@@ -10,6 +12,9 @@ export function AddBookButton() {
                 type: 'OPEN_FILE',
                 file,
             });
+            if (fileFieldRef) {
+                fileFieldRef.value = '';
+            }
         }
     };
 
@@ -31,6 +36,7 @@ export function AddBookButton() {
                 <RiSystemAddFill size="40" />
             </label>
             <input
+                ref={fileFieldRef}
                 type="file"
                 id="file-input"
                 accept=".epub"

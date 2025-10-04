@@ -2,21 +2,28 @@ import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { pathUtils } from 'src/utils';
 
+const imageRegexp = /<img.+?src=["']([^"']+)["'].*?>/gi;
+
 export async function replaceImageUrls(props: {
-    xmlDoc: Document,
+    fileContent: string,
     chapterDirname: string,
     staticMapping: Map<string, string>,
-}) {
+}): Promise<string> {
     const {
-        xmlDoc,
+        fileContent,
         chapterDirname,
         staticMapping,
     } = props;
 
-    const images = xmlDoc.querySelectorAll('img');
+    let modifiedFileContent = fileContent;
+    const images = fileContent.match(imageRegexp);
+
+    if (!images) {
+        return fileContent;
+    }
 
     for (const image of images) {
-        const src = image.getAttribute('src');
+        const src = image.replace(imageRegexp, '$1');
         if (!src) {
             continue;
         }
@@ -24,7 +31,7 @@ export async function replaceImageUrls(props: {
         
         const cachedImageUrl = staticMapping.get(src);
         if (cachedImageUrl) {
-            image.setAttribute('src', cachedImageUrl);
+            modifiedFileContent = modifiedFileContent.replace(src, cachedImageUrl);
             continue;
         }
         
@@ -36,6 +43,8 @@ export async function replaceImageUrls(props: {
         const imageFileUri = Capacitor.convertFileSrc(fileUri.uri);
         
         staticMapping.set(src, imageFileUri);
-        image.setAttribute('src', imageFileUri);
+        modifiedFileContent = modifiedFileContent.replace(src, imageFileUri);
     }
+
+    return modifiedFileContent;
 }

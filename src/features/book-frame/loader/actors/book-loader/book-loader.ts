@@ -18,25 +18,24 @@ export const bookLoaderActor = fromPromise(async (props: {
     if (Capacitor.isNativePlatform()) {
         const jobs: Promise<void>[] = [];
         for (const chapterName in spine) {
-            jobs.push(new Promise((resolve) => {
+            jobs.push((async () => {
                 const chapterPath = spine[chapterName];
                 const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
 
-                Filesystem.readFile({
+                const fileReadResponse = await Filesystem.readFile({
                     path: chapterFullPath,
                     directory: Directory.Documents,
                     encoding: Encoding.UTF8,
-                }).then(((fileReadResponse) => {
-                    let fileContent = fileReadResponse.data as string;
-                    fileContent = fileContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
+                });
 
-                    const blob = new Blob([fileContent], { type: 'text/html' });
-                    const blobUrl = URL.createObjectURL(blob);
+                let fileContent = fileReadResponse.data as string;
+                fileContent = fileContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
 
-                    spine[chapterName] = blobUrl;
-                    resolve();
-                }));
-            }));
+                const blob = new Blob([fileContent], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                spine[chapterName] = blobUrl;
+            })());
         }
 
         await Promise.all(jobs);

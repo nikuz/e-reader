@@ -27,33 +27,24 @@ export async function replaceStaticContentUrls(props: {
         fileContent = await fileContent.text();
     }
 
-    const xmlDoc = new DOMParser().parseFromString(fileContent, 'text/xml');
     const chapterDirname = chapterFullPath.slice(0, chapterFullPath.lastIndexOf('/'));
 
-    await Promise.all([
-        replaceStyleUrls({
-            xmlDoc,
-            chapterDirname,
-            staticMapping,
-        }),
-        replaceImageUrls({
-            xmlDoc,
-            chapterDirname,
-            staticMapping,
-        }),
-    ]);
-
-    const injectedStylePlaceholderNode = document.createElement('style');
-    injectedStylePlaceholderNode.textContent = INJECTED_CSS_PLACEHOLDER;
+    let modifiedFileContent = await replaceStyleUrls({
+        fileContent,
+        chapterDirname,
+        staticMapping,
+    });
+    modifiedFileContent = await replaceImageUrls({
+        fileContent: modifiedFileContent,
+        chapterDirname,
+        staticMapping,
+    });
     
-    xmlDoc.head.appendChild(injectedStylePlaceholderNode);
-
-    const serializer = new XMLSerializer();
-    const modifiedContent = serializer.serializeToString(xmlDoc);
-
+    modifiedFileContent = modifiedFileContent.replace('</head>', `<style>${INJECTED_CSS_PLACEHOLDER}</style></head>`);
+    
     await Filesystem.writeFile({
         path: chapterFullPath,
-        data: modifiedContent,
+        data: modifiedFileContent,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
     });

@@ -1,4 +1,4 @@
-import { Show } from 'solid-js';
+import { createSignal, createEffect, untrack, Show, For } from 'solid-js';
 import { Toast, Spinner } from 'src/components';
 import { AddBookButton } from './components';
 import { StateSupplier } from './daemons';
@@ -9,21 +9,43 @@ import {
 } from './state';
 
 export default function Library() {
-    const isOpeningFile = useLibraryStateMatch(['INITIATING', 'OPENING_FILE']);
+    const [loadTime, setLoadTime] = createSignal<number[]>([]);
+    const isInitiating = useLibraryStateMatch(['INITIATING']);
+    const isOpeningFile = useLibraryStateMatch(['OPENING_FILE']);
     const errorMessage = useLibraryStateSelect('errorMessage');
+    let loadStartTime = 0;
 
     const closeErrorHandler = () => {
         libraryStateMachineActor.send({ type: 'CLOSE_ERROR_TOAST' });
     };
+
+    createEffect(() => {
+        if (isOpeningFile()) {
+            loadStartTime = Date.now();
+        } else if (loadStartTime && !isOpeningFile()) {
+            untrack(() => {
+                setLoadTime([
+                    ...loadTime(),
+                    Date.now() - loadStartTime,
+                ]);
+            });
+        }
+    });
     
     return (
         <div class="w-full h-full">
             <h1 class="text-center mt-2 text-lg">Library</h1>
             <AddBookButton />
 
-            <Show when={isOpeningFile()}>
+            <Show when={isInitiating() || isOpeningFile()}>
                 <Spinner size="xl" color="accent" blocker />
             </Show>
+
+            <For each={loadTime()}>
+                {(item) => (
+                    <div>{item}</div>
+                )}
+            </For>
 
             <Show when={errorMessage()}>
                 <Toast

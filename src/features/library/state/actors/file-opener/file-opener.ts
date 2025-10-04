@@ -20,7 +20,7 @@ export const fileOpenerActor = fromPromise(async (props: {
 
     const fileContent = await fileReaderUtils.readAsArrayBuffer(file);
     const unwrappedContent = await zip.loadAsync(fileContent);
-    
+
     const opfFile = unwrappedContent.file(/\.opf/)[0];
     if (!opfFile) {
         throw new Error('Book doesn\'t have .OPF file');
@@ -77,15 +77,13 @@ export const fileOpenerActor = fromPromise(async (props: {
         bookAttributes.dirname = bookRootDirectory;
     }
 
-    // const saveFileJobs: Promise<void>[] = [];
+    await createBookFoldersFromArchive(unwrappedContent.files, bookRootDirectory);
+    
+    const saveFileJobs: Promise<void>[] = [];
     for (const fileName in unwrappedContent.files) {
-        // saveFileJobs.push(new Promise((resolve) => {
-        //     saveFileFromArchive(unwrappedContent.files[fileName], bookRootDirectory).then(resolve);
-        // }));
-        await saveFileFromArchive(unwrappedContent.files[fileName], bookRootDirectory);
+        saveFileJobs.push(saveFileFromArchive(unwrappedContent.files[fileName], bookRootDirectory));
     }
-
-    // await Promise.race(saveFileJobs);
+    await Promise.all(saveFileJobs);
 
     const staticMapping: Map<string, string> = new Map();
     for (const chapterName in bookAttributes.spine) {
@@ -99,6 +97,26 @@ export const fileOpenerActor = fromPromise(async (props: {
 
     return bookAttributes;
 });
+
+async function createBookFoldersFromArchive(files: Record<string, JSZip.JSZipObject>, bookDirectory: string): Promise<void> {
+    const uniqueFolders = new Set<string>();
+    for (const fileName in files) {
+        if (fileName.indexOf('/') === -1) {
+            continue;
+        }
+        const folderName = fileName.slice(0, fileName.lastIndexOf('/'));
+        uniqueFolders.add(folderName);
+    }
+
+    for (const folder of uniqueFolders) {
+        const folderPath = pathUtils.join([bookDirectory, folder]);
+        await Filesystem.mkdir({
+            path: folderPath,
+            recursive: true,
+            directory: Directory.Documents,
+        });
+    }
+}
 
 async function saveFileFromArchive(file: JSZip.JSZipObject, bookDirectory: string): Promise<void> {
     if (file.dir) {
@@ -115,6 +133,5 @@ async function saveFileFromArchive(file: JSZip.JSZipObject, bookDirectory: strin
             : await file.async('text'),
         directory: Directory.Documents,
         encoding: isImage ? undefined :  Encoding.UTF8,
-        recursive: true,
     });
 }

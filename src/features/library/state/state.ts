@@ -1,4 +1,5 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
+import { xStateUtils } from 'src/utils';
 import { initiatorActor, fileOpenerActor } from './actors';
 import { selectBookAction } from './actions';
 import type {
@@ -63,9 +64,12 @@ export const libraryStateMachine = setup({
                 },
                 onError: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        errorMessage: event.error?.toString(),
-                    })),
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
                 },
             },
         },

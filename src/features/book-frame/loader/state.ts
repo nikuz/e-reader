@@ -1,4 +1,5 @@
 import { setup, sendParent } from 'xstate';
+import { xStateUtils } from 'src/utils';
 import type { BookLoadSuccessEvent, BookLoadErrorEvent } from '../state/types';
 import { bookLoaderActor } from './actors';
 import type { BookLoaderStateEvents } from './types';
@@ -35,10 +36,13 @@ export const bookLoaderStateMachine = setup({
                 },
                 onError: {
                     target: 'IDLE',
-                    actions: sendParent(({ event }): BookLoadErrorEvent => ({
-                        type: 'BOOK_LOAD_ERROR',
-                        errorMessage: event.error?.toString(),
-                    }))
+                    actions: [
+                        sendParent(({ event }): BookLoadErrorEvent => ({
+                            type: 'BOOK_LOAD_ERROR',
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ]
                 },
             },
         },

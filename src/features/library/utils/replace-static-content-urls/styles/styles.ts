@@ -2,22 +2,29 @@ import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory, Encoding, type ReadFileResult } from '@capacitor/filesystem';
 import { pathUtils } from 'src/utils';
 
+const linkRegexp = /<link.+?href=["']([^"']+)["'].*?>/gi;
+const cssUrlRegexp = /url\("?'?([^)]+?)"?'?\)/gi;
+
 export async function replaceStyleUrls(props: {
-    xmlDoc: Document,
+    fileContent: string,
     chapterDirname: string,
     staticMapping: Map<string, string>,
-}) {
+}): Promise<string> {
     const {
-        xmlDoc,
+        fileContent,
         chapterDirname,
         staticMapping,
     } = props;
 
-    const links = xmlDoc.querySelectorAll('link');
-    const cssUrlRegexp = /url\("?'?([^)]+?)"?'?\)/g;
+    let modifiedFileContent = fileContent;
+    const links = fileContent.match(linkRegexp);
+
+    if (!links) {
+        return fileContent;
+    }
 
     for (const link of links) {
-        const href = link.getAttribute('href');
+        const href = link.replace(linkRegexp, '$1');
         if (!href) {
             continue;
         }
@@ -25,7 +32,7 @@ export async function replaceStyleUrls(props: {
         
         const cachedStyleValue = staticMapping.get(href);
         if (cachedStyleValue) {
-            link.setAttribute('href', cachedStyleValue);
+            modifiedFileContent = modifiedFileContent.replace(href, cachedStyleValue);
             continue;
         }
         
@@ -53,7 +60,7 @@ export async function replaceStyleUrls(props: {
         });
         const styleFileUri = Capacitor.convertFileSrc(styleSrcUri.uri);
         staticMapping.set(href, styleFileUri);
-        link.setAttribute('href', styleFileUri);
+        modifiedFileContent = modifiedFileContent.replace(href, styleFileUri);
 
         const urls = styleFileContent.match(cssUrlRegexp);
         if (!urls) {   
@@ -94,4 +101,6 @@ export async function replaceStyleUrls(props: {
             encoding: Encoding.UTF8,
         });
     }
+
+    return modifiedFileContent;
 }
