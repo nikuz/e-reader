@@ -118,20 +118,27 @@ async function createBookFoldersFromArchive(files: Record<string, JSZip.JSZipObj
     }
 }
 
+const imageRegex = /\.(jpg|jpeg|png|gif|bmp|svg|webp|ico)$/i;
+const fontRegex = /\.(ttf|otf|woff2?|eot)$/i;
+
 async function saveFileFromArchive(file: JSZip.JSZipObject, bookDirectory: string): Promise<void> {
     if (file.dir) {
         return;
     }
 
     const filePath = pathUtils.join([bookDirectory, file.name]);
-    const isImage = filePath.endsWith('.jpg');
+    const isImage = imageRegex.test(filePath);
+    const isFont = fontRegex.test(filePath);
+    const isBinary = isImage || isFont;
 
     await Filesystem.writeFile({
         path: filePath,
-        data: isImage
+        data: isBinary
             ? await file.async('base64')
             : await file.async('text'),
         directory: Directory.Documents,
-        encoding: isImage ? undefined :  Encoding.UTF8,
+        encoding: isBinary
+            ? undefined
+            : Encoding.UTF8,
     });
 }
