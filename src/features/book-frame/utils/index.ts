@@ -1,0 +1,1 @@
+export * from './web-retrieve-static-content';

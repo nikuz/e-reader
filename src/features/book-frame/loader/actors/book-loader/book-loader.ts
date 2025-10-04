@@ -5,7 +5,7 @@ import { pathUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
 import { INJECTED_CSS_PLACEHOLDER } from '../../../constants';
 import injectedCss from '../../../injections/style/main.css?raw';
-import { retrieveStaticContent } from '../../utils';
+import { webRetrieveStaticContent } from '../../../utils';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {
@@ -42,7 +42,6 @@ export const bookLoaderActor = fromPromise(async (props: {
     }
     // web platform requires reading every file and generating object URLs for linked static content
     else {
-        const staticMapping: Map<string, string> = new Map();
         for (const chapterName in spine) {
             const chapterPath = spine[chapterName];
             const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
@@ -60,10 +59,7 @@ export const bookLoaderActor = fromPromise(async (props: {
 
             const xmlDoc = new DOMParser().parseFromString(fileContent, 'text/xml');
 
-            await retrieveStaticContent({
-                xmlDoc,
-                staticMapping,
-            });
+            await webRetrieveStaticContent({ xmlDoc });
 
             const styleEl = xmlDoc.createElement('style');
             styleEl.textContent = injectedCss;
