@@ -5,6 +5,7 @@ export interface BookAttributes {
     language: string,
     navigation: string,
     dirname: string,
+    cover?: string,
 
     spine: Record<string, string>,
 }

@@ -34,7 +34,9 @@ export async function retrieveImages(props: {
             staticFileContent = await staticFileContent.text();
         }
 
-        const url = `data:image/jpeg;base64,${staticFileContent}`;
+        const extension = src.replace(/.+\.([^.]+)$/, '$1');
+
+        const url = `data:image/${extension};base64,${staticFileContent}`;
         const data = await (await fetch(url)).blob();
 
         const blobUrl = URL.createObjectURL(data);

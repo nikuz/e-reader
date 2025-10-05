@@ -1,5 +1,7 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
+import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
+import type { BookAttributes } from 'src/types';
 import { initiatorActor, fileOpenerActor } from './actors';
 import { selectBookAction } from './actions';
 import type {
@@ -21,7 +23,12 @@ export const libraryStateMachine = setup({
     id: 'LIBRARY',
 
     context: {
-        
+        dbController: new DatabaseController<BookAttributes>({
+            name: 'books-db',
+            indexName: 'books',
+            indexKeyPath: 'eisbn',
+        }),
+        storedBooks: [],
     },
 
     initial: 'INITIATING',
@@ -42,8 +49,14 @@ export const libraryStateMachine = setup({
         INITIATING: {
             invoke: {
                 src: 'initiatorActor',
+                input: ({ context }) => ({
+                    dbController: context.dbController,
+                }),
                 onDone: {
                     target: 'IDLE',
+                    actions: assign(({ event }) => ({
+                        storedBooks: event.output,
+                    })),
                 },
                 onError: {
                     target: 'IDLE',
@@ -57,7 +70,10 @@ export const libraryStateMachine = setup({
         OPENING_FILE: {
             invoke: {
                 src: 'fileOpenerActor',
-                input: ({ event }) => event as OpenFileEvent,
+                input: ({ event, context }) => ({
+                    file: (event as OpenFileEvent).file,
+                    dbController: context.dbController,
+                }),
                 onDone: {
                     target: 'IDLE',
                     actions: enqueueActions(selectBookAction),

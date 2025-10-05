@@ -1,6 +1,7 @@
 import { fromPromise } from 'xstate';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import JSZip from 'jszip';
+import type { DatabaseController } from 'src/controllers';
 import { pathUtils, fileReaderUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
 import {
@@ -13,6 +14,7 @@ import { libraryDirectory } from '../../../constants';
 export const fileOpenerActor = fromPromise(async (props: {
     input: {
         file: File,
+        dbController: DatabaseController<BookAttributes>,
     },
 }): Promise<BookAttributes | undefined> => {
     const { file } = props.input;
@@ -44,6 +46,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         if (bookDirectoryStats) {
             // recreate directory in dev only
             if (import.meta.env.DEV) {
+                await props.input.dbController.delete(bookAttributes.eisbn);
                 await Filesystem.rmdir({
                     path: bookRootDirectory,
                     directory: Directory.Documents,
@@ -94,6 +97,8 @@ export const fileOpenerActor = fromPromise(async (props: {
             staticMapping,
         });
     }
+
+    await props.input.dbController.create(bookAttributes);
 
     return bookAttributes;
 });

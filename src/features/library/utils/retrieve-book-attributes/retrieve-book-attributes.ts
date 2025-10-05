@@ -10,18 +10,20 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         throw new Error('OPF should contain "metadata", "manifest", and "spine" nodes');
     }
 
+    // navigation
     const navigation = manifestNode.querySelector('item[properties="nav"]');
-
     if (!navigation) {
         throw new Error('OPF manifest doesn\'t contain navigation');
     }
 
+    // metadata
     const eisbn = metadataNode.querySelector('#eisbn');
     const title = metadataNode.getElementsByTagName('dc:title')[0];
     const author = metadataNode.getElementsByTagName('dc:creator')[0];
     const language = metadataNode.getElementsByTagName('dc:language')[0];
-    const spine: Record<string, string> = {};
 
+    // spine
+    const spine: Record<string, string> = {};
     const spineItems = spineNode.querySelectorAll('itemref');
 
     spineItems?.forEach((item) => {
@@ -34,6 +36,9 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         }
     });
 
+    // cover
+    const cover = manifestNode.querySelector('#cover-image')?.getAttribute('href');
+    
     return {
         eisbn: eisbn?.textContent ?? '',
         title: title?.textContent ?? '',
@@ -41,6 +46,7 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         language: language?.textContent ?? '',
         navigation: navigation?.getAttribute('href') ?? '',
         dirname: '',
+        cover: cover ?? undefined,
 
         spine,
     };

@@ -1,4 +1,4 @@
-import { onCleanup, Show } from 'solid-js';
+import { onCleanup, Switch, Match } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { Toast, Spinner } from 'src/components';
 import { Routes } from 'src/types';
@@ -44,42 +44,47 @@ export default function BookFrame() {
 
     return (
         <div class="book-frame-container">
-            {!book() && !bookLoadErrorMessage() && !bookIsLoading() && (
-                <p class="flex flex-col">
-                    Select book to display
-                    <button
-                        class="btn block rounded-lg mt-2"
-                        onClick={navigateToLibraryHandler}
-                    >
-                        Go to Library
-                    </button>
-                </p>
-            )}
-            {bookIsLoading() && (
-                <Spinner size="xl" color="accent" blocker />
-            )}
-            <Show when={bookLoadErrorMessage()}>
-                <Toast
-                    message={
-                        <span>
-                            Book rendering error
-                            <br />
-                            {bookLoadErrorMessage()}
-                        </span>
-                    }
-                    type="error"
-                    class="mt-10"
-                    onClose={closeErrorHandler}
-                />
-            </Show>
-            <Show when={chapterContent()}>
-                <iframe
-                    src={chapterContent()}
-                    class="book-frame"
-                    sandbox="allow-same-origin allow-scripts"
-                    onLoad={frameContentLoadHandler}
-                />
-            </Show>
+            <Switch>
+                <Match when={bookIsLoading()}>
+                    <Spinner size="xl" color="accent" blocker />
+                </Match>
+
+                <Match when={bookLoadErrorMessage()}>
+                    <Toast
+                        message={
+                            <span>
+                                Book rendering error
+                                <br />
+                                {bookLoadErrorMessage()}
+                            </span>
+                        }
+                        type="error"
+                        class="mt-10"
+                        onClose={closeErrorHandler}
+                    />
+                </Match>
+
+                <Match when={!book()}>
+                    <p class="flex flex-col">
+                        Select book to display
+                        <button
+                            class="btn block rounded-lg mt-2"
+                            onClick={navigateToLibraryHandler}
+                        >
+                            Go to Library
+                        </button>
+                    </p>
+                </Match>
+
+                <Match when={chapterContent()}>
+                    <iframe
+                        src={chapterContent()}
+                        class="book-frame"
+                        sandbox="allow-same-origin allow-scripts"
+                        onLoad={frameContentLoadHandler}
+                    />
+                </Match>
+            </Switch>
         </div>
     );
 }

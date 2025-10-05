@@ -13,7 +13,7 @@ export const bookLoaderActor = fromPromise(async (props: {
     },
 }): Promise<BookAttributes> => {
     const { bookAttributes } = props.input;
-    const spine = bookAttributes.spine;
+    const spine = { ...bookAttributes.spine };
 
     if (Capacitor.isNativePlatform()) {
         const jobs: Promise<void>[] = [];
@@ -75,5 +75,8 @@ export const bookLoaderActor = fromPromise(async (props: {
         }
     }
 
-    return bookAttributes;
+    return {
+        ...bookAttributes,
+        spine,
+    };
 });

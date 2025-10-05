@@ -9,6 +9,7 @@ export function selectBookAction(props: {
     context: LibraryStateContext,
     enqueue: { assign: (context: Partial<LibraryStateContext>) => void },
 }) {
+    const storedBooks = props.context.storedBooks;
     let bookAttributes: BookAttributes | undefined;
     if (props.event.type === 'SELECT_BOOK') {
         bookAttributes = props.event.bookAttributes;
@@ -16,11 +17,20 @@ export function selectBookAction(props: {
         bookAttributes = props.event.output;
     }
 
-    if (bookAttributes) {
-        bookFrameStateMachineActor.send({
-            type: 'LOAD_BOOK',
-            bookAttributes,
-        });
-        props.context.navigator?.(Routes.BOOK);
+    if (!bookAttributes) {
+        return;
     }
+
+    bookFrameStateMachineActor.send({
+        type: 'LOAD_BOOK',
+        bookAttributes,
+    });
+    props.context.navigator?.(Routes.BOOK);
+
+    props.enqueue.assign({
+        storedBooks: [
+            ...storedBooks,
+            bookAttributes,
+        ],
+    });
 }
