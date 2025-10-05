@@ -44,7 +44,7 @@ export default function BookFrame() {
 
     return (
         <div class="book-frame-container">
-            {!book() && !bookLoadErrorMessage() && (
+            {!book() && !bookLoadErrorMessage() && !bookIsLoading() && (
                 <p class="flex flex-col">
                     Select book to display
                     <button
