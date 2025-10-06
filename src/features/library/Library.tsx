@@ -11,6 +11,7 @@ import {
 export default function Library() {
     const isInitiating = useLibraryStateMatch(['INITIATING']);
     const isOpeningFile = useLibraryStateMatch(['OPENING_FILE']);
+    const isRemovingBook = useLibraryStateMatch(['REMOVING_BOOK']);
     const storedBooks = useLibraryStateSelect('storedBooks');
     const errorMessage = useLibraryStateSelect('errorMessage');
 
@@ -22,7 +23,7 @@ export default function Library() {
         <div class="h-full">
             <h1 class="text-center mt-2 text-lg">Library</h1>
 
-            <Show when={isInitiating() || isOpeningFile()}>
+            <Show when={isInitiating() || isOpeningFile() || isRemovingBook()}>
                 <Spinner size="xl" color="accent" blocker />
             </Show>
 

@@ -28,8 +28,14 @@ export interface SelectBookEvent {
     bookAttributes: BookAttributes,
 }
 
+export interface RemoveBookEvent {
+    type: 'REMOVE_BOOK',
+    bookAttributes: BookAttributes,
+}
+
 export type LibraryStateEvents =
     | SetNavigator
     | OpenFileEvent
     | CloseErrorToastEvent
-    | SelectBookEvent;
+    | SelectBookEvent
+    | RemoveBookEvent;
