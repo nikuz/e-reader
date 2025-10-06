@@ -1,4 +1,4 @@
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { FileStorageController } from 'src/controllers';
 
 export async function retrieveImages(props: {
     xmlDoc: Document,
@@ -12,7 +12,7 @@ export async function retrieveImages(props: {
     const images = xmlDoc.querySelectorAll('img');
 
     for (const image of images) {
-        const src = image.getAttribute('src')?.replace(Directory.Documents, '');
+        const src = image.getAttribute('src')?.replace(/\/[A-Z]+/, '');
         if (!src) {
             continue;
         }
@@ -24,10 +24,7 @@ export async function retrieveImages(props: {
             continue;
         }
 
-        const fileReadResponse = await Filesystem.readFile({
-            path: src,
-            directory: Directory.Documents,
-        });
+        const fileReadResponse = await FileStorageController.readFile({ path: src });
 
         let staticFileContent = fileReadResponse.data;
         if (staticFileContent instanceof Blob) {

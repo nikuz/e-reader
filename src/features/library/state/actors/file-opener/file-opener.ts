@@ -1,5 +1,5 @@
 import { fromPromise } from 'xstate';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import JSZip from 'jszip';
 import type { DatabaseController } from 'src/controllers';
 import { pathUtils, fileReaderUtils } from 'src/utils';
@@ -8,6 +8,7 @@ import {
     retrieveBookAttributes,
     generateFakeIsbn,
     replaceStaticContentUrls,
+    getBookCoverObjectUrl,
 } from '../../../utils';
 import { libraryDirectory } from '../../../constants';
 
@@ -39,33 +40,23 @@ export const fileOpenerActor = fromPromise(async (props: {
 
     // if book directory already exists, don't proceed
     try {
-        const bookDirectoryStats = await Filesystem.stat({
-            path: bookRootDirectory,
-            directory: Directory.Documents,
-        });
+        const bookDirectoryStats = await FileStorageController.stat({ path: bookRootDirectory });
         if (bookDirectoryStats) {
             // recreate directory in dev only
             if (import.meta.env.DEV) {
                 await props.input.dbController.delete(bookAttributes.eisbn);
-                await Filesystem.rmdir({
+                await FileStorageController.rmdir({
                     path: bookRootDirectory,
-                    directory: Directory.Documents,
                     recursive: true,
                 });
-                await Filesystem.mkdir({
-                    path: bookRootDirectory,
-                    directory: Directory.Documents,
-                });
+                await FileStorageController.mkdir({ path: bookRootDirectory });
                 console.log('Book directory recreated');
             } else {
                 return;
             }
         }
     } catch {
-        await Filesystem.mkdir({
-            path: bookRootDirectory,
-            directory: Directory.Documents,
-        });
+        await FileStorageController.mkdir({ path: bookRootDirectory });
     }
 
     const fileNames = Object.keys(unwrappedContent.files);
@@ -100,10 +91,16 @@ export const fileOpenerActor = fromPromise(async (props: {
 
     await props.input.dbController.create(bookAttributes);
 
-    return bookAttributes;
+    return {
+        ...bookAttributes,
+        cover: await getBookCoverObjectUrl(bookAttributes),
+    };
 });
 
-async function createBookFoldersFromArchive(files: Record<string, JSZip.JSZipObject>, bookDirectory: string): Promise<void> {
+async function createBookFoldersFromArchive(
+    files: Record<string, JSZip.JSZipObject>,
+    bookDirectory: string,
+): Promise<void> {
     const uniqueFolders = new Set<string>();
     for (const fileName in files) {
         if (fileName.indexOf('/') === -1) {
@@ -115,10 +112,9 @@ async function createBookFoldersFromArchive(files: Record<string, JSZip.JSZipObj
 
     for (const folder of uniqueFolders) {
         const folderPath = pathUtils.join([bookDirectory, folder]);
-        await Filesystem.mkdir({
+        await FileStorageController.mkdir({
             path: folderPath,
             recursive: true,
-            directory: Directory.Documents,
         });
     }
 }
@@ -126,7 +122,10 @@ async function createBookFoldersFromArchive(files: Record<string, JSZip.JSZipObj
 const imageRegex = /\.(jpg|jpeg|png|gif|bmp|svg|webp|ico)$/i;
 const fontRegex = /\.(ttf|otf|woff2?|eot)$/i;
 
-async function saveFileFromArchive(file: JSZip.JSZipObject, bookDirectory: string): Promise<void> {
+async function saveFileFromArchive(
+    file: JSZip.JSZipObject,
+    bookDirectory: string,
+): Promise<void> {
     if (file.dir) {
         return;
     }
@@ -136,14 +135,13 @@ async function saveFileFromArchive(file: JSZip.JSZipObject, bookDirectory: strin
     const isFont = fontRegex.test(filePath);
     const isBinary = isImage || isFont;
 
-    await Filesystem.writeFile({
+    await FileStorageController.writeFile({
         path: filePath,
         data: isBinary
             ? await file.async('base64')
             : await file.async('text'),
-        directory: Directory.Documents,
         encoding: isBinary
             ? undefined
-            : Encoding.UTF8,
+            : FileStorageEncoding.UTF8,
     });
 }

@@ -1,5 +1,9 @@
 import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory, Encoding, type ReadFileResult } from '@capacitor/filesystem';
+import {
+    FileStorageController,
+    FileStorageEncoding,
+    type FileStorageReadFileResult,
+} from 'src/controllers';
 import { pathUtils } from 'src/utils';
 
 const linkRegexp = /<link.+?href=["']([^"']+)["'].*?>/gi;
@@ -38,12 +42,11 @@ export async function replaceStyleUrls(props: {
         
         const styleSrc = pathUtils.join([chapterDirname, href]);
         
-        let fileReadResponse: ReadFileResult;
+        let fileReadResponse: FileStorageReadFileResult;
         try {
-            fileReadResponse = await Filesystem.readFile({
+            fileReadResponse = await FileStorageController.readFile({
                 path: styleSrc,
-                directory: Directory.Documents,
-                encoding: Encoding.UTF8,
+                encoding: FileStorageEncoding.UTF8,
             });
         } catch {
             continue;
@@ -54,10 +57,7 @@ export async function replaceStyleUrls(props: {
             styleFileContent = await styleFileContent.text();
         }
 
-        const styleSrcUri = await Filesystem.getUri({
-            path: styleSrc,
-            directory: Directory.Documents,
-        });
+        const styleSrcUri = await FileStorageController.getUri({ path: styleSrc });
         const styleFileUri = Capacitor.convertFileSrc(styleSrcUri.uri);
         staticMapping.set(href, styleFileUri);
         modifiedFileContent = modifiedFileContent.replace(href, styleFileUri);
@@ -84,21 +84,17 @@ export async function replaceStyleUrls(props: {
             }
 
             const urlSrc = pathUtils.join([staticSrcDirname, urlValue]);
-            const urlSrcUri = await Filesystem.getUri({
-                path: urlSrc,
-                directory: Directory.Documents,
-            }); 
+            const urlSrcUri = await FileStorageController.getUri({ path: urlSrc }); 
             const urlFileUri = Capacitor.convertFileSrc(urlSrcUri.uri);
 
             styleFileContent = styleFileContent.replace(urlValue, urlFileUri);
             staticMapping.set(urlValue, urlFileUri);
         }
 
-        await Filesystem.writeFile({
+        await FileStorageController.writeFile({
             path: styleSrc,
             data: styleFileContent,
-            directory: Directory.Documents,
-            encoding: Encoding.UTF8,
+            encoding: FileStorageEncoding.UTF8,
         });
     }
 

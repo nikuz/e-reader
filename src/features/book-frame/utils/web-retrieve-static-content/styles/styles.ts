@@ -1,4 +1,4 @@
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 
 export async function retrieveStyles(props: {
     xmlDoc: Document,
@@ -11,9 +11,10 @@ export async function retrieveStyles(props: {
 
     const links = xmlDoc.querySelectorAll('link');
     const cssUrlRegexp = /url\("?'?([^)]+?)"?'?\)/g;
+    const directoryNameReg = /^\/[A-Z]+/;
 
     for (const link of links) {
-        const href = link.getAttribute('href')?.replace(Directory.Documents, '');
+        const href = link.getAttribute('href')?.replace(directoryNameReg, '');
         if (!href) {
             continue;
         }
@@ -25,10 +26,9 @@ export async function retrieveStyles(props: {
             continue;
         }
 
-        const fileReadResponse = await Filesystem.readFile({
+        const fileReadResponse = await FileStorageController.readFile({
             path: href,
-            directory: Directory.Documents,
-            encoding: Encoding.UTF8,
+            encoding: FileStorageEncoding.UTF8,
         });
 
         let staticFileContent = fileReadResponse.data;
@@ -53,11 +53,10 @@ export async function retrieveStyles(props: {
                     continue;
                 }
 
-                const urlSrc = urlValue.replace(Directory.Documents, '');
-                const urlReadResponse = await Filesystem.readFile({
+                const urlSrc = urlValue.replace(directoryNameReg, '');
+                const urlReadResponse = await FileStorageController.readFile({
                     path: urlSrc,
-                    directory: Directory.Documents,
-                    encoding: Encoding.UTF8,
+                    encoding: FileStorageEncoding.UTF8,
                 });
 
                 let urlFileContent = urlReadResponse.data;

@@ -1,4 +1,4 @@
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { INJECTED_CSS_PLACEHOLDER } from 'src/features/book-frame/constants';
 import { pathUtils } from 'src/utils';
 import { replaceStyleUrls } from './styles';
@@ -16,10 +16,9 @@ export async function replaceStaticContentUrls(props: {
     } = props;
     
     const chapterFullPath = pathUtils.join([bookDirectory, chapterPath]);
-    const fileReadResponse = await Filesystem.readFile({
+    const fileReadResponse = await FileStorageController.readFile({
         path: chapterFullPath,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
+        encoding: FileStorageEncoding.UTF8,
     });
 
     let fileContent = fileReadResponse.data;
@@ -42,10 +41,9 @@ export async function replaceStaticContentUrls(props: {
     
     modifiedFileContent = modifiedFileContent.replace('</head>', `<style>${INJECTED_CSS_PLACEHOLDER}</style></head>`);
     
-    await Filesystem.writeFile({
+    await FileStorageController.writeFile({
         path: chapterFullPath,
         data: modifiedFileContent,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
+        encoding: FileStorageEncoding.UTF8,
     });
 }

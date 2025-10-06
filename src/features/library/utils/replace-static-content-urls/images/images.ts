@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { FileStorageController } from 'src/controllers';
 import { pathUtils } from 'src/utils';
 
 const imageRegexp = /<img.+?src=["']([^"']+)["'].*?>/gi;
@@ -36,9 +36,8 @@ export async function replaceImageUrls(props: {
         }
         
         const staticSrc = pathUtils.join([chapterDirname, src]);
-        const fileUri = await Filesystem.getUri({
+        const fileUri = await FileStorageController.getUri({
             path: staticSrc,
-            directory: Directory.Documents,
         });
         const imageFileUri = Capacitor.convertFileSrc(fileUri.uri);
         

@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
@@ -22,10 +22,9 @@ export const bookLoaderActor = fromPromise(async (props: {
                 const chapterPath = spine[chapterName];
                 const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
 
-                const fileReadResponse = await Filesystem.readFile({
+                const fileReadResponse = await FileStorageController.readFile({
                     path: chapterFullPath,
-                    directory: Directory.Documents,
-                    encoding: Encoding.UTF8,
+                    encoding: FileStorageEncoding.UTF8,
                 });
 
                 let fileContent = fileReadResponse.data as string;
@@ -46,10 +45,9 @@ export const bookLoaderActor = fromPromise(async (props: {
             const chapterPath = spine[chapterName];
             const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
 
-            const fileReadResponse = await Filesystem.readFile({
+            const fileReadResponse = await FileStorageController.readFile({
                 path: chapterFullPath,
-                directory: Directory.Documents,
-                encoding: Encoding.UTF8,
+                encoding: FileStorageEncoding.UTF8,
             });
 
             let fileContent = fileReadResponse.data;

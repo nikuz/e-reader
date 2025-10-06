@@ -1,2 +1,2 @@
-export * from './database';
 export * from './file-storage';
+export * from './types';
