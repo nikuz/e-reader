@@ -34,11 +34,7 @@ export async function retrieveStyles(props: {
             path: href,
             encoding: FileStorageEncoding.UTF8,
         });
-
         let staticFileContent = fileReadResponse.data;
-        if (staticFileContent instanceof Blob) {
-            staticFileContent = await staticFileContent.text();
-        }
 
         const urls = staticFileContent.match(cssUrlRegexp);
 
@@ -58,17 +54,12 @@ export async function retrieveStyles(props: {
                 }
 
                 const urlSrc = urlValue.replace(directoryNameReg, '');
-                const urlReadResponse = await FileStorageController.readFile({
+                const urlFileContent = await FileStorageController.readFile({
                     path: urlSrc,
                     encoding: FileStorageEncoding.UTF8,
                 });
-
-                let urlFileContent = urlReadResponse.data;
-                if (urlFileContent instanceof Blob) {
-                    urlFileContent = await urlFileContent.text();
-                }
-
-                const urlContent = new Blob([urlFileContent]);
+                
+                const urlContent = new Blob([urlFileContent.data]);
                 const blobUrl = URL.createObjectURL(urlContent);
 
                 staticFileContent = staticFileContent.replace(urlValue, blobUrl);

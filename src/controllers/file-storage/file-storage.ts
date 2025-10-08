@@ -41,7 +41,19 @@ export class FileStorageController {
     }
 
     static async readFile(options: FileStorageReadFileOptions): Promise<FileStorageReadFileResult> {
-        return this.filesystem.readFile(this.ensureDirectory(options));
+        const response = await this.filesystem.readFile(this.ensureDirectory(options)) as {
+            data: string | Blob;
+        };
+
+        let data = response.data;
+        if (data instanceof Blob) {
+            data = await data.text();
+        }
+
+        return {
+            ...response,
+            data,
+        };
     }
 
     static async readFileInChunks(

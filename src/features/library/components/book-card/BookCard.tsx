@@ -1,6 +1,6 @@
 import { Show, createSignal, type JSX } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { AiOutlineMore, AiFillDelete } from 'solid-icons/ai';
+import { AiOutlineMore } from 'solid-icons/ai';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { libraryStateMachineActor } from 'src/features/library/state';
 import { Routes } from 'src/types';
@@ -72,7 +72,7 @@ export function BookCard(props: Props) {
             </Show>
             <div class="mt-1 flex items-center gap-2 px-1">
                 <p
-                    class="flex-1 text-sm text-right"
+                    class="flex-1 text-sm"
                     onClick={cardClickHandler}
                 >
                     {props.bookAttributes.title}
@@ -87,13 +87,13 @@ export function BookCard(props: Props) {
                     >
                         <AiOutlineMore size={20} />
                     </button>
-                    <ul class="dropdown-content menu menu-sm bg-base-100 rounded-box shadow">
+                    <ul class="dropdown-content menu menu-sm bg-base-100 rounded-box shadow p-0">
                         <li>
                             <button
-                                class="btn btn-circle btn-xs text-error"
+                                class="text-error"
                                 onClick={removeHandler}
                             >
-                                <AiFillDelete size={20} />
+                                Delete
                             </button>
                         </li>
                     </ul>

@@ -95,7 +95,7 @@ export interface FileStorageCopyOptions {
 export type FileStorageRenameOptions = FileStorageCopyOptions;
 
 export interface FileStorageReadFileResult {
-    data: string | Blob;
+    data: string;
 }
 
 export interface FileStorageWriteFileResult {

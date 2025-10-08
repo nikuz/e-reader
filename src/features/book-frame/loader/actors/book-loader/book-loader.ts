@@ -45,17 +45,11 @@ export const bookLoaderActor = fromPromise(async (props: {
             const chapterPath = spine[chapterName];
             const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
 
-            const fileReadResponse = await FileStorageController.readFile({
+            const fileContent = await FileStorageController.readFile({
                 path: chapterFullPath,
                 encoding: FileStorageEncoding.UTF8,
             });
-
-            let fileContent = fileReadResponse.data;
-            if (fileContent instanceof Blob) {
-                fileContent = await fileContent.text();
-            }
-
-            const xmlDoc = new DOMParser().parseFromString(fileContent, 'text/xml');
+            const xmlDoc = new DOMParser().parseFromString(fileContent.data, 'text/xml');
 
             await webRetrieveStaticContent({ xmlDoc });
 

@@ -18,12 +18,8 @@ export async function replaceStaticContentUrls(props: {
         path: fileFullPath,
         encoding: FileStorageEncoding.UTF8,
     });
-
     let fileContent = fileReadResponse.data;
-    if (fileContent instanceof Blob) {
-        fileContent = await fileContent.text();
-    }
-
+    
     const chapterDirname = fileFullPath.slice(0, fileFullPath.lastIndexOf('/'));
     const staticMapping = new Map();
 

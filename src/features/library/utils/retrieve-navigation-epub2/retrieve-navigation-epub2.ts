@@ -1,4 +1,4 @@
-import { FileStorageController } from 'src/controllers';
+import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { pathUtils } from 'src/utils';
 import type {
     BookAttributes,
@@ -12,19 +12,17 @@ export async function retrieveNavigationEpub2(book: BookAttributes): Promise<Boo
     }
 
     const navigationPath = pathUtils.join([book.dirname, book.navigationEpub2Src]);
-    console.log(navigationPath);
-
-    const fileReadResponse = await FileStorageController.readFile({ path: navigationPath });
-    let tocContent = fileReadResponse.data;
-    if (tocContent instanceof Blob) {
-        tocContent = await tocContent.text();
-    }
-
-    if (typeof tocContent !== 'string') {
+    
+    const tocContent = await FileStorageController.readFile({
+        path: navigationPath,
+        encoding: FileStorageEncoding.UTF8,
+    });
+    
+    if (typeof tocContent.data !== 'string') {
         throw new Error('Unable to read EPUB2 navigation file');
     }
 
-    const xmlDoc = new DOMParser().parseFromString(tocContent, 'text/xml');
+    const xmlDoc = new DOMParser().parseFromString(tocContent.data, 'text/xml');
     const navMapNode = xmlDoc.querySelector('navMap');
 
     if (!navMapNode) {

@@ -24,16 +24,11 @@ export async function retrieveImages(props: {
             continue;
         }
 
-        const fileReadResponse = await FileStorageController.readFile({ path: src });
-
-        let staticFileContent = fileReadResponse.data;
-        if (staticFileContent instanceof Blob) {
-            staticFileContent = await staticFileContent.text();
-        }
+        const staticFileContent = await FileStorageController.readFile({ path: src });
 
         const extension = src.replace(/.+\.([^.]+)$/, '$1');
 
-        const url = `data:image/${extension};base64,${staticFileContent}`;
+        const url = `data:image/${extension};base64,${staticFileContent.data}`;
         const data = await (await fetch(url)).blob();
 
         const blobUrl = URL.createObjectURL(data);

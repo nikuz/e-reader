@@ -46,11 +46,30 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
     });
     bookAttributes.spine = spine;
 
-    // cover
-    const cover = manifestNode.querySelector('#cover-image')?.getAttribute('href');
-    if (cover) {
-        bookAttributes.cover = cover;
-    }
+    // cover (EPUB 2 & 3)
+    const coverIdFromMeta = metadataNode.querySelector('meta[name="cover"]')?.getAttribute('content')?.trim();
     
+    let coverHref: string | undefined;
+    
+    if (coverIdFromMeta) {
+        if (coverIdFromMeta.indexOf('/') !== -1 || coverIdFromMeta.indexOf('.') !== -1) {
+            coverHref = coverIdFromMeta;
+        } else {
+            coverHref = manifestNode.querySelector(`#${coverIdFromMeta}`)?.getAttribute('href') ?? undefined;
+        }
+    }
+
+    if (!coverHref) {
+        coverHref = manifestNode.querySelector('item[properties~="cover-image"]')?.getAttribute('href') ?? undefined;
+    }
+
+    if (!coverHref) {
+        coverHref = manifestNode.querySelector('#cover-image, #cover')?.getAttribute('href') ?? undefined;
+    }
+
+    if (coverHref) {
+        bookAttributes.cover = coverHref;
+    }
+
     return bookAttributes;
 }

@@ -54,10 +54,6 @@ export async function replaceStyleUrls(props: {
         }
 
         let styleFileContent = fileReadResponse.data;
-        if (styleFileContent instanceof Blob) {
-            styleFileContent = await styleFileContent.text();
-        }
-
         const styleSrcUri = await FileStorageController.getUri({ path: styleSrc });
         const styleFileUri = Capacitor.convertFileSrc(styleSrcUri.uri);
         staticMapping.set(href, styleFileUri);
