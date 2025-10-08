@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { FileStorageController } from 'src/controllers';
+import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 import { pathUtils } from 'src/utils';
 
 const imageRegexp = /<img.+?src=["']([^"']+)["'].*?>/gi;
@@ -24,11 +24,10 @@ export async function replaceImageUrls(props: {
 
     for (const image of images) {
         const src = image.replace(imageRegexp, '$1');
-        if (!src) {
+        if (!src || src.startsWith(`/${FILE_STORAGE_DEFAULT_DIRECTORY}`)) {
             continue;
         }
 
-        
         const cachedImageUrl = staticMapping.get(src);
         if (cachedImageUrl) {
             modifiedFileContent = modifiedFileContent.replace(src, cachedImageUrl);

@@ -1,4 +1,8 @@
-import { FileStorageController, FileStorageEncoding } from 'src/controllers';
+import {
+    FileStorageController,
+    FileStorageEncoding,
+    FILE_STORAGE_DEFAULT_DIRECTORY,
+} from 'src/controllers';
 
 export async function retrieveStyles(props: {
     xmlDoc: Document,
@@ -11,7 +15,7 @@ export async function retrieveStyles(props: {
 
     const links = xmlDoc.querySelectorAll('link');
     const cssUrlRegexp = /url\("?'?([^)]+?)"?'?\)/g;
-    const directoryNameReg = /^\/[A-Z]+/;
+    const directoryNameReg = `/${FILE_STORAGE_DEFAULT_DIRECTORY}`;
 
     for (const link of links) {
         const href = link.getAttribute('href')?.replace(directoryNameReg, '');

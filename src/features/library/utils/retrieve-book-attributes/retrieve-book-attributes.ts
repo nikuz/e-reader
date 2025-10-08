@@ -10,17 +10,26 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         throw new Error('OPF should contain "metadata", "manifest", and "spine" nodes');
     }
 
-    // navigation
-    const navigation = manifestNode.querySelector('item[properties="nav"]');
-    if (!navigation) {
-        throw new Error('OPF manifest doesn\'t contain navigation');
-    }
+    const bookAttributes: BookAttributes = {
+        eisbn: metadataNode.querySelector('#eisbn')?.textContent ?? '',
+        title: metadataNode.getElementsByTagName('dc:title')[0]?.textContent ?? '',
+        author: metadataNode.getElementsByTagName('dc:creator')[0]?.textContent ?? '',
+        language: metadataNode.getElementsByTagName('dc:language')[0].textContent ?? '',
+        dirname: '',
 
-    // metadata
-    const eisbn = metadataNode.querySelector('#eisbn');
-    const title = metadataNode.getElementsByTagName('dc:title')[0];
-    const author = metadataNode.getElementsByTagName('dc:creator')[0];
-    const language = metadataNode.getElementsByTagName('dc:language')[0];
+        spine: {},
+        addedAt: Date.now(),
+    };
+
+    // navigation
+    const navigationEPUB2 = manifestNode.querySelector('item[media-type="application/x-dtbncx+xml"]');
+    const navigationEPUB3 = manifestNode.querySelector('item[properties~="nav"]');
+
+    if (navigationEPUB3) {
+        bookAttributes.navigationEpub3Src = navigationEPUB3.getAttribute('href') ?? '';
+    } else if (navigationEPUB2) {
+        bookAttributes.navigationEpub2Src = navigationEPUB2.getAttribute('href') ?? '';
+    }
 
     // spine
     const spine: Record<string, string> = {};
@@ -35,19 +44,13 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
             spine[idRef] = value;
         }
     });
+    bookAttributes.spine = spine;
 
     // cover
     const cover = manifestNode.querySelector('#cover-image')?.getAttribute('href');
+    if (cover) {
+        bookAttributes.cover = cover;
+    }
     
-    return {
-        eisbn: eisbn?.textContent ?? '',
-        title: title?.textContent ?? '',
-        author: author?.textContent ?? '',
-        language: language?.textContent ?? '',
-        navigation: navigation?.getAttribute('href') ?? '',
-        dirname: '',
-        cover: cover ?? undefined,
-
-        spine,
-    };
+    return bookAttributes;
 }

@@ -20,6 +20,8 @@ export const initiatorActor = fromPromise(async (props: {
     await props.input.dbController.init();
     const storedBooks = await props.input.dbController.readAll();
 
+    storedBooks.sort((a, b) => b.addedAt - a.addedAt);
+
     for (const book of storedBooks) {
         const cover = await getBookCoverObjectUrl(book);
         if (cover) {

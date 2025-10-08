@@ -1,4 +1,5 @@
 import { Filesystem } from '@capacitor/filesystem';
+import { FILE_STORAGE_DEFAULT_DIRECTORY } from './constants';
 import { FileStorageDirectory } from './types';
 import type {
     FileStorageAppendFileOptions,
@@ -112,15 +113,15 @@ export class FileStorageController {
     ): T {
         return {
             ...options,
-            directory: options.directory ?? FileStorageDirectory.Data,
+            directory: options.directory ?? FILE_STORAGE_DEFAULT_DIRECTORY,
         };
     }
 
     private static ensureCopyDirectories(options: FileStorageCopyOptions): FileStorageCopyOptions {
         return {
             ...options,
-            directory: options.directory ?? FileStorageDirectory.Data,
-            toDirectory: options.toDirectory ?? options.directory ?? FileStorageDirectory.Data,
+            directory: options.directory ?? FILE_STORAGE_DEFAULT_DIRECTORY,
+            toDirectory: options.toDirectory ?? options.directory ?? FILE_STORAGE_DEFAULT_DIRECTORY,
         };
     }
 }

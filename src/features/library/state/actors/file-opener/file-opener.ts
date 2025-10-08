@@ -9,6 +9,7 @@ import {
     generateFakeIsbn,
     replaceStaticContentUrls,
     getBookCoverObjectUrl,
+    retrieveNavigationEpub2,
 } from '../../../utils';
 import { libraryDirectory } from '../../../constants';
 
@@ -72,20 +73,27 @@ export const fileOpenerActor = fromPromise(async (props: {
     }
 
     await createBookFoldersFromArchive(unwrappedContent.files, bookRootDirectory);
-    
+
     const saveFileJobs: Promise<void>[] = [];
     for (const fileName in unwrappedContent.files) {
         saveFileJobs.push(saveFileFromArchive(unwrappedContent.files[fileName], bookRootDirectory));
     }
     await Promise.all(saveFileJobs);
 
-    const staticMapping: Map<string, string> = new Map();
+    if (bookAttributes.navigationEpub3Src) {
+        await replaceStaticContentUrls({
+            filePath: bookAttributes.navigationEpub3Src,
+            bookDirectory: bookAttributes.dirname,
+        });
+    } else if (bookAttributes.navigationEpub2Src) {
+        bookAttributes.navigationEpub2 = await retrieveNavigationEpub2(bookAttributes);
+    }
+
     for (const chapterName in bookAttributes.spine) {
         const chapterPath = bookAttributes.spine[chapterName];
         await replaceStaticContentUrls({
-            chapterPath,
+            filePath: chapterPath,
             bookDirectory: bookAttributes.dirname,
-            staticMapping,
         });
     }
 

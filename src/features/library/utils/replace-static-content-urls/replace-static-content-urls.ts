@@ -5,19 +5,17 @@ import { replaceStyleUrls } from './styles';
 import { replaceImageUrls } from './images';
 
 export async function replaceStaticContentUrls(props: {
-    chapterPath: string,
+    filePath: string,
     bookDirectory: string,
-    staticMapping: Map<string, string>,
 }) {
     const {
-        chapterPath,
+        filePath,
         bookDirectory,
-        staticMapping,
     } = props;
     
-    const chapterFullPath = pathUtils.join([bookDirectory, chapterPath]);
+    const fileFullPath = pathUtils.join([bookDirectory, filePath]);
     const fileReadResponse = await FileStorageController.readFile({
-        path: chapterFullPath,
+        path: fileFullPath,
         encoding: FileStorageEncoding.UTF8,
     });
 
@@ -26,7 +24,8 @@ export async function replaceStaticContentUrls(props: {
         fileContent = await fileContent.text();
     }
 
-    const chapterDirname = chapterFullPath.slice(0, chapterFullPath.lastIndexOf('/'));
+    const chapterDirname = fileFullPath.slice(0, fileFullPath.lastIndexOf('/'));
+    const staticMapping = new Map();
 
     let modifiedFileContent = await replaceStyleUrls({
         fileContent,
@@ -42,7 +41,7 @@ export async function replaceStaticContentUrls(props: {
     modifiedFileContent = modifiedFileContent.replace('</head>', `<style>${INJECTED_CSS_PLACEHOLDER}</style></head>`);
     
     await FileStorageController.writeFile({
-        path: chapterFullPath,
+        path: fileFullPath,
         data: modifiedFileContent,
         encoding: FileStorageEncoding.UTF8,
     });

@@ -9,28 +9,32 @@ export function selectBookAction(props: {
     context: LibraryStateContext,
     enqueue: { assign: (context: Partial<LibraryStateContext>) => void },
 }) {
-    const storedBooks = props.context.storedBooks;
-    let bookAttributes: BookAttributes | undefined;
+    let newBook: BookAttributes | undefined;
     if (props.event.type === 'SELECT_BOOK') {
-        bookAttributes = props.event.bookAttributes;
+        newBook = props.event.bookAttributes;
     } else {
-        bookAttributes = props.event.output;
+        newBook = props.event.output;
     }
-
-    if (!bookAttributes) {
+    
+    if (!newBook) {
         return;
     }
+    
+    const storedBooks = [...props.context.storedBooks];
+    const existingBookIndex = storedBooks.findIndex(item => item.eisbn === newBook.eisbn);
+
+    if (existingBookIndex !== -1) {
+        storedBooks.splice(existingBookIndex, 1);
+    }
+
+    storedBooks.unshift(newBook);
+
+    props.enqueue.assign({ storedBooks });
 
     bookFrameStateMachineActor.send({
         type: 'LOAD_BOOK',
-        bookAttributes,
+        bookAttributes: newBook,
     });
     props.context.navigator?.(Routes.BOOK);
 
-    props.enqueue.assign({
-        storedBooks: [
-            ...storedBooks,
-            bookAttributes,
-        ],
-    });
 }

@@ -1,4 +1,4 @@
-import { FileStorageController } from 'src/controllers';
+import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 
 export async function retrieveImages(props: {
     xmlDoc: Document,
@@ -12,7 +12,7 @@ export async function retrieveImages(props: {
     const images = xmlDoc.querySelectorAll('img');
 
     for (const image of images) {
-        const src = image.getAttribute('src')?.replace(/\/[A-Z]+/, '');
+        const src = image.getAttribute('src')?.replace(`/${FILE_STORAGE_DEFAULT_DIRECTORY}`, '');
         if (!src) {
             continue;
         }

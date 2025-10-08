@@ -3,6 +3,7 @@ import {
     FileStorageController,
     FileStorageEncoding,
     type FileStorageReadFileResult,
+    FILE_STORAGE_DEFAULT_DIRECTORY,
 } from 'src/controllers';
 import { pathUtils } from 'src/utils';
 
@@ -22,6 +23,7 @@ export async function replaceStyleUrls(props: {
 
     let modifiedFileContent = fileContent;
     const links = fileContent.match(linkRegexp);
+    const directoryNameReg = `/${FILE_STORAGE_DEFAULT_DIRECTORY}`;
 
     if (!links) {
         return fileContent;
@@ -29,11 +31,10 @@ export async function replaceStyleUrls(props: {
 
     for (const link of links) {
         const href = link.replace(linkRegexp, '$1');
-        if (!href) {
+        if (!href || href.startsWith(directoryNameReg)) {
             continue;
         }
 
-        
         const cachedStyleValue = staticMapping.get(href);
         if (cachedStyleValue) {
             modifiedFileContent = modifiedFileContent.replace(href, cachedStyleValue);
@@ -73,7 +74,11 @@ export async function replaceStyleUrls(props: {
             const urlValue = url.replace(cssUrlRegexp, '$1');
 
             // ignore http and base64 urls
-            if (urlValue.startsWith('http') || urlValue.startsWith('data:')) {
+            if (
+                urlValue.startsWith('http')
+                || urlValue.startsWith('data:')
+                || urlValue.startsWith(directoryNameReg)
+            ) {
                 continue;
             }
 
