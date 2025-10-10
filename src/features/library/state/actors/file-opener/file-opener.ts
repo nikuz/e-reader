@@ -4,6 +4,7 @@ import JSZip from 'jszip';
 import type { DatabaseController } from 'src/controllers';
 import { pathUtils, fileReaderUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
+import { createBookInDB, deleteBookFromDB } from '../../../db-service';
 import {
     retrieveBookAttributes,
     generateFakeIsbn,
@@ -11,7 +12,7 @@ import {
     getBookCoverObjectUrl,
     retrieveNavigationEpub2,
 } from '../../../utils';
-import { libraryDirectory } from '../../../constants';
+import { LIBRARY_DIRECTORY } from '../../../constants';
 
 export const fileOpenerActor = fromPromise(async (props: {
     input: {
@@ -37,7 +38,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         bookAttributes.eisbn = generateFakeIsbn(bookAttributes.author, bookAttributes.title);
     }
 
-    const bookRootDirectory = pathUtils.join([libraryDirectory, bookAttributes.eisbn]);
+    const bookRootDirectory = pathUtils.join([LIBRARY_DIRECTORY, bookAttributes.eisbn]);
 
     // if book directory already exists, don't proceed
     try {
@@ -45,7 +46,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         if (bookDirectoryStats) {
             // recreate directory in dev only
             if (import.meta.env.DEV) {
-                await props.input.dbController.delete(bookAttributes.eisbn);
+                await deleteBookFromDB(props.input.dbController, bookAttributes);
                 await FileStorageController.rmdir({
                     path: bookRootDirectory,
                     recursive: true,
@@ -97,7 +98,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         });
     }
 
-    await props.input.dbController.create(bookAttributes);
+    await createBookInDB(props.input.dbController, bookAttributes);
 
     return {
         ...bookAttributes,

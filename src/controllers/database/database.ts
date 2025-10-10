@@ -1,27 +1,33 @@
 import { Capacitor } from '@capacitor/core';
 import { IndexedDBAdapter } from './indexed-db';
-import type { StorageAdapter, StorageConfig } from './types';
+import { SQLiteAdapter } from './sqlite';
+import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
 
 export class DatabaseController<T> {
-    private adapter: StorageAdapter<T>;
+    private adapter: DatabaseAdapter<T>;
     
-    constructor(config: StorageConfig<T>) {
+    constructor(config: DatabaseConfig<T>) {
         if (Capacitor.isNativePlatform()) {
-            // For now, always use IndexedDB adapter
-            // TODO: add SQLite support for native platforms
-            this.adapter = new IndexedDBAdapter<T>(config);
+            this.adapter = new SQLiteAdapter<T>(config);
         } else {
             this.adapter = new IndexedDBAdapter<T>(config);
         }
     }
 
-    async init(): Promise<void> {
-        await this.adapter.init();
+    async init(upgrades?: DatabaseMigration[]): Promise<void> {
+        await this.adapter.init(upgrades);
     }
 
-    // CRUD operations
-    async create(item: T): Promise<void> {
-        await this.adapter.set(item);
+    isInitiated(): boolean {
+        return this.adapter.isInitiated(); 
+    }
+
+    async openDB(): Promise<void> {
+        await this.adapter.openDB();
+    }
+
+    async closeDB(): Promise<void> {
+        await this.adapter.closeDB();
     }
 
     async read(key: string): Promise<T | undefined> {
@@ -32,15 +38,19 @@ export class DatabaseController<T> {
         return this.adapter.getAll();
     }
 
-    async update(item: T): Promise<void> {
-        await this.create(item); // In key-value stores, set = upsert
+    async create(data: T): Promise<void>;
+    async create(query: string, values?: any[]): Promise<void>;
+    async create(query: any, values?: any[]): Promise<void> {
+        await this.adapter.create(query, values);
+    }
+
+    async update(data: T): Promise<void>;
+    async update(query: string, values?: any[]): Promise<void>;
+    async update(query: any, values?: any[]): Promise<void> {
+        await this.adapter.update(query, values);
     }
 
     async delete(key: string): Promise<void> {
         await this.adapter.delete(key);
-    }
-
-    async query(predicate: (item: T) => boolean): Promise<T[]> {
-        return this.adapter.query(predicate);
     }
 }

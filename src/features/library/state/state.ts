@@ -2,7 +2,13 @@ import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
-import { initiatorActor, fileOpenerActor, bookRemoverActor } from './actors';
+import { LIBRARY_DB_CONFIG } from '../constants';
+import {
+    initiatorActor,
+    fileOpenerActor,
+    bookRemoverActor,
+    cleanupActor,
+} from './actors';
 import { selectBookAction } from './actions';
 import type {
     LibraryStateContext,
@@ -16,6 +22,7 @@ export const libraryStateMachine = setup({
         initiatorActor,
         fileOpenerActor,
         bookRemoverActor,
+        cleanupActor,
     },
     types: {
         context: {} as LibraryStateContext,
@@ -25,15 +32,11 @@ export const libraryStateMachine = setup({
     id: 'LIBRARY',
 
     context: {
-        dbController: new DatabaseController<BookAttributes>({
-            name: 'books-db',
-            indexName: 'books',
-            indexKeyPath: 'eisbn',
-        }),
+        dbController: new DatabaseController<BookAttributes>(LIBRARY_DB_CONFIG),
         storedBooks: [],
     },
 
-    initial: 'INITIATING',
+    initial: 'IDLE',
 
     states: {
         IDLE: {
@@ -46,10 +49,11 @@ export const libraryStateMachine = setup({
                 SELECT_BOOK: {
                     actions: enqueueActions(selectBookAction),
                 },
+                INITIALIZE: 'INITIALIZING',
             },
         },
 
-        INITIATING: {
+        INITIALIZING: {
             invoke: {
                 src: 'initiatorActor',
                 input: ({ context }) => ({
@@ -119,12 +123,32 @@ export const libraryStateMachine = setup({
                 },
             },
         },
+
+        CLEANING_UP: {
+            invoke: {
+                src: 'cleanupActor',
+                input: ({ context }) => ({
+                    dbController: context.dbController,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: assign(() => ({ storedBooks: [] })),
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: assign(({ event }) => ({
+                        errorMessage: event.error?.toString(),
+                    })),
+                },
+            },
+        },
     },
 
     on: {
         SET_NAVIGATOR: {
             actions: assign(({ event }) => ({ navigator: event.navigator })),
         },
+        CLEANUP: '.CLEANING_UP',
     }
 });
 

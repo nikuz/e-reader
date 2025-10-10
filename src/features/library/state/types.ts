@@ -11,10 +11,14 @@ export interface LibraryStateContext {
     errorMessage?: string,
 }
 
-interface SetNavigator {
+interface SetNavigatorEvent {
     type: 'SET_NAVIGATOR',
     navigator: Navigator,
 }
+
+interface InitializeEvent { type: 'INITIALIZE' }
+
+interface CleanupEvent { type: 'CLEANUP' }
 
 export interface OpenFileEvent {
     type: 'OPEN_FILE',
@@ -34,7 +38,9 @@ export interface RemoveBookEvent {
 }
 
 export type LibraryStateEvents =
-    | SetNavigator
+    | SetNavigatorEvent
+    | InitializeEvent
+    | CleanupEvent
     | OpenFileEvent
     | CloseErrorToastEvent
     | SelectBookEvent

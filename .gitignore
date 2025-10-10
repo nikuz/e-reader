@@ -16,3 +16,4 @@ dist/
 .idea
 
 public/books
+tsconfig.app.tsbuildinfo

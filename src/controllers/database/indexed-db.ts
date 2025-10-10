@@ -1,19 +1,32 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import type { StorageAdapter, StorageConfig } from './types';
+import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
 
 // IndexedDB implementation
-export class IndexedDBAdapter<T> implements StorageAdapter<T> {
+export class IndexedDBAdapter<T> implements DatabaseAdapter<T> {
+    constructor(config: DatabaseConfig<T>) {
+        this.config = config;
+    }
+
     private db: IDBPDatabase | null = null;
+    private config: DatabaseConfig<T>;
+    private initialized = false;
 
-    constructor(private config: StorageConfig<T>) { }
+    private ensureDB(): IDBPDatabase {
+        if (!this.db) {
+            throw new Error('Database not initialized. Call init() first.');
+        }
+        return this.db;
+    }
 
-    async init(): Promise<void> {
-        this.db = await openDB(this.config.name, this.config.version ?? 1, {
+    async init(upgrades?: DatabaseMigration[]): Promise<void> {
+        if (this.initialized) {
+            return;
+        }
+        const db = await openDB(this.config.name, this.config.version ?? 1, {
             upgrade: (db) => {
-                // Use custom upgrade if provided
-                if (this.config.upgrade) {
-                    this.config.upgrade(db);
-                    return;
+                if (upgrades) {
+                    // TODO: add proper upgrade logic
+                    // return;
                 }
 
                 // Default upgrade: create object store if it doesn't exist
@@ -24,13 +37,25 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
                 }
             },
         });
+        this.initialized = true;
+        db.close();
     }
 
-    private ensureDB(): IDBPDatabase {
+    isInitiated(): boolean {
+        return this.initialized;
+    }
+
+    async openDB(): Promise<void> {
         if (!this.db) {
-            throw new Error('Database not initialized. Call init() first.');
+            this.db = await openDB(this.config.name, this.config.version ?? 1);
         }
-        return this.db;
+    }
+
+    async closeDB(): Promise<void> {
+        if (this.db) {
+            this.db.close();
+            this.db = null;
+        }
     }
 
     async get(key: string): Promise<T | undefined> {
@@ -43,9 +68,26 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
         return db.getAll(this.config.indexName);
     }
 
-    async set(value: T): Promise<void> {
+    async create(data: T): Promise<void>;
+    async create(query: string, values?: any[]): Promise<void>;
+    async create(query: any, values?: any[]): Promise<void> {
         const db = this.ensureDB();
-        await db.put(this.config.indexName, value);
+        if (typeof query === 'string' && values) {
+            await db.put(this.config.indexName, values[0]);
+        } else {
+            await db.put(this.config.indexName, query);
+        }
+    }
+
+    async update(data: T): Promise<void>;
+    async update(query: string, values?: any[]): Promise<void>;
+    async update(query: any, values?: any[]): Promise<void> {
+        const db = this.ensureDB();
+        if (typeof query === 'string' && values) {
+            await db.put(this.config.indexName, values[0]);
+        } else {
+            await db.put(this.config.indexName, query);
+        }
     }
 
     async delete(key: string): Promise<void> {
@@ -53,45 +95,9 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
         await db.delete(this.config.indexName, key);
     }
 
-    async query(predicate: (item: T) => boolean): Promise<T[]> {
-        const all = await this.getAll();
-        return all.filter(predicate);
-    }
-
     async clear(): Promise<void> {
         const db = this.ensureDB();
         await db.clear(this.config.indexName);
-    }
-
-    // Close database connection
-    async close(): Promise<void> {
-        if (this.db) {
-            this.db.close();
-            this.db = null;
-        }
-    }
-
-    // Bulk operations for better performance
-    async bulkSet(items: T[]): Promise<void> {
-        const db = this.ensureDB();
-        const tx = db.transaction(this.config.indexName, 'readwrite');
-        const store = tx.objectStore(this.config.indexName);
-
-        await Promise.all([
-            ...items.map(item => store.put(item)),
-            tx.done,
-        ]);
-    }
-
-    async bulkDelete(keys: string[]): Promise<void> {
-        const db = this.ensureDB();
-        const tx = db.transaction(this.config.indexName, 'readwrite');
-        const store = tx.objectStore(this.config.indexName);
-
-        await Promise.all([
-            ...keys.map(key => store.delete(key)),
-            tx.done,
-        ]);
     }
 
     // Count items in store

@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/e-reader.js",
   "scripts": {
-    "build": "rsbuild build",
+    "build": "tsc -b && rsbuild build",
     "dev": "rsbuild dev --open",
     "preview": "rsbuild preview",
     "copy": "npx cap copy",
@@ -14,6 +14,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@capacitor-community/sqlite": "^7.0.1",
     "@capacitor/android": "^7.4.3",
     "@capacitor/core": "^7.4.3",
     "@capacitor/filesystem": "^7.1.4",

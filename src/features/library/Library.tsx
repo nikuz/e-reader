@@ -1,4 +1,4 @@
-import { Show, For } from 'solid-js';
+import { onMount, onCleanup, Show, For } from 'solid-js';
 import { Toast, Spinner } from 'src/components';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
@@ -9,7 +9,7 @@ import {
 } from './state';
 
 export default function Library() {
-    const isInitiating = useLibraryStateMatch(['INITIATING']);
+    const isInitiating = useLibraryStateMatch(['INITIALIZING']);
     const isOpeningFile = useLibraryStateMatch(['OPENING_FILE']);
     const isRemovingBook = useLibraryStateMatch(['REMOVING_BOOK']);
     const storedBooks = useLibraryStateSelect('storedBooks');
@@ -18,6 +18,14 @@ export default function Library() {
     const closeErrorHandler = () => {
         libraryStateMachineActor.send({ type: 'CLOSE_ERROR_TOAST' });
     };
+
+    onMount(() => {
+        libraryStateMachineActor.send({ type: 'INITIALIZE' });
+    });
+
+    onCleanup(() => {
+        libraryStateMachineActor.send({ type: 'CLEANUP' });
+    });
 
     return (
         <div class="h-full">
