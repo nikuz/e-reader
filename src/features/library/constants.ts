@@ -1,5 +1,5 @@
 import type { DatabaseConfig } from 'src/controllers';
-import type { BookAttributes } from 'src/types';
+import type { BookAttributes } from './types';
 
 export const LIBRARY_DIRECTORY = 'books';
 

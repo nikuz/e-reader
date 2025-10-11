@@ -1,7 +1,7 @@
 import { render } from 'solid-js/web';
-import Router from './Router';
+import AppRouter from './router';
 
 const root = document.getElementById('root');
 if (root) {
-    render(() => <Router />, root);
+    render(() => <AppRouter />, root);
 }

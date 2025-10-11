@@ -1,4 +1,4 @@
-import type { BookAttributes } from 'src/types';
+import type { BookAttributes } from '../../types';
 
 export async function retrieveBookAttributes(opfFileContent: string): Promise<BookAttributes> {
     const xmlDoc = new DOMParser().parseFromString(opfFileContent, 'text/xml');

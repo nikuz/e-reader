@@ -1,6 +1,6 @@
 import type { Navigator } from '@solidjs/router';
 import type { DatabaseController } from 'src/controllers';
-import type { BookAttributes } from 'src/types';
+import type { BookAttributes } from '../types';
 
 export interface LibraryStateContext {
     dbController: DatabaseController<BookAttributes>,

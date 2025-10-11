@@ -3,7 +3,7 @@ import { VsLibrary } from 'solid-icons/vs';
 import { AiFillRead } from 'solid-icons/ai';
 import { BsViewList } from 'solid-icons/bs';
 import { VsSettings } from 'solid-icons/vs';
-import { Routes } from 'src/types';
+import { Routes } from 'src/router/constants';
 
 export default function TabBar() {
     const navigate = useNavigate();

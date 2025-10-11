@@ -3,8 +3,8 @@ import { useNavigate } from '@solidjs/router';
 import { AiOutlineMore } from 'solid-icons/ai';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { libraryStateMachineActor } from 'src/features/library/state';
-import { Routes } from 'src/types';
-import type { BookAttributes } from 'src/types';
+import { Routes } from 'src/router/constants';
+import type { BookAttributes } from '../../types';
 
 interface Props {
     bookAttributes: BookAttributes,

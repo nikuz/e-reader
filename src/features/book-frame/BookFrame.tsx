@@ -1,7 +1,7 @@
 import { onCleanup, Switch, Match } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { Toast, Spinner } from 'src/components';
-import { Routes } from 'src/types';
+import { Routes } from 'src/router/constants';
 import { FrameEventObserver } from './injections';
 import {
     useBookFrameStateSelect,

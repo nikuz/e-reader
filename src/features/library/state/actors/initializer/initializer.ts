@@ -2,9 +2,9 @@ import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
 import type { DatabaseController } from 'src/controllers';
 import { getBookCoverObjectUrl } from 'src/features/library/utils';
-import type { BookAttributes } from 'src/types';
 import { initializeDBService, getAllBooksFromDB } from '../../../db-service';
 import { LIBRARY_DIRECTORY } from '../../../constants';
+import type { BookAttributes } from '../../../types';
 
 export const initializerActor = fromPromise(async (props: {
     input: {

@@ -4,7 +4,7 @@ import type {
     BookAttributes,
     BookNavigationEpub2,
     BookNavigationEpub2NavPoint,
-} from 'src/types';
+} from '../../types';
 
 export async function retrieveNavigationEpub2(book: BookAttributes): Promise<BookNavigationEpub2> {
     if (!book.navigationEpub2Src) {

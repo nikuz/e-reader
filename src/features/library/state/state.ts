@@ -1,8 +1,8 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
-import type { BookAttributes } from 'src/types';
 import { LIBRARY_DB_CONFIG } from '../constants';
+import type { BookAttributes } from '../types';
 import {
     initializerActor,
     fileOpenerActor,

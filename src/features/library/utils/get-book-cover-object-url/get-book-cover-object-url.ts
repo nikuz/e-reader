@@ -1,6 +1,6 @@
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 import { pathUtils } from 'src/utils';
-import type { BookAttributes } from 'src/types';
+import type { BookAttributes } from '../../types';
 
 const HTML_CONTAINER_EXTENSIONS = new Set(['xhtml', 'html', 'htm']);
 

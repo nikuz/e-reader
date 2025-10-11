@@ -1,9 +1,9 @@
 import { createEffect } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { useLocation, useNavigate } from '@solidjs/router';
+import { Routes } from 'src/router/constants';
 import Debug from './features/debug';
 import TabBar from './features/tab-bar';
-import { Routes } from './types';
 import './App.css';
 
 interface Props {

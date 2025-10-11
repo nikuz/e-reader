@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { DatabaseController } from 'src/controllers';
-import type { BookAttributes } from 'src/types';
+import type { BookAttributes } from '../../types';
 
 export async function getAllBooksFromDB(db: DatabaseController<BookAttributes>): Promise<BookAttributes[]> {
     if (Capacitor.isNativePlatform()) {

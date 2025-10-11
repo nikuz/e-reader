@@ -1,8 +1,8 @@
 import { Capacitor } from '@capacitor/core';
+import type { BookAttributes } from 'src/features/library/types';
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
-import type { BookAttributes } from 'src/types';
 import { INJECTED_CSS_PLACEHOLDER } from '../../../constants';
 import injectedCss from '../../../injections/style/main.css?raw';
 import { webRetrieveStaticContent } from '../../../utils';

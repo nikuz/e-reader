@@ -1,4 +1,4 @@
-import type { BookAttributes } from 'src/types';
+import type { BookAttributes } from 'src/features/library/types';
 
 interface LoadBookEvent {
     type: 'LOAD_BOOK',

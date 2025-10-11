@@ -1,10 +1,10 @@
 import { Router, Route } from '@solidjs/router';
-import App from './App';
-import Library from './features/library';
-import BookFrame from './features/book-frame';
-import Dictionary from './features/dictionary';
-import Settings from './features/settings';
-import { Routes } from './types';
+import App from 'src/App';
+import Library from 'src/features/library';
+import BookFrame from 'src/features/book-frame';
+import Dictionary from 'src/features/dictionary';
+import Settings from 'src/features/settings';
+import { Routes } from './constants';
 
 export default function AppRouter() {
     return (

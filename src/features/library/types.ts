@@ -28,8 +28,3 @@ export interface BookNavigationEpub2NavPoint {
 export interface BookNavigationEpub2 {
     navMap: BookNavigationEpub2NavPoint[];
 }
-
-export interface BookSettings {
-    chapter: number,
-    page: number,
-}
