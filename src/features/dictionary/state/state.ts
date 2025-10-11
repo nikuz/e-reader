@@ -1,5 +1,6 @@
 import { setup, createActor, assign } from 'xstate';
 import { DatabaseController } from 'src/controllers';
+import { xStateUtils } from 'src/utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
 import type { DictionaryWord } from '../types';
 import { initializerActor } from './actors';
@@ -47,9 +48,12 @@ export const dictionaryStateMachine = setup({
                 },
                 onError: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        errorMessage: event.error?.toString(),
-                    })),
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
                 },
             },
         },
