@@ -4,7 +4,7 @@ import { xStateUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
 import { LIBRARY_DB_CONFIG } from '../constants';
 import {
-    initiatorActor,
+    initializerActor,
     fileOpenerActor,
     bookRemoverActor,
     cleanupActor,
@@ -19,7 +19,7 @@ import type {
 
 export const libraryStateMachine = setup({
     actors: {
-        initiatorActor,
+        initializerActor,
         fileOpenerActor,
         bookRemoverActor,
         cleanupActor,
@@ -55,7 +55,7 @@ export const libraryStateMachine = setup({
 
         INITIALIZING: {
             invoke: {
-                src: 'initiatorActor',
+                src: 'initializerActor',
                 input: ({ context }) => ({
                     dbController: context.dbController,
                 }),

@@ -90,7 +90,7 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
 
     async create(data: T): Promise<void>;
     async create(query: string, values?: any[]): Promise<void>;
-    async create(query: any, values?: any[]): Promise<void> {
+    async create(query: T | string, values?: any[]): Promise<void> {
         if (typeof query === 'string') {
             return this.rawQuery(query, values);
         }
@@ -98,7 +98,7 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
 
     async update(data: T): Promise<void>;
     async update(query: string, values?: any[]): Promise<void>;
-    async update(query: any, values?: any[]): Promise<void> {
+    async update(query: T | string, values?: any[]): Promise<void> {
         if (typeof query === 'string') {
             return this.rawQuery(query, values);
         }

@@ -6,12 +6,11 @@ import type { BookAttributes } from 'src/types';
 import { initializeDBService, getAllBooksFromDB } from '../../../db-service';
 import { LIBRARY_DIRECTORY } from '../../../constants';
 
-export const initiatorActor = fromPromise(async (props: {
+export const initializerActor = fromPromise(async (props: {
     input: {
         dbController: DatabaseController<BookAttributes>,
     },
 }): Promise<BookAttributes[]> => {
-    // create LIBRARY_DIRECTORY if it doesn't exist yet
     try {
         await FileStorageController.stat({ path: LIBRARY_DIRECTORY });
     } catch {
@@ -30,6 +29,8 @@ export const initiatorActor = fromPromise(async (props: {
             book.cover = cover;
         }
     }
+
+    console.log('Library initialized');
 
     return storedBooks;
 });

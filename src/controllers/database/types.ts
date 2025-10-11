@@ -13,10 +13,12 @@ export interface DatabaseAdapter<T> {
     getAll(): Promise<T[]>;
 
     create(data: T): Promise<void>;
-    create(query?: string, values?: any[]): Promise<void>;
+    create(query: string, values?: any[]): Promise<void>;
+    create(query: T | string, values?: any[]): Promise<void>;
 
     update(data: T): Promise<void>;
-    update(query?: string, values?: any[]): Promise<void>;
+    update(query: string, values?: any[]): Promise<void>;
+    update(query: T | string, values?: any[]): Promise<void>;
 
     delete(key: string): Promise<void>;
 
