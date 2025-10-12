@@ -1,4 +1,4 @@
-import type { BookAttributes } from '../../types';
+import type { BookAttributes, BookChapter } from '../../types';
 
 export async function retrieveBookAttributes(opfFileContent: string): Promise<BookAttributes> {
     const xmlDoc = new DOMParser().parseFromString(opfFileContent, 'text/xml');
@@ -17,7 +17,7 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         language: metadataNode.getElementsByTagName('dc:language')[0].textContent ?? '',
         dirname: '',
 
-        spine: {},
+        spine: [],
         addedAt: Date.now(),
     };
 
@@ -32,7 +32,7 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
     }
 
     // spine
-    const spine: Record<string, string> = {};
+    const spine: BookChapter[] = [];
     const spineItems = spineNode.querySelectorAll('itemref');
 
     spineItems?.forEach((item) => {
@@ -41,7 +41,7 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         const value = manifestItem?.getAttribute('href');
 
         if (idRef && value) {
-            spine[idRef] = value;
+            spine.push({ filePath: value });
         }
     });
     bookAttributes.spine = spine;

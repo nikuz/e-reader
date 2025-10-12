@@ -2,7 +2,7 @@ import { setup, createActor, assign, enqueueActions, sendTo } from 'xstate';
 import { bookLoaderStateMachine } from '../loader/state';
 import { TEXT_SELECT_DELAY } from '../constants';
 import {
-    initiateBookAction,
+    initializeBookAction,
     chapterLoadAction,
     pageTurnNextAction,
     pageTurnPrevAction,
@@ -12,6 +12,7 @@ import {
     frameTouchCancelAction,
     frameResizeAction,
     selectTextAction,
+    updateBookAttributesAction,
 } from './actions';
 import type {
     BookFrameStateContext,
@@ -30,7 +31,7 @@ export const bookFrameStateMachine = setup({
     id: 'BOOK_FRAME',
 
     context: {
-        settings: {
+        readProgress: {
             chapter: 0,
             page: 0,
         },
@@ -60,7 +61,7 @@ export const bookFrameStateMachine = setup({
                     actions: sendTo('loader', ({ event }) => event),
                 },
                 BOOK_LOAD_SUCCESS: {
-                    actions: enqueueActions(initiateBookAction),
+                    actions: enqueueActions(initializeBookAction),
                 },
                 BOOK_LOAD_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.errorMessage })),
@@ -80,6 +81,9 @@ export const bookFrameStateMachine = setup({
                 },
                 PAGE_TURN_PREV: {
                     actions: enqueueActions(pageTurnPrevAction),
+                },
+                UPDATE_BOOK_ATTRIBUTES: {
+                    actions: enqueueActions(updateBookAttributesAction),
                 },
             },
         },
@@ -117,6 +121,9 @@ export const bookFrameStateMachine = setup({
             actions: assign(({ event }) => ({
                 chapterRect: event.rect,
             })),
+        },
+        SAVE_READ_PROGRESS: {
+            actions: sendTo('loader', ({ event }) => event),
         },
     },
 });

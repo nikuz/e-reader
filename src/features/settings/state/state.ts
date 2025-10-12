@@ -1,7 +1,8 @@
-import { setup, createActor, assign } from 'xstate';
+import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { xStateUtils } from 'src/utils';
 import { DefaultFontSettings } from '../defaults';
 import { initializerActor, saveFontSettingsActor } from './actors';
+import { generateSettingsCSSAction } from './actions';
 import type {
     SettingsStateContext,
     SettingsStateEvents,
@@ -40,9 +41,12 @@ export const settingsStateMachine = setup({
                 src: 'initializerActor',
                 onDone: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        ...event.output,
-                    })),
+                    actions: [
+                        assign(({ event }) => ({
+                            ...event.output,
+                        })),
+                        enqueueActions(generateSettingsCSSAction),
+                    ],
                 },
                 onError: {
                     target: 'IDLE',
@@ -65,9 +69,12 @@ export const settingsStateMachine = setup({
                 }),
                 onDone: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        font: event.output,
-                    })),
+                    actions: [
+                        assign(({ event }) => ({
+                            font: event.output,
+                        })),
+                        enqueueActions(generateSettingsCSSAction),
+                    ],
                 },
                 onError: {
                     target: 'IDLE',

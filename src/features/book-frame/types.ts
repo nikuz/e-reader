@@ -1,4 +1,4 @@
-export interface BookSettings {
+export interface BookReadProgress {
     chapter: number,
     page: number,
 }

@@ -1,8 +1,9 @@
 import { SettingsGroup } from './types';
 
 export interface FontSettings extends SettingsGroup {
-    fontSize: number,
+    fontSize: string,
     fontFamily: string,
+    color: string,
 }
 
 export class DefaultFontSettings extends SettingsGroup implements FontSettings {
@@ -15,13 +16,15 @@ export class DefaultFontSettings extends SettingsGroup implements FontSettings {
         }
     }
 
-    fontSize = 18;
+    fontSize = '18px';
     fontFamily = 'Arial';
+    color = '#FFF';
 
     toObject() {
         return {
             fontSize: this.fontSize,
             fontFamily: this.fontFamily,
+            color: this.color,
         };
     }
 
@@ -31,6 +34,6 @@ export class DefaultFontSettings extends SettingsGroup implements FontSettings {
 
     toCss(): string {
         const cssProps = this.getCssProps(this.toObject());
-        return `body ${cssProps}`;
+        return `* ${cssProps}`;
     }
 }

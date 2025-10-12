@@ -1,8 +1,11 @@
-import type { BookFrameStateContext } from '../../types';
+import type { BookFrameStateContext, BookFrameStateEvents } from '../../types';
 
 export function pageTurnPrevAction(props: {
     context: BookFrameStateContext,
-    enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
+    enqueue: {
+        assign: (context: Partial<BookFrameStateContext>) => void,
+        raise: (context: BookFrameStateEvents) => void,
+    },
 }) {
     const iframeEl = props.context.iframeEl;
     const window = iframeEl?.contentWindow;
@@ -13,35 +16,38 @@ export function pageTurnPrevAction(props: {
     }
 
     const contextUpdate: Partial<BookFrameStateContext> = {};
-    const settings = props.context.settings;
+    const readProgress = props.context.readProgress;
     const screenRect = props.context.screenRect;
     const chapterRect = props.context.chapterRect;
     const pagesAmount = Math.round(chapterRect.width / screenRect.width);
     const scrollStep = Math.ceil(chapterRect.width / pagesAmount);
-    const prevPage = settings.page - 1;
+    const prevPage = readProgress.page - 1;
     const prevScrollPosition = scrollStep * prevPage;
     
     // scroll within the chapter
     if (prevScrollPosition >= 0) {
         window.scrollTo({ left: prevScrollPosition });
-        contextUpdate.settings = {
-            ...settings,
+        contextUpdate.readProgress = {
+            ...readProgress,
             page: prevPage,
         };
         contextUpdate.scrollPosition = prevScrollPosition;
     }
     // change the chapter
     else {
-        const prevChapter = Math.max(settings.chapter - 1, 0);
-        const key = Object.keys(bookAttributes.spine)[prevChapter];
+        const prevChapter = Math.max(readProgress.chapter - 1, 0);
 
-        contextUpdate.settings = {
-            ...props.context.settings,
+        contextUpdate.readProgress = {
+            ...props.context.readProgress,
             chapter: prevChapter,
         };
-        contextUpdate.chapterContent = bookAttributes.spine[key];
-        contextUpdate.prevChapter = settings.chapter;
+        contextUpdate.chapterUrl = bookAttributes.spine[prevChapter].url;
+        contextUpdate.prevChapter = readProgress.chapter;
     }
 
     props.enqueue.assign(contextUpdate);
+    props.enqueue.raise({
+        type: 'SAVE_READ_PROGRESS',
+        progress: contextUpdate.readProgress,
+    });
 }

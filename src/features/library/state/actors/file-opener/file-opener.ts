@@ -90,10 +90,9 @@ export const fileOpenerActor = fromPromise(async (props: {
         bookAttributes.navigationEpub2 = await retrieveNavigationEpub2(bookAttributes);
     }
 
-    for (const chapterName in bookAttributes.spine) {
-        const chapterPath = bookAttributes.spine[chapterName];
+    for (const chapter of bookAttributes.spine) {
         await replaceStaticContentUrls({
-            filePath: chapterPath,
+            filePath: chapter.filePath,
             bookDirectory: bookAttributes.dirname,
         });
     }

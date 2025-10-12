@@ -1,4 +1,4 @@
-export * from './initiate-book';
+export * from './initialize-book';
 export * from './chapter-load';
 export * from './page-turn-next';
 export * from './page-turn-prev';
@@ -8,3 +8,4 @@ export * from './frame-touch-end';
 export * from './frame-touch-cancel';
 export * from './frame-resize';
 export * from './select-text';
+export * from './update-book-attributes';

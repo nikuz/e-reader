@@ -7,7 +7,7 @@ export default function Settings() {
     const setFontHandler = () => {
         settingsStateMachineActor.send({
             type: 'SET_FONT_SIZE',
-            value: 20,
+            value: '20px',
         });
     };
 

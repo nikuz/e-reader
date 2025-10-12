@@ -12,8 +12,8 @@ export function frameResizeAction(props: {
         return;
     }
 
-    const settings = props.context.settings;
-    const newScrollPosition = window.innerWidth * settings.page;
+    const readProgress = props.context.readProgress;
+    const newScrollPosition = window.innerWidth * readProgress.page;
 
     window.scrollTo({ left: newScrollPosition });
 

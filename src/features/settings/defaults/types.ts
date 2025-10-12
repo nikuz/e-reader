@@ -1,20 +1,20 @@
 export abstract class SettingsGroup {
-    abstract toObject(): Record<string, string | number>;
+    abstract toObject(): Record<string, string>;
     abstract toString(): string;
     
-    getCssProps(properties: Record<string, string | number>) {
-        const css: Record<string, string | number> = {};
+    getCssProps(properties: Record<string, string>) {
+        const css: Record<string, string> = {};
 
         for (const key in properties) {
             const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
             const value = properties[key];
 
-            css[cssKey] = value;
+            css[cssKey] = `${value}!important`;
         }
 
         return JSON.stringify(css)
             .replaceAll(',', ';')
-            .replace(/"([^"]+)":/g, '$1:');
+            .replaceAll('"', '');
     }
 
     abstract toCss(): string;

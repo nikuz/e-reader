@@ -9,7 +9,6 @@ export const initializerActor = fromPromise(async (): Promise<Partial<SettingsSt
     const storedFontSettings = await Preferences.get({ key: DefaultFontSettings.id });
     if (storedFontSettings.value) {
         contextUpdate.font = new DefaultFontSettings(JSON.parse(storedFontSettings.value));
-        console.log(contextUpdate.font.toCss());
     }
     
     return contextUpdate;

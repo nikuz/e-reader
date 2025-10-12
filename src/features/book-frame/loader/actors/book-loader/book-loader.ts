@@ -1,39 +1,56 @@
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import type { BookAttributes } from 'src/features/library/types';
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
+import { settingsStateMachineActor } from 'src/features/settings/state';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
 import { INJECTED_CSS_PLACEHOLDER } from '../../../constants';
-import injectedCss from '../../../injections/style/main.css?raw';
-import { webRetrieveStaticContent } from '../../../utils';
+import {
+    webRetrieveStaticContent,
+    getReadProgressStorageKey,
+    getInjectedCSS,
+} from '../../../utils';
+import type { BookReadProgress } from 'src/features/book-frame/types';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {
         bookAttributes: BookAttributes,
     },
-}): Promise<BookAttributes> => {
+}): Promise<{
+    bookAttributes: BookAttributes,
+    readProgress?: BookReadProgress,
+}> => {
     const { bookAttributes } = props.input;
-    const spine = { ...bookAttributes.spine };
+    const spine = [ ...bookAttributes.spine ];
+    const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
+    const settingsCSS = settingsSnapshot.settingsCSS;
+    const injectedCss = getInjectedCSS(settingsCSS);
+    const readProgress = await Preferences.get({ key: getReadProgressStorageKey(bookAttributes) });
 
     if (Capacitor.isNativePlatform()) {
         const jobs: Promise<void>[] = [];
-        for (const chapterName in spine) {
+        for (const key in spine) {
             jobs.push((async () => {
-                const chapterPath = spine[chapterName];
-                const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
+                const chapter = spine[key];
+                const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapter.filePath]);
 
                 const fileReadResponse = await FileStorageController.readFile({
                     path: chapterFullPath,
                     encoding: FileStorageEncoding.UTF8,
                 });
 
-                let fileContent = fileReadResponse.data as string;
-                fileContent = fileContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
+                const originalContent = fileReadResponse.data as string;
+                const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
 
-                const blob = new Blob([fileContent], { type: 'text/html' });
+                const blob = new Blob([modifiedContent], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
 
-                spine[chapterName] = blobUrl;
+                spine[key] = {
+                    ...chapter,
+                    url: blobUrl,
+                    content: originalContent,
+                };
             })());
         }
 
@@ -41,34 +58,38 @@ export const bookLoaderActor = fromPromise(async (props: {
     }
     // web platform requires reading every file and generating object URLs for linked static content
     else {
-        for (const chapterName in spine) {
-            const chapterPath = spine[chapterName];
-            const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapterPath]);
+        for (const key in spine) {
+            const chapter = spine[key];
+            const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapter.filePath]);
 
             const fileContent = await FileStorageController.readFile({
                 path: chapterFullPath,
                 encoding: FileStorageEncoding.UTF8,
             });
             const xmlDoc = new DOMParser().parseFromString(fileContent.data, 'text/xml');
-
+            
             await webRetrieveStaticContent({ xmlDoc });
 
-            const styleEl = xmlDoc.createElement('style');
-            styleEl.textContent = injectedCss;
-
-            xmlDoc.head.appendChild(styleEl);
-
             const serializer = new XMLSerializer();
-            const modifiedContent = serializer.serializeToString(xmlDoc);
+            const originalContent = serializer.serializeToString(xmlDoc);
+            const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
+
             const blob = new Blob([modifiedContent], { type: 'text/html' });
             const blobUrl = URL.createObjectURL(blob);
 
-            spine[chapterName] = blobUrl;
+            spine[key] = {
+                ...chapter,
+                url: blobUrl,
+                content: originalContent,
+            };
         }
     }
 
     return {
-        ...bookAttributes,
-        spine,
+        bookAttributes: {
+            ...bookAttributes,
+            spine,
+        },
+        readProgress: readProgress.value ? JSON.parse(readProgress.value) : undefined
     };
 });

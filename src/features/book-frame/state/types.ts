@@ -1,12 +1,13 @@
 import type { ActorRefFrom } from 'xstate';
 import type { BookAttributes } from 'src/features/library/types';
 import type { Size, Position } from 'src/types';
-import type { BookSettings } from '../types';
+import type { BookReadProgress } from '../types';
 import { bookLoaderStateMachine } from '../loader/state';
+import type { SaveReadProgressEvent } from '../loader/types';
 
 export interface BookFrameStateContext {
     bookAttributes?: BookAttributes,
-    settings: BookSettings,
+    readProgress: BookReadProgress,
 
     iframeEl?: HTMLIFrameElement,
     scrollPosition: number,
@@ -15,7 +16,7 @@ export interface BookFrameStateContext {
     frameInteractionStartTime?: number,
     frameInteractionStartPosition?: Position,
     
-    chapterContent?: string,
+    chapterUrl?: string,
     prevChapter?: number,
     chapterRect: Size,
 
@@ -34,6 +35,7 @@ export interface LoadBookEvent {
 export interface BookLoadSuccessEvent {
     type: 'BOOK_LOAD_SUCCESS',
     bookAttributes: BookAttributes,
+    readProgress?: BookReadProgress,
 }
 
 export interface BookLoadErrorEvent {
@@ -81,6 +83,16 @@ export interface SetTextSelectionEvent {
     textSelection: Selection,
 }
 
+export interface UpdateBookAttributesEvent {
+    type: 'UPDATE_BOOK_ATTRIBUTES',
+    bookAttributes: BookAttributes,
+}
+
+export interface UpdateSettingsEvent {
+    type: 'UPDATE_SETTINGS',
+    settingsCSS: string,
+}
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -95,4 +107,7 @@ export type BookFrameStateEvents =
     | FrameTouchCancelEvent
     | PageTurnNextEvent
     | PageTurnPrevEvent
-    | SetTextSelectionEvent;
+    | SetTextSelectionEvent
+    | SaveReadProgressEvent
+    | UpdateBookAttributesEvent
+    | UpdateSettingsEvent;

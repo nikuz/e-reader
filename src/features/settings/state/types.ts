@@ -10,7 +10,7 @@ export interface SettingsStateContext {
 
 export interface SetFontSizeEvent {
     type: 'SET_FONT_SIZE',
-    value: number,
+    value: string,
 }
 
 export interface SetFontFamilyEvent {

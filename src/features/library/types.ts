@@ -14,9 +14,15 @@ export interface BookAttributes {
     navigationEpub3Src?: string,
 
     // spine
-    spine: Record<string, string>,
+    spine: BookChapter[],
 
     addedAt: number,
+}
+
+export interface BookChapter {
+    filePath: string,
+    url?: string,
+    content?: string,
 }
 
 export interface BookNavigationEpub2NavPoint {

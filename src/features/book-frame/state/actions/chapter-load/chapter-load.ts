@@ -1,12 +1,19 @@
-import type { BookFrameStateContext, ChapterLoadEvent } from '../../types';
+import type {
+    BookFrameStateContext,
+    BookFrameStateEvents,
+    ChapterLoadEvent,
+} from '../../types';
 
 export function chapterLoadAction(props: {
     event: ChapterLoadEvent,
     context: BookFrameStateContext,
-    enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
+    enqueue: {
+        assign: (context: Partial<BookFrameStateContext>) => void,
+        raise: (context: BookFrameStateEvents) => void,
+    },
 }) {
     const iframeEl = props.event.iframeEl;
-    const settings = props.context.settings;
+    const readProgress = props.context.readProgress;
     const prevChapter = props.context.prevChapter;
     const window = iframeEl?.contentWindow;
     const bodyEl = iframeEl?.contentDocument?.body;
@@ -27,16 +34,20 @@ export function chapterLoadAction(props: {
         };
     }
 
-    if (prevChapter !== undefined && settings.chapter < prevChapter && window && bodyEl) {
+    if (prevChapter !== undefined && readProgress.chapter < prevChapter && window && bodyEl) {
         const newScrollPosition = bodyEl.scrollWidth - window.innerWidth;
 
         window.scrollTo({ left: newScrollPosition });
 
-        contextUpdate.settings = {
-            ...settings,
+        contextUpdate.readProgress = {
+            ...readProgress,
             page: Math.round(newScrollPosition / window.innerWidth),
         };
         contextUpdate.scrollPosition = newScrollPosition;
+        props.enqueue.raise({
+            type: 'SAVE_READ_PROGRESS',
+            progress: contextUpdate.readProgress,
+        });
     }
 
     props.enqueue.assign(contextUpdate);
