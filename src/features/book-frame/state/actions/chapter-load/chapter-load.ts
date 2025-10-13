@@ -48,6 +48,10 @@ export function chapterLoadAction(props: {
             type: 'SAVE_READ_PROGRESS',
             progress: contextUpdate.readProgress,
         });
+    } else if (readProgress.page > 0 && window && bodyEl) {
+        window.scrollTo({
+            left: window.innerWidth * readProgress.page,
+        });
     }
 
     props.enqueue.assign(contextUpdate);
