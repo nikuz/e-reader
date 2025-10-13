@@ -17,6 +17,7 @@ export interface BookFrameStateContext {
     frameInteractionStartPosition?: Position,
     
     chapterUrl?: string,
+    deferredRevokeChapterUrl?: string,
     prevChapter?: number,
     chapterRect: Size,
 
@@ -88,8 +89,8 @@ export interface UpdateBookAttributesEvent {
     bookAttributes: BookAttributes,
 }
 
-export interface UpdateSettingsEvent {
-    type: 'UPDATE_SETTINGS',
+export interface UpdateSettingsCSSEvent {
+    type: 'UPDATE_SETTINGS_CSS',
     settingsCSS: string,
 }
 
@@ -110,4 +111,4 @@ export type BookFrameStateEvents =
     | SetTextSelectionEvent
     | SaveReadProgressEvent
     | UpdateBookAttributesEvent
-    | UpdateSettingsEvent;
+    | UpdateSettingsCSSEvent;

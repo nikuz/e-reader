@@ -25,7 +25,7 @@ export const bookLoaderActor = fromPromise(async (props: {
     const spine = [ ...bookAttributes.spine ];
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const settingsCSS = settingsSnapshot.settingsCSS;
-    const injectedCss = getInjectedCSS(settingsCSS);
+    const injectedCSS = getInjectedCSS(settingsCSS);
     const readProgress = await Preferences.get({ key: getReadProgressStorageKey(bookAttributes) });
 
     if (Capacitor.isNativePlatform()) {
@@ -41,7 +41,7 @@ export const bookLoaderActor = fromPromise(async (props: {
                 });
 
                 const originalContent = fileReadResponse.data as string;
-                const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
+                const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCSS);
 
                 const blob = new Blob([modifiedContent], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
@@ -72,7 +72,7 @@ export const bookLoaderActor = fromPromise(async (props: {
 
             const serializer = new XMLSerializer();
             const originalContent = serializer.serializeToString(xmlDoc);
-            const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);
+            const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCSS);
 
             const blob = new Blob([modifiedContent], { type: 'text/html' });
             const blobUrl = URL.createObjectURL(blob);

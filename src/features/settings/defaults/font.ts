@@ -1,31 +1,36 @@
 import { SettingsGroup } from './types';
 
-export interface FontSettings extends SettingsGroup {
-    fontSize: string,
-    fontFamily: string,
-    color: string,
-}
+const fontCSSProperties = {
+    fontSize: '18px',
+    fontFamily: 'Inter, Avenir, Helvetica, Arial, sans-serif',
+    color: '#FFF',
+    lineHeight: '1.5em',
+};
 
-export class DefaultFontSettings extends SettingsGroup implements FontSettings {
+type FontProps = typeof fontCSSProperties;
+
+export type FontSettings = SettingsGroup<FontProps> & FontProps;
+
+export class DefaultFontSettings extends SettingsGroup<FontProps> implements FontSettings {
     static id = 'font';
+    
+    declare fontSize: string;
+    declare fontFamily: string;
+    declare color: string;
+    declare lineHeight: string;
     
     constructor(overrides?: Partial<FontSettings>) {
         super();
-        if (overrides) {
-            Object.assign(this, overrides);
-        }
+        Object.assign(this, fontCSSProperties, overrides);
     }
 
-    fontSize = '18px';
-    fontFamily = 'Arial';
-    color = '#FFF';
-
     toObject() {
-        return {
-            fontSize: this.fontSize,
-            fontFamily: this.fontFamily,
-            color: this.color,
-        };
+        const result = {} as FontProps;
+        for (const key in fontCSSProperties) {
+            const keyTyped = key as keyof FontProps;
+            result[keyTyped] = this[keyTyped];
+        }
+        return result;
     }
 
     toString() {
@@ -34,6 +39,6 @@ export class DefaultFontSettings extends SettingsGroup implements FontSettings {
 
     toCss(): string {
         const cssProps = this.getCssProps(this.toObject());
-        return `* ${cssProps}`;
+        return `* { ${cssProps} }`;
     }
 }

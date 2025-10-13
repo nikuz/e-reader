@@ -1,5 +1,5 @@
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
-import { INJECTED_CSS_PLACEHOLDER } from 'src/features/book-frame/constants';
+import { INJECTED_CSS_ID, INJECTED_CSS_PLACEHOLDER } from 'src/features/book-frame/constants';
 import { pathUtils } from 'src/utils';
 import { replaceStyleUrls } from './styles';
 import { replaceImageUrls } from './images';
@@ -34,7 +34,8 @@ export async function replaceStaticContentUrls(props: {
         staticMapping,
     });
     
-    modifiedFileContent = modifiedFileContent.replace('</head>', `<style>${INJECTED_CSS_PLACEHOLDER}</style></head>`);
+    const newStyleNode = `<style id="${INJECTED_CSS_ID}">${INJECTED_CSS_PLACEHOLDER}</style>`;
+    modifiedFileContent = modifiedFileContent.replace('</head>', `${newStyleNode}</head>`);
     
     await FileStorageController.writeFile({
         path: fileFullPath,

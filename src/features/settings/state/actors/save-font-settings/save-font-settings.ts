@@ -20,9 +20,21 @@ export const saveFontSettingsActor = fromPromise(async (props: {
         case 'SET_FONT_FAMILY':
             currentFontSettings.fontFamily = event.value;
             break;
+        
+        case 'SET_FONT_COLOR':
+            currentFontSettings.color = event.value;
+            break;
+        
+        case 'SET_FONT_LINE_HEIGHT':
+            currentFontSettings.lineHeight = event.value;
+            break;
     }
 
     const newFontSettings = new DefaultFontSettings(currentFontSettings);
+
+    // await Preferences.remove({
+    //     key: DefaultFontSettings.id,
+    // });
 
     await Preferences.set({
         key: DefaultFontSettings.id,

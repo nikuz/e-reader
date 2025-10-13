@@ -4,6 +4,7 @@ export interface SettingsCSSChangeMessage {
     type: 'SETTINGS_CSS_CHANGE',
     bookAttributes: BookAttributes,
     settingsCSS: string,
+    currentChapterUrl?: string,
 }
 
 export type SettingsWatcherWorkerMessage = SettingsCSSChangeMessage;

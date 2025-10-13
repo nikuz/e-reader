@@ -103,7 +103,7 @@ export default function BookFrame() {
                 </Match>
             </Switch>
 
-            <div class="absolute right-0 top-0">
+            <div class="absolute right-0 top-[env(safe-area-inset-top)]">
                 <button class="btn" onClick={increaseFontSizeHandler}>Increase font size</button>
                 <button class="btn" onClick={decreaseFontSizeHandler}>Decrease font size</button>
             </div>

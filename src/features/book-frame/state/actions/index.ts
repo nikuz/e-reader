@@ -9,3 +9,4 @@ export * from './frame-touch-cancel';
 export * from './frame-resize';
 export * from './select-text';
 export * from './update-book-attributes';
+export * from './update-settings-css';

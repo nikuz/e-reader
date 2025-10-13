@@ -3,6 +3,7 @@ import { INJECTED_CSS_PLACEHOLDER } from '../../constants';
 import type {
     SettingsWatcherWorkerMessage,
     SettingsCSSChangeMessage,
+    WorkerBookAttributesUpdateMessage,
 } from './types';
 
 self.onmessage = (event: MessageEvent<SettingsWatcherWorkerMessage>) => { 
@@ -11,21 +12,29 @@ self.onmessage = (event: MessageEvent<SettingsWatcherWorkerMessage>) => {
             updateInjectedCSS(event.data);
             break;
     }
-    // self.postMessage({ type: '' });
 };
 
 function updateInjectedCSS(event: SettingsCSSChangeMessage) {
-    const { bookAttributes, settingsCSS } = event;
-    const injectedCss = getInjectedCSS(settingsCSS);
+    const {
+        bookAttributes,
+        settingsCSS,
+        currentChapterUrl,
+    } = event;
+
+    const injectedCSS = getInjectedCSS(settingsCSS);
     const spine = [...bookAttributes.spine];
-    
+ 
     for (const key in spine) {
         const chapter = { ...bookAttributes.spine[key] };
         if (chapter.url && chapter.content) {
-            // revoke old URL to prevent memory leak
-            URL.revokeObjectURL(chapter.url);
+            // revoke old URL to prevent memory leak,
+            // but keep current chapter url to prevent page flickering on settingsCSS change,
+            // it will be revoked on chapter change
+            if (currentChapterUrl !== chapter.url) {
+                URL.revokeObjectURL(chapter.url);
+            }
 
-            const modifiedContent = chapter.content.replace(INJECTED_CSS_PLACEHOLDER, injectedCss);;
+            const modifiedContent = chapter.content.replace(INJECTED_CSS_PLACEHOLDER, injectedCSS);
             const blob = new Blob([modifiedContent], { type: 'text/html' });
             const blobUrl = URL.createObjectURL(blob);
             chapter.url = blobUrl;
@@ -33,11 +42,13 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
         spine[key] = chapter;
     }
 
-    self.postMessage({
+    const message: WorkerBookAttributesUpdateMessage = {
         type: 'WORKER_BOOK_ATTRIBUTE_UPDATE',
         bookAttributes: {
             ...bookAttributes,
             spine,
         },
-    });
+    };
+
+    self.postMessage(message);
 }

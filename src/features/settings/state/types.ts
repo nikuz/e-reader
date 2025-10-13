@@ -18,8 +18,20 @@ export interface SetFontFamilyEvent {
     value: string,
 }
 
+export interface SetFontColorEvent {
+    type: 'SET_FONT_COLOR',
+    value: string,
+}
+
+export interface SetFontLineHeightEvent {
+    type: 'SET_FONT_LINE_HEIGHT',
+    value: string,
+}
+
 export type SettingsStateFontEvents = SetFontSizeEvent
-    | SetFontFamilyEvent;
+    | SetFontFamilyEvent
+    | SetFontColorEvent
+    | SetFontLineHeightEvent;
 
 export type SettingsStateEvents = 
     | SettingsStateFontEvents;

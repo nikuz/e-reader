@@ -44,6 +44,11 @@ export function pageTurnNextAction(props: {
         contextUpdate.chapterUrl = bookAttributes.spine[nextChapter].url;
         contextUpdate.prevChapter = readProgress.chapter;
         contextUpdate.scrollPosition = 0;
+
+        if (props.context.deferredRevokeChapterUrl) {
+            URL.revokeObjectURL(props.context.deferredRevokeChapterUrl);
+            contextUpdate.deferredRevokeChapterUrl = undefined;
+        }
     }
 
     props.enqueue.assign(contextUpdate);

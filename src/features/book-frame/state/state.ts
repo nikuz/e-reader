@@ -12,6 +12,7 @@ import {
     frameTouchCancelAction,
     frameResizeAction,
     selectTextAction,
+    updateSettingsCSSAction,
     updateBookAttributesAction,
 } from './actions';
 import type {
@@ -81,6 +82,9 @@ export const bookFrameStateMachine = setup({
                 },
                 PAGE_TURN_PREV: {
                     actions: enqueueActions(pageTurnPrevAction),
+                },
+                UPDATE_SETTINGS_CSS: {
+                    actions: enqueueActions(updateSettingsCSSAction),
                 },
                 UPDATE_BOOK_ATTRIBUTES: {
                     actions: enqueueActions(updateBookAttributesAction),
