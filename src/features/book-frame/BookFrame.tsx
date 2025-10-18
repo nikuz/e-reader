@@ -1,7 +1,13 @@
 import { onCleanup, Switch, Match } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
+import {
+    Button,
+    Toast,
+    Box,
+    Typography,
+    PageLoader,
+} from 'src/design-system/components';
 import { settingsStateMachineActor, useSettingsStateSelect } from 'src/features/settings/state';
-import { Toast, Spinner } from 'src/components';
 import { Routes } from 'src/router/constants';
 import { SettingsWatcher } from './settings-watcher';
 import { FrameEventObserver } from './injections';
@@ -63,7 +69,7 @@ export default function BookFrame() {
         <div class="book-frame-container">
             <Switch>
                 <Match when={bookIsLoading()}>
-                    <Spinner size="xl" color="accent" blocker />
+                    <PageLoader />
                 </Match>
 
                 <Match when={bookLoadErrorMessage()}>
@@ -82,15 +88,17 @@ export default function BookFrame() {
                 </Match>
 
                 <Match when={!book()}>
-                    <p class="flex flex-col">
-                        Select book to display
-                        <button
-                            class="btn block rounded-lg mt-2"
+                    <Box class="flex flex-col">
+                        <Typography marginBottom={1}>
+                            Select book to display
+                        </Typography>
+                        <Button
+                            variant="contained"
                             onClick={navigateToLibraryHandler}
                         >
                             Go to Library
-                        </button>
-                    </p>
+                        </Button>
+                    </Box>
                 </Match>
 
                 <Match when={chapterUrl()}>
@@ -103,10 +111,10 @@ export default function BookFrame() {
                 </Match>
             </Switch>
 
-            <div class="absolute right-0 top-[env(safe-area-inset-top)]">
-                <button class="btn" onClick={increaseFontSizeHandler}>Increase font size</button>
-                <button class="btn" onClick={decreaseFontSizeHandler}>Decrease font size</button>
-            </div>
+            <Box class="absolute right-0 top-[env(safe-area-inset-top)]" sx={{ background: '#000' }}>
+                <Button variant="outlined" size="small" onClick={increaseFontSizeHandler}>Increase font size</Button>
+                <Button variant="outlined" size="small" onClick={decreaseFontSizeHandler}>Decrease font size</Button>
+            </Box>
 
             <SettingsWatcher />
         </div>

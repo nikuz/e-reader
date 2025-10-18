@@ -1,5 +1,6 @@
 import type { JSX } from 'solid-js';
-import { RiSystemAddFill } from 'solid-icons/ri';
+import { Fab } from 'src/design-system/components';
+import { AddIcon } from 'src/design-system/icons';
 import { libraryStateMachineActor } from '../../state';
 
 export function AddBookButton() {
@@ -19,21 +20,9 @@ export function AddBookButton() {
     };
 
     return (
-        <div class="absolute bottom-21 right-5">
-            <label
-                for="file-input"
-                class="
-                    w-[50px] 
-                    h-[50px] 
-                    btn 
-                    btn-primary 
-                    rounded-full 
-                    flex 
-                    items-center 
-                    justify-center
-                "
-            >
-                <RiSystemAddFill size="40" />
+        <Fab color="primary" class="absolute! bottom-21 right-5">
+            <label for="file-input">
+                <AddIcon sx={{ fontSize: 40 }} />
             </label>
             <input
                 ref={fileFieldRef}
@@ -43,6 +32,6 @@ export function AddBookButton() {
                 class="hidden"
                 onChange={selectFileHandler}
             />
-        </div>
+        </Fab>
     );
 }

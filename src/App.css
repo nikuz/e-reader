@@ -1,12 +1,4 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-    themes: light --default, dark --prefersdark;
-    root: ":root";
-    include: ;
-    exclude: ;
-    prefix: ;
-    logs: true;
-}
 
 html, body {
     width: 100%;
@@ -22,8 +14,4 @@ body {
 #root {
     padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
     height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-}
-
-.content {
-    height: 100%;
 }

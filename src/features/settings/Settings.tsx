@@ -1,4 +1,5 @@
 import { createEffect } from 'solid-js';
+import { Typography, Button } from 'src/design-system/components';
 import { settingsStateMachineActor, useSettingsStateSelect } from './state';
 
 export default function Settings() {
@@ -17,8 +18,8 @@ export default function Settings() {
 
     return (
         <div>
-            <h1 class="text-center mt-2 text-lg">Setting</h1>
-            <button class="btn" onClick={setFontHandler}>Set to 20</button>
+            <Typography variant="h6" class="text-center mt-2!">Setting</Typography>
+            <Button variant="outlined" onClick={setFontHandler}>Set to 20</Button>
         </div>
     );
 }

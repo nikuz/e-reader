@@ -1,4 +1,5 @@
 import { onMount } from 'solid-js';
+import { Typography } from 'src/design-system/components';
 import { dictionaryStateMachineActor } from './state';
 
 export default function Dictionary() {
@@ -8,7 +9,7 @@ export default function Dictionary() {
 
     return (
         <div>
-            <h1 class="text-center mt-2 text-lg">Dictionary</h1>
+            <Typography variant="h6" class="text-center mt-2!">Dictionary</Typography>
         </div>
     );
 }

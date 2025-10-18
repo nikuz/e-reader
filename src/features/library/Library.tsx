@@ -1,5 +1,5 @@
 import { onMount, onCleanup, Show, For } from 'solid-js';
-import { Toast, Spinner } from 'src/components';
+import { Typography, PageLoader, Toast } from 'src/design-system/components';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
 import {
@@ -29,10 +29,10 @@ export default function Library() {
 
     return (
         <div class="h-full">
-            <h1 class="text-center mt-2 text-lg">Library</h1>
+            <Typography variant="h6" class="text-center mt-2!">Library</Typography>
 
             <Show when={isInitiating() || isOpeningFile() || isRemovingBook()}>
-                <Spinner size="xl" color="accent" blocker />
+                <PageLoader />
             </Show>
 
             <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">

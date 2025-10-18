@@ -1,6 +1,8 @@
 import { createEffect } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { useLocation, useNavigate } from '@solidjs/router';
+import { Paper } from 'src/design-system/components';
+import { ThemeProvider, darkTheme } from 'src/design-system/styles';
 import { Routes } from 'src/router/constants';
 import Debug from './features/debug';
 import TabBar from './features/tab-bar';
@@ -21,10 +23,16 @@ export default function App(props: Props) {
     });
 
     return (
-        <div class="content">
-            {props.children}
-            <TabBar />
-            <Debug />
-        </div>
+        <ThemeProvider theme={darkTheme}>
+            <Paper
+                square
+                elevation={0}
+                class="h-full overflow-hidden"
+            >
+                {props.children}
+                <TabBar />
+                <Debug />
+            </Paper>
+        </ThemeProvider>
     );
 };

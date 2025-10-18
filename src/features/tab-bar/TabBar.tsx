@@ -1,51 +1,51 @@
 import { useNavigate, useLocation } from '@solidjs/router';
-import { VsLibrary } from 'solid-icons/vs';
-import { AiFillRead } from 'solid-icons/ai';
-import { BsViewList } from 'solid-icons/bs';
-import { VsSettings } from 'solid-icons/vs';
+import { BottomNavigation, BottomNavigationAction } from 'src/design-system/components';
+import {
+    LocalLibraryIcon,
+    MenuBookIcon,
+    ViewListIcon,
+    TuneIcon,
+} from 'src/design-system/icons';
 import { Routes } from 'src/router/constants';
 
 export default function TabBar() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const navigateHandler = (route: string) => {
+    const changeHandler = (_: any, route: string) => {
         navigate(route);
     };
 
     return (
-        <div class="dock z-9999">
-            <button
-                classList={{ 'dock-active': location.pathname === Routes.LIBRARY }}
-                onClick={[navigateHandler, Routes.LIBRARY]}
-            >
-                <VsLibrary />
-                <span class="dock-label">Library</span>
-            </button>
+        <BottomNavigation
+            value={location.pathname}
+            showLabels
+            class="absolute left-0 right-0 bottom-0"
+            onChange={changeHandler}
+        >
+            <BottomNavigationAction
+                label="Library"
+                icon={<LocalLibraryIcon />}
+                value={Routes.LIBRARY}
+            />
 
-            <button
-                classList={{ 'dock-active': location.pathname === Routes.BOOK }}
-                onClick={[navigateHandler, Routes.BOOK]}
-            >
-                <AiFillRead />
-                <span class="dock-label">Book</span>
-            </button>
+            <BottomNavigationAction
+                label="Book"
+                icon={<MenuBookIcon />}
+                value={Routes.BOOK}
+            />
 
-            <button
-                classList={{ 'dock-active': location.pathname === Routes.DICTIONARY }}
-                onClick={[navigateHandler, Routes.DICTIONARY]}
-            >
-                <BsViewList />
-                <span class="dock-label">Dictionary</span>
-            </button>
+            <BottomNavigationAction
+                label="Dictionary"
+                icon={<ViewListIcon />}
+                value={Routes.DICTIONARY}
+            />
 
-            <button
-                classList={{ 'dock-active': location.pathname === Routes.SETTINGS }}
-                onClick={[navigateHandler, Routes.SETTINGS]}
-            >
-                <VsSettings />
-                <span class="dock-label">Settings</span>
-            </button>
-        </div>
+            <BottomNavigationAction
+                label="Settings"
+                icon={<TuneIcon />}
+                value={Routes.SETTINGS}
+            />
+        </BottomNavigation>
     );
 }
