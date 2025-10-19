@@ -23,6 +23,8 @@ export interface BookFrameStateContext {
 
     textSelection?: Selection,
 
+    menuPanelsVisible: boolean,
+
     errorMessage?: string,
 
     loaderMachineRef?: ActorRefFrom<typeof bookLoaderStateMachine>,
@@ -94,6 +96,10 @@ export interface UpdateSettingsCSSEvent {
     settingsCSS: string,
 }
 
+export interface HideMenuPanelsEvent {
+    type: 'HIDE_MENU_PANELS',
+}
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -111,4 +117,5 @@ export type BookFrameStateEvents =
     | SetTextSelectionEvent
     | SaveReadProgressEvent
     | UpdateBookAttributesEvent
-    | UpdateSettingsCSSEvent;
+    | UpdateSettingsCSSEvent
+    | HideMenuPanelsEvent;

@@ -28,8 +28,12 @@ export { default as DialogActions } from '@suid/material/DialogActions';
 export { default as DialogContent } from '@suid/material/DialogContent';
 export { default as DialogContentText } from '@suid/material/DialogContentText';
 export { default as DialogTitle } from '@suid/material/DialogTitle';
+export { default as AppBar } from '@suid/material/AppBar';
+export { default as Toolbar } from '@suid/material/Toolbar';
+export { default as Slide } from '@suid/material/Slide';
 
 // custom components
 export * from './toast';
 export * from './dropdown';
 export * from './page-loader';
+export * from './stepper';

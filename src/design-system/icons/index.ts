@@ -1,7 +1,12 @@
 export { default as CloseIcon } from '@suid/icons-material/Close';
 export { default as AddIcon } from '@suid/icons-material/Add';
 export { default as MoreVertIcon } from '@suid/icons-material/MoreVert';
-export { default as LocalLibraryIcon } from '@suid/icons-material/LocalLibrary';
 export { default as MenuBookIcon } from '@suid/icons-material/MenuBook';
-export { default as ViewListIcon } from '@suid/icons-material/ViewList';
+export { default as TranslateIcon } from '@suid/icons-material/Translate';
 export { default as TuneIcon } from '@suid/icons-material/Tune';
+export { default as SettingsIcon } from '@suid/icons-material/Settings';
+export { default as ArrowBackIosNewIcon } from '@suid/icons-material/ArrowBackIosNew';
+export { default as FormatListBulletedIcon } from '@suid/icons-material/FormatListBulleted';
+export { default as SearchIcon } from '@suid/icons-material/Search';
+export { default as MoreHorizIcon } from '@suid/icons-material/MoreHoriz';
+export { default as RemoveIcon } from '@suid/icons-material/Remove';

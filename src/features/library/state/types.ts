@@ -7,6 +7,7 @@ export interface LibraryStateContext {
     navigator?: Navigator,
 
     storedBooks: BookAttributes[],
+    lastSelectedBook?: BookAttributes,
 
     errorMessage?: string,
 }
@@ -15,10 +16,6 @@ interface SetNavigatorEvent {
     type: 'SET_NAVIGATOR',
     navigator: Navigator,
 }
-
-interface InitializeEvent { type: 'INITIALIZE' }
-
-interface CleanupEvent { type: 'CLEANUP' }
 
 export interface OpenFileEvent {
     type: 'OPEN_FILE',
@@ -39,8 +36,6 @@ export interface RemoveBookEvent {
 
 export type LibraryStateEvents =
     | SetNavigatorEvent
-    | InitializeEvent
-    | CleanupEvent
     | OpenFileEvent
     | CloseErrorToastEvent
     | SelectBookEvent

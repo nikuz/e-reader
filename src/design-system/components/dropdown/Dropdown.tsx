@@ -13,8 +13,6 @@ export function Dropdown(props: Props) {
 
     const isOpen = () => Boolean(anchorEl());
 
-    const id = () => (isOpen() ? props.id ?? 'dropdown-popover' : undefined);
-
     const closeHandler = () => {
         setAnchorEl(null);
         props.onClose?.();
@@ -22,7 +20,6 @@ export function Dropdown(props: Props) {
 
     return <>
         <span
-            aria-describedby={id()}
             class="inline-flex"
             onClick={(e) => setAnchorEl(e.currentTarget)}
         >
@@ -30,7 +27,6 @@ export function Dropdown(props: Props) {
         </span>
         <Popover
             {...props}
-            id={id()}
             open={isOpen()}
             anchorEl={anchorEl()}
             anchorOrigin={props.anchorOrigin ?? {

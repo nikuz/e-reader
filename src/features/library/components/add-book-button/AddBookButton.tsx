@@ -20,7 +20,7 @@ export function AddBookButton() {
     };
 
     return (
-        <Fab color="primary" class="absolute! bottom-21 right-5">
+        <Fab color="primary" class="absolute! bottom-5 right-5">
             <label for="file-input">
                 <AddIcon sx={{ fontSize: 40 }} />
             </label>

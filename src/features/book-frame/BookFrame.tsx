@@ -1,122 +1,94 @@
-import { onCleanup, Switch, Match } from 'solid-js';
+import { Switch, Match } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import {
-    Button,
     Toast,
-    Box,
-    Typography,
     PageLoader,
+    AppBar,
+    Toolbar,
+    Typography,
+    IconButton,
+    Slide,
 } from 'src/design-system/components';
-import { settingsStateMachineActor, useSettingsStateSelect } from 'src/features/settings/state';
-import { Routes } from 'src/router/constants';
+import { ArrowBackIosNewIcon } from 'src/design-system/icons';
+import {
+    BookFrameIFrame,
+    BookFrameSettings,
+    BookFrameTabBar,
+} from './components';
 import { SettingsWatcher } from './settings-watcher';
-import { FrameEventObserver } from './injections';
+import { Routes } from 'src/router/constants';
 import {
     useBookFrameStateSelect,
     useBookLoaderStateMatch,
     bookFrameStateMachineActor,
 } from './state';
-import './style.css';
 
 export default function BookFrame() {
     const navigate = useNavigate();
-    const book = useBookFrameStateSelect('bookAttributes');
     const chapterUrl = useBookFrameStateSelect('chapterUrl');
+    const bookAttributes = useBookFrameStateSelect('bookAttributes');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
+    const menuPanelsVisible = useBookFrameStateSelect('menuPanelsVisible');
     const bookIsLoading = useBookLoaderStateMatch(['LOADING_BOOK']);
-    const fontSettings = useSettingsStateSelect('font');
-    let eventObserver: FrameEventObserver;
-
-    const frameContentLoadHandler = (event: Event) => {
-        const iframeEl = event.target as HTMLIFrameElement;
-        
-        eventObserver = new FrameEventObserver(iframeEl);
-        eventObserver.subscribe();
-
-        bookFrameStateMachineActor.send({
-            type: 'CHAPTER_LOAD',
-            iframeEl,
-        });
-    };
 
     const navigateToLibraryHandler = () => {
         navigate(Routes.LIBRARY);
+        bookFrameStateMachineActor.send({ type: 'HIDE_MENU_PANELS' });
     };
-
+    
     const closeErrorHandler = () => {
         bookFrameStateMachineActor.send({ type: 'CLOSE_BOOK_LOAD_ERROR' });
     };
 
-    const increaseFontSizeHandler = () => {
-        settingsStateMachineActor.send({
-            type: 'SET_FONT_SIZE',
-            value: `${parseInt(fontSettings().fontSize, 10) + 1}px`,
-        });
-    };
-    
-    const decreaseFontSizeHandler = () => {
-        settingsStateMachineActor.send({
-            type: 'SET_FONT_SIZE',
-            value: `${parseInt(fontSettings().fontSize, 10) - 1}px`,
-        });
-    };
+    return <>
+        <Slide direction="down" in={menuPanelsVisible()}>
+            <AppBar position="absolute">
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                        onClick={navigateToLibraryHandler}
+                    >
+                        <ArrowBackIosNewIcon />
+                    </IconButton>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        {bookAttributes()?.title}
+                    </Typography>
+                    <BookFrameSettings />
+                </Toolbar>
+            </AppBar>
+        </Slide>
+        
+        <Switch>
+            <Match when={bookIsLoading()}>
+                <PageLoader />
+            </Match>
 
-    onCleanup(() => {
-        eventObserver?.unsubscribe();
-    });
+            <Match when={bookLoadErrorMessage()}>
+                <Toast
+                    message={
+                        <span>
+                            Book rendering error
+                            <br />
+                            {bookLoadErrorMessage()}
+                        </span>
+                    }
+                    type="error"
+                    withToolbar
+                    onClose={closeErrorHandler}
+                />
+            </Match>
 
-    return (
-        <div class="book-frame-container">
-            <Switch>
-                <Match when={bookIsLoading()}>
-                    <PageLoader />
-                </Match>
+            <Match when={chapterUrl()}>
+                <BookFrameIFrame />
+            </Match>
+        </Switch>
 
-                <Match when={bookLoadErrorMessage()}>
-                    <Toast
-                        message={
-                            <span>
-                                Book rendering error
-                                <br />
-                                {bookLoadErrorMessage()}
-                            </span>
-                        }
-                        type="error"
-                        class="mt-10"
-                        onClose={closeErrorHandler}
-                    />
-                </Match>
+        <BookFrameTabBar />
 
-                <Match when={!book()}>
-                    <Box class="flex flex-col">
-                        <Typography marginBottom={1}>
-                            Select book to display
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            onClick={navigateToLibraryHandler}
-                        >
-                            Go to Library
-                        </Button>
-                    </Box>
-                </Match>
-
-                <Match when={chapterUrl()}>
-                    <iframe
-                        src={chapterUrl()}
-                        class="book-frame"
-                        sandbox="allow-same-origin allow-scripts"
-                        onLoad={frameContentLoadHandler}
-                    />
-                </Match>
-            </Switch>
-
-            <Box class="absolute right-0 top-[env(safe-area-inset-top)]" sx={{ background: '#000' }}>
-                <Button variant="outlined" size="small" onClick={increaseFontSizeHandler}>Increase font size</Button>
-                <Button variant="outlined" size="small" onClick={decreaseFontSizeHandler}>Decrease font size</Button>
-            </Box>
-
-            <SettingsWatcher />
-        </div>
-    );
+        <SettingsWatcher />
+    </>;
 }

@@ -6,21 +6,24 @@ import type { BookAttributes } from '../types';
 import {
     initializerActor,
     fileOpenerActor,
+    bookSelectorActor,
     bookRemoverActor,
     cleanupActor,
 } from './actors';
-import { selectBookAction } from './actions';
+import { addOpenedBookAction, selectBookAction } from './actions';
 import type {
     LibraryStateContext,
     LibraryStateEvents,
     OpenFileEvent,
     RemoveBookEvent,
+    SelectBookEvent,
 } from './types';
 
 export const libraryStateMachine = setup({
     actors: {
         initializerActor,
         fileOpenerActor,
+        bookSelectorActor,
         bookRemoverActor,
         cleanupActor,
     },
@@ -36,7 +39,7 @@ export const libraryStateMachine = setup({
         storedBooks: [],
     },
 
-    initial: 'IDLE',
+    initial: 'INITIALIZING',
 
     states: {
         IDLE: {
@@ -46,10 +49,7 @@ export const libraryStateMachine = setup({
                 CLOSE_ERROR_TOAST: {
                     actions: assign(() => ({ errorMessage: undefined })),
                 },
-                SELECT_BOOK: {
-                    actions: enqueueActions(selectBookAction),
-                },
-                INITIALIZE: 'INITIALIZING',
+                SELECT_BOOK: 'SELECTING_BOOK',
             },
         },
 
@@ -62,7 +62,8 @@ export const libraryStateMachine = setup({
                 onDone: {
                     target: 'IDLE',
                     actions: assign(({ event }) => ({
-                        storedBooks: event.output,
+                        storedBooks: event.output.books,
+                        lastSelectedBook: event.output.lastSelectedBook,
                     })),
                 },
                 onError: {
@@ -80,6 +81,28 @@ export const libraryStateMachine = setup({
                 input: ({ event, context }) => ({
                     file: (event as OpenFileEvent).file,
                     dbController: context.dbController,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: enqueueActions(addOpenedBookAction),
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+
+        SELECTING_BOOK: {
+            invoke: {
+                src: 'bookSelectorActor',
+                input: ({ event }) => ({
+                    bookAttributes: (event as SelectBookEvent).bookAttributes,
                 }),
                 onDone: {
                     target: 'IDLE',
@@ -148,7 +171,6 @@ export const libraryStateMachine = setup({
         SET_NAVIGATOR: {
             actions: assign(({ event }) => ({ navigator: event.navigator })),
         },
-        CLEANUP: '.CLEANING_UP',
     }
 });
 

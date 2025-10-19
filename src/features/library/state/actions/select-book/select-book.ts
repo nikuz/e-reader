@@ -1,40 +1,26 @@
 import type { DoneActorEvent } from 'xstate';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { Routes } from 'src/router/constants';
-import type { BookAttributes } from '../../../types';
-import type { LibraryStateContext, SelectBookEvent } from '../../types';
+import type { LibraryStateContext } from '../../types';
+import type { BookAttributes } from 'src/features/library/types';
 
 export function selectBookAction(props: {
-    event: SelectBookEvent | DoneActorEvent<BookAttributes | undefined>,
+    event: DoneActorEvent<BookAttributes>,
     context: LibraryStateContext,
     enqueue: { assign: (context: Partial<LibraryStateContext>) => void },
 }) {
-    let newBook: BookAttributes | undefined;
-    if (props.event.type === 'SELECT_BOOK') {
-        newBook = props.event.bookAttributes;
-    } else {
-        newBook = props.event.output;
-    }
-    
-    if (!newBook) {
+    const selectedBook = props.event.output;
+    if (!selectedBook) {
         return;
     }
-    
-    const storedBooks = [...props.context.storedBooks];
-    const existingBookIndex = storedBooks.findIndex(item => item.eisbn === newBook.eisbn);
 
-    if (existingBookIndex !== -1) {
-        storedBooks.splice(existingBookIndex, 1);
-    }
-
-    storedBooks.unshift(newBook);
-
-    props.enqueue.assign({ storedBooks });
+    props.enqueue.assign({
+        lastSelectedBook: selectedBook,
+    });
 
     bookFrameStateMachineActor.send({
         type: 'LOAD_BOOK',
-        bookAttributes: newBook,
+        bookAttributes: selectedBook,
     });
     props.context.navigator?.(Routes.BOOK);
-
 }

@@ -1,16 +1,23 @@
 import { fromPromise } from 'xstate';
+import { Preferences } from '@capacitor/preferences';
 import { FileStorageController } from 'src/controllers';
 import type { DatabaseController } from 'src/controllers';
 import { getBookCoverObjectUrl } from 'src/features/library/utils';
 import { initializeDBService, getAllBooksFromDB } from '../../../db-service';
-import { LIBRARY_DIRECTORY } from '../../../constants';
+import {
+    LIBRARY_DIRECTORY,
+    LIBRARY_LAST_SELECTED_BOOK_STORAGE_KEY,
+} from '../../../constants';
 import type { BookAttributes } from '../../../types';
 
 export const initializerActor = fromPromise(async (props: {
     input: {
         dbController: DatabaseController<BookAttributes>,
     },
-}): Promise<BookAttributes[]> => {
+}): Promise<{
+    books: BookAttributes[],
+    lastSelectedBook?: BookAttributes,
+}> => {
     try {
         await FileStorageController.stat({ path: LIBRARY_DIRECTORY });
     } catch {
@@ -30,7 +37,17 @@ export const initializerActor = fromPromise(async (props: {
         }
     }
 
-    console.log('Library initialized');
+    const lastSelectedBookEisbn = await Preferences.get({
+        key: LIBRARY_LAST_SELECTED_BOOK_STORAGE_KEY,
+    });
+    let lastSelectedBook: BookAttributes | undefined;
 
-    return storedBooks;
+    if (lastSelectedBookEisbn.value) {
+        lastSelectedBook = storedBooks.find(item => item.eisbn === lastSelectedBookEisbn.value);
+    }
+
+    return {
+        books: storedBooks,
+        lastSelectedBook,
+    };
 });

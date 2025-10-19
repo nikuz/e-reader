@@ -1,5 +1,5 @@
-import { onMount, onCleanup, Show, For } from 'solid-js';
-import { Typography, PageLoader, Toast } from 'src/design-system/components';
+import { Show, For } from 'solid-js';
+import { AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
 import {
@@ -19,17 +19,15 @@ export default function Library() {
         libraryStateMachineActor.send({ type: 'CLOSE_ERROR_TOAST' });
     };
 
-    onMount(() => {
-        libraryStateMachineActor.send({ type: 'INITIALIZE' });
-    });
-
-    onCleanup(() => {
-        libraryStateMachineActor.send({ type: 'CLEANUP' });
-    });
-
     return (
         <div class="h-full">
-            <Typography variant="h6" class="text-center mt-2!">Library</Typography>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        Library
+                    </Typography>
+                </Toolbar>
+            </AppBar>
 
             <Show when={isInitiating() || isOpeningFile() || isRemovingBook()}>
                 <PageLoader />
@@ -53,7 +51,7 @@ export default function Library() {
                         </span>
                     }
                     type="error"
-                    class="mt-10"
+                    withToolbar
                     onClose={closeErrorHandler}
                 />
             </Show>

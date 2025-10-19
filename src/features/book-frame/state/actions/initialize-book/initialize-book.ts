@@ -12,5 +12,6 @@ export function initializeBookAction(props: {
         bookAttributes,
         readProgress,
         chapterUrl: bookAttributes.spine[readProgress.chapter].url,
+        menuPanelsVisible: false,
     });
 }

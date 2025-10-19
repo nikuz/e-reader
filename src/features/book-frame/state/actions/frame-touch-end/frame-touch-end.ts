@@ -22,9 +22,16 @@ export function frameTouchEndAction(props: {
         return;
     }
 
+    const contextUpdate: Partial<BookFrameStateContext> = {
+        frameInteractionStartTime: undefined,
+        frameInteractionStartPosition: undefined,
+    };
+    const menuPanelsVisible = props.context.menuPanelsVisible;
     const textSelection = props.context.textSelection;
     
-    if (!textSelection?.toString().length) {
+    if (menuPanelsVisible) {
+        contextUpdate.menuPanelsVisible = false;
+    } else if (!textSelection?.toString().length) {
         const position = props.event.position;
         const bodyRect = iframeDocument.body.getBoundingClientRect();
         const x = position.x - contentWindow.scrollX;
@@ -39,12 +46,10 @@ export function frameTouchEndAction(props: {
         }
         // middle screen touch
         else {
+            contextUpdate.menuPanelsVisible = true;
             statusBarStateMachineActor.send({ type: 'TOGGLE' });
         }
     }
 
-    props.enqueue.assign({
-        frameInteractionStartTime: undefined,
-        frameInteractionStartPosition: undefined,
-    });
+    props.enqueue.assign(contextUpdate);
 }

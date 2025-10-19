@@ -45,6 +45,7 @@ export const bookFrameStateMachine = setup({
             width: 0,
             height: 0,
         },
+        menuPanelsVisible: false,
     },
 
     entry: [
@@ -128,6 +129,9 @@ export const bookFrameStateMachine = setup({
         },
         SAVE_READ_PROGRESS: {
             actions: sendTo('loader', ({ event }) => event),
+        },
+        HIDE_MENU_PANELS: {
+            actions: assign(() => ({ menuPanelsVisible: false })),
         },
     },
 });

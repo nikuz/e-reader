@@ -1,5 +1,4 @@
 import { createSignal, Show, type JSX } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
 import {
     IconButton,
     Dropdown,
@@ -15,9 +14,7 @@ import {
     Button,
 } from 'src/design-system/components';
 import { MoreVertIcon } from 'src/design-system/icons';
-import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
-import { libraryStateMachineActor } from 'src/features/library/state';
-import { Routes } from 'src/router/constants';
+import { libraryStateMachineActor } from '../../state';
 import type { BookAttributes } from '../../types';
 
 interface Props {
@@ -26,14 +23,12 @@ interface Props {
 
 export function BookCard(props: Props) {
     const [isPromptOpen, setIsPromptOpen] = createSignal(false);
-    const navigate = useNavigate();
 
     const selectHandler = () => {
-        bookFrameStateMachineActor.send({
-            type: 'LOAD_BOOK',
+        libraryStateMachineActor.send({
+            type: 'SELECT_BOOK',
             bookAttributes: props.bookAttributes,
         });
-        navigate(Routes.BOOK);
     };
 
     const cardClickHandler: JSX.EventHandler<HTMLElement, MouseEvent> = () => {
