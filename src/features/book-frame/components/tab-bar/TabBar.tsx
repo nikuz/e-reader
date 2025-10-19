@@ -31,7 +31,10 @@ export function BookFrameTabBar() {
         <Slide direction="up" in={menuPanelsVisible()}>    
             <BottomNavigation
                 showLabels={false}
-                class="absolute left-0 right-0 bottom-0"
+                class="absolute left-0 right-0"
+                sx={{
+                    bottom: 'env(safe-area-inset-bottom)',
+                }}
                 onChange={changeHandler}
             >
                 <BottomNavigationAction

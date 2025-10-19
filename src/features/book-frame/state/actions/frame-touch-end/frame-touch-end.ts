@@ -31,6 +31,7 @@ export function frameTouchEndAction(props: {
     
     if (menuPanelsVisible) {
         contextUpdate.menuPanelsVisible = false;
+        statusBarStateMachineActor.send({ type: 'TOGGLE' });
     } else if (!textSelection?.toString().length) {
         const position = props.event.position;
         const bodyRect = iframeDocument.body.getBoundingClientRect();

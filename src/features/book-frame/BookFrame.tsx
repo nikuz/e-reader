@@ -42,7 +42,12 @@ export default function BookFrame() {
 
     return <>
         <Slide direction="down" in={menuPanelsVisible()}>
-            <AppBar position="absolute">
+            <AppBar
+                position="absolute"
+                sx={{
+                    top: 'env(safe-area-inset-top)',
+                }}
+            >
                 <Toolbar>
                     <IconButton
                         size="large"

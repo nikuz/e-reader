@@ -26,6 +26,8 @@ export default function App(props: Props) {
                 bookAttributes: selectedBookAttributes,
             });
             navigate(Routes.BOOK);
+        } else if (location.pathname !== Routes.LIBRARY) {
+            navigate(Routes.LIBRARY);
         }
     });
 
@@ -35,6 +37,9 @@ export default function App(props: Props) {
                 square
                 elevation={0}
                 class="h-full overflow-hidden"
+                sx={{
+                    padding: 'env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0',
+                }}
             >
                 <Show when={isLibraryInitializing()}>
                     <PageLoader />

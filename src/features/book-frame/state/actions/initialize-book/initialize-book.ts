@@ -1,3 +1,4 @@
+import { statusBarStateMachineActor } from 'src/features/status-bar/state';
 import type { BookFrameStateContext, BookLoadSuccessEvent } from '../../types';
 
 export function initializeBookAction(props: {
@@ -14,4 +15,6 @@ export function initializeBookAction(props: {
         chapterUrl: bookAttributes.spine[readProgress.chapter].url,
         menuPanelsVisible: false,
     });
+
+    statusBarStateMachineActor.send({ type: 'HIDE' });
 }
