@@ -1,7 +1,6 @@
-export enum Routes {
+export enum RouterPath {
     HOME = '/',
     LIBRARY = '/library',
     BOOK = '/book',
     DICTIONARY = '/dictionary',
-    SETTINGS = '/settings',
 }

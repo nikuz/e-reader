@@ -1,7 +1,14 @@
-import { render } from 'solid-js/web';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import AppRouter from './router';
 
-const root = document.getElementById('root');
-if (root) {
-    render(() => <AppRouter />, root);
+const container = document.getElementById('root');
+
+if (container) {
+    const root = createRoot(container);
+    root.render(
+        <StrictMode>
+            <AppRouter />
+        </StrictMode>,
+    );
 }

@@ -1,10 +1,10 @@
-import type { Navigator } from '@solidjs/router';
+import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
 import type { BookAttributes } from '../types';
 
 export interface LibraryStateContext {
     dbController: DatabaseController<BookAttributes>,
-    navigator?: Navigator,
+    navigator?: NavigateFunction,
 
     storedBooks: BookAttributes[],
     lastSelectedBook?: BookAttributes,
@@ -14,7 +14,7 @@ export interface LibraryStateContext {
 
 interface SetNavigatorEvent {
     type: 'SET_NAVIGATOR',
-    navigator: Navigator,
+    navigator: NavigateFunction,
 }
 
 export interface OpenFileEvent {

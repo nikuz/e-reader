@@ -1,4 +1,4 @@
-import { createSignal, Show, type JSX } from 'solid-js';
+import { useState } from 'react';
 import {
     IconButton,
     Dropdown,
@@ -21,17 +21,17 @@ interface Props {
     bookAttributes: BookAttributes,
 }
 
-export function BookCard(props: Props) {
-    const [isPromptOpen, setIsPromptOpen] = createSignal(false);
+export function BookCard({ bookAttributes }: Props) {
+    const [isPromptOpen, setIsPromptOpen] = useState(false);
 
     const selectHandler = () => {
         libraryStateMachineActor.send({
             type: 'SELECT_BOOK',
-            bookAttributes: props.bookAttributes,
+            bookAttributes,
         });
     };
 
-    const cardClickHandler: JSX.EventHandler<HTMLElement, MouseEvent> = () => {
+    const cardClickHandler = () => {
         selectHandler();
     };
 
@@ -43,40 +43,38 @@ export function BookCard(props: Props) {
         closePromptHandler();
         libraryStateMachineActor.send({
             type: 'REMOVE_BOOK',
-            bookAttributes: props.bookAttributes,
+            bookAttributes,
         });
     };
 
     return <>
-        <Card class="min-h-80 cursor-pointer rounded-b-lg">
-            <Show when={props.bookAttributes.cover}>
+        <Card className="min-h-80 cursor-pointer rounded-b-lg">
+            {bookAttributes.cover && (
                 <CardMedia
-                    component='img'
-                    image={props.bookAttributes.cover}
-                    alt={props.bookAttributes.title}
+                    component="img"
+                    image={bookAttributes.cover}
+                    alt={bookAttributes.title}
                     onClick={cardClickHandler}
                 />
-            </Show>
-            <CardContent class="mt-1 flex items-flex-start gap-2 p-0!">
+            )}
+            <CardContent className="mt-1 flex items-start gap-2 !p-0">
                 <Typography
-                    class="flex-1 text-sm py-2! pl-2!"
+                    className="flex-1 text-sm !py-2 !pl-2"
                     onClick={cardClickHandler}
                 >
-                    {props.bookAttributes.title}
+                    {bookAttributes.title}
                 </Typography>
                 <Dropdown
-                    content={(closeDropdown) => {
-                        return (
-                            <List disablePadding>
-                                <ListItemButton onClick={() => {
-                                    setIsPromptOpen(true);
-                                    closeDropdown();
-                                }}>
-                                    Delete
-                                </ListItemButton>
-                            </List>
-                        );
-                    }}
+                    content={(closeDropdown) => (
+                        <List disablePadding>
+                            <ListItemButton onClick={() => {
+                                setIsPromptOpen(true);
+                                closeDropdown();
+                            }}>
+                                Delete
+                            </ListItemButton>
+                        </List>
+                    )}
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'right',
@@ -94,11 +92,11 @@ export function BookCard(props: Props) {
         </Card>
 
         <Dialog
-            open={isPromptOpen()}
+            open={isPromptOpen}
             onClose={closePromptHandler}
         >
             <DialogTitle>
-                {`Remove "${props.bookAttributes.title}" from your library?`}
+                {`Remove "${bookAttributes.title}" from your library?`}
             </DialogTitle>
             <DialogActions>
                 <Button onClick={closePromptHandler}>Cancel</Button>

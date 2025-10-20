@@ -1,42 +1,31 @@
-import type { JSX } from 'solid-js';
-import Box from '@suid/material/Box';
-import Alert from '@suid/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import type { AlertProps } from '@mui/material/Alert';
+import type { Theme } from '@mui/material/styles';
 
-export interface Props {
-    message: JSX.Element,
-    type: 'info' | 'warn' | 'error',
-    class?: string,
+export interface Props extends AlertProps {
+    className?: string,
     withToolbar?: boolean,
     onClose?: () => void,
 }
 
-export function Toast(props: Props) {
-    const closeHandler = () => {
-        props.onClose?.();
-    };
-
+export function Toast({ children, color, className, withToolbar, onClose }: Props) {
     return (
-        <Box
-            class={`
-                absolute
-                top-[env(safe-area-inset-top)]
-                mt-5
-                left-1/2 
-                -translate-x-1/2
-                ${props.class ?? ''}
-            `}
-            sx={{
-                top: (theme) => props.withToolbar
-                    ? theme.mixins.toolbar.minHeight
-                    : 0,
+        <Snackbar
+            open
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
             }}
+            className={className}
+            sx={{
+                marginTop: (theme: Theme) => (withToolbar ? `${theme.mixins.toolbar.minHeight}px` : 0),
+            }}
+            onClose={onClose}
         >
-            <Alert
-                severity="error"
-                onClose={closeHandler}
-            >
-                {props.message}
+            <Alert severity={color} onClose={onClose}>
+                {children}
             </Alert>
-        </Box>
+        </Snackbar>
     );
 }

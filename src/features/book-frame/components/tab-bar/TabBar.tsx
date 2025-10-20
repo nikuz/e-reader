@@ -1,8 +1,9 @@
-import { useNavigate } from '@solidjs/router';
+import { useNavigate } from 'react-router-dom';
 import {
     BottomNavigation,
     BottomNavigationAction,
     Slide,
+    Fade,
 } from 'src/design-system/components';
 import {
     FormatListBulletedIcon,
@@ -10,7 +11,7 @@ import {
     TranslateIcon,
     MoreHorizIcon,
 } from 'src/design-system/icons';
-import { Routes } from 'src/router/constants';
+import { RouterPath } from 'src/router/constants';
 import {
     useBookFrameStateSelect,
     bookFrameStateMachineActor,
@@ -20,43 +21,50 @@ export function BookFrameTabBar() {
     const menuPanelsVisible = useBookFrameStateSelect('menuPanelsVisible');
     const navigate = useNavigate();
 
-    const changeHandler = (_: any, value: string) => {
+    const changeHandler = (_: React.SyntheticEvent, value: string) => {
         if (value === 'dictionary') {
-            navigate(Routes.DICTIONARY);
+            navigate(RouterPath.DICTIONARY);
             bookFrameStateMachineActor.send({ type: 'HIDE_MENU_PANELS' });
         }
     };
 
     return (
-        <Slide direction="up" in={menuPanelsVisible()}>    
-            <BottomNavigation
-                showLabels={false}
-                class="absolute left-0 right-0"
-                sx={{
-                    bottom: 'env(safe-area-inset-bottom)',
-                }}
-                onChange={changeHandler}
-            >
-                <BottomNavigationAction
-                    icon={<FormatListBulletedIcon />}
-                    value="navigation"
-                />
+        <Fade
+            in={menuPanelsVisible}
+            timeout={{ enter: 300, exit: 100 }}
+        >
+            <div>
+                <Slide direction="up" in={menuPanelsVisible}>
+                    <BottomNavigation
+                        showLabels={false}
+                        className="absolute left-0 right-0"
+                        sx={{
+                            bottom: 'env(safe-area-inset-bottom)',
+                        }}
+                        onChange={changeHandler}
+                    >
+                        <BottomNavigationAction
+                            icon={<FormatListBulletedIcon />}
+                            value="navigation"
+                        />
 
-                <BottomNavigationAction
-                    icon={<SearchIcon />}
-                    value="search"
-                />
+                        <BottomNavigationAction
+                            icon={<SearchIcon />}
+                            value="search"
+                        />
 
-                <BottomNavigationAction
-                    icon={<TranslateIcon />}
-                    value="dictionary"
-                />
+                        <BottomNavigationAction
+                            icon={<TranslateIcon />}
+                            value="dictionary"
+                        />
 
-                <BottomNavigationAction
-                    icon={<MoreHorizIcon />}
-                    value="more"
-                />
-            </BottomNavigation>
-        </Slide>
+                        <BottomNavigationAction
+                            icon={<MoreHorizIcon />}
+                            value="more"
+                        />
+                    </BottomNavigation>
+                </Slide>
+            </div>
+        </Fade>
     );
 }

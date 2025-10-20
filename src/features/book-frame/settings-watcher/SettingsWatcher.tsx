@@ -1,7 +1,6 @@
-import { createEffect, onMount, onCleanup, untrack } from 'solid-js';
-import { unwrap } from 'solid-js/store';
+import { useCallback, useEffect } from 'react';
 import { useSettingsStateSelect } from 'src/features/settings/state';
-import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../state';
+import { bookFrameStateMachineActor, useBookFrameStateSnapshot } from '../state';
 import type {
     SettingsWatcherWorker,
     WorkerBookAttributesUpdateMessage,
@@ -11,45 +10,41 @@ const worker: SettingsWatcherWorker = new Worker(new URL('./worker', import.meta
 
 export function SettingsWatcher() {
     const settingsCSS = useSettingsStateSelect('settingsCSS');
-    const bookAttributes = useBookFrameStateSelect('bookAttributes');
-    const currentChapterUrl = useBookFrameStateSelect('chapterUrl');
+    const bookAttributesSnapshot = useBookFrameStateSnapshot('bookAttributes');
+    const currentChapterUrlSnapshot = useBookFrameStateSnapshot('chapterUrl');
 
-    const workerMessageHandler = (event: MessageEvent<WorkerBookAttributesUpdateMessage>) => {
+    const workerMessageHandler = useCallback((event: MessageEvent<WorkerBookAttributesUpdateMessage>) => {
         if (event.data.type === 'WORKER_BOOK_ATTRIBUTE_UPDATE') {
             bookFrameStateMachineActor.send({
                 ...event.data,
                 type: 'UPDATE_BOOK_ATTRIBUTES',
             });
         }
-    };
-
-    createEffect(() => {
-        const _bookAttributes = untrack(bookAttributes);
-        const _currentChapterUrl = untrack(currentChapterUrl);
-        const _settingsCSS = settingsCSS();
-        
+    }, []);
+    
+    useEffect(() => {
         bookFrameStateMachineActor.send({
             type: 'UPDATE_SETTINGS_CSS',
-            settingsCSS: _settingsCSS,
+            settingsCSS,
         });
 
-        if (_bookAttributes) {
+        const bookAttributes = bookAttributesSnapshot();
+        if (bookAttributes) {
             worker.postMessage({
                 type: 'SETTINGS_CSS_CHANGE',
-                bookAttributes: unwrap(_bookAttributes),
-                settingsCSS: _settingsCSS,
-                currentChapterUrl: _currentChapterUrl,
+                bookAttributes,
+                settingsCSS,
+                currentChapterUrl: currentChapterUrlSnapshot(),
             });
         }
-    });
+    }, [settingsCSS, bookAttributesSnapshot, currentChapterUrlSnapshot]);
 
-    onMount(() => {
+    useEffect(() => {
         worker.addEventListener('message', workerMessageHandler);
-    });
+        return () => {
+            worker.removeEventListener('message', workerMessageHandler);
+        };
+    }, [workerMessageHandler]);
 
-    onCleanup(() => {
-        worker.removeEventListener('message', workerMessageHandler);
-    });
-    
     return null;
 }

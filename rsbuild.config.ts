@@ -1,13 +1,16 @@
 import { defineConfig, RsbuildConfig } from '@rsbuild/core';
 import { pluginBabel } from '@rsbuild/plugin-babel';
-import { pluginSolid } from '@rsbuild/plugin-solid';
+import { pluginReact } from '@rsbuild/plugin-react';
 
 const config: RsbuildConfig = {
     plugins: [
+        pluginReact(),
         pluginBabel({
             include: /\.(?:jsx|tsx)$/,
+            babelLoaderOptions(opts) {
+                opts.plugins?.unshift('babel-plugin-react-compiler');
+            },
         }),
-        pluginSolid(),
     ],
     html: {
         template: 'public/index.html',

@@ -1,19 +1,24 @@
-import { Router, Route } from '@solidjs/router';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from 'src/App';
 import Library from 'src/features/library';
 import BookFrame from 'src/features/book-frame';
 import Dictionary from 'src/features/dictionary';
-import { Routes } from './constants';
+import { RouterPath } from './constants';
 
 export default function AppRouter() {
     return (
-        <Router>
-            <Route path={Routes.HOME} component={App}>
-                <Route path={Routes.LIBRARY} component={Library} />
-                <Route path={Routes.BOOK} component={BookFrame} />
-                <Route path={Routes.DICTIONARY} component={Dictionary} />
-                <Route path="*404" component={() => null} />
-            </Route>
-        </Router>
+        <BrowserRouter>
+            <Routes>
+                <Route path={RouterPath.HOME} element={<App />}>
+                    <Route
+                        index
+                        element={<Navigate to={RouterPath.LIBRARY} replace />}
+                    />
+                    <Route path={RouterPath.LIBRARY} element={<Library />} />
+                    <Route path={RouterPath.BOOK} element={<BookFrame />} />
+                    <Route path={RouterPath.DICTIONARY} element={<Dictionary />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 }

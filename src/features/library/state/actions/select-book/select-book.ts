@@ -1,6 +1,6 @@
 import type { DoneActorEvent } from 'xstate';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
-import { Routes } from 'src/router/constants';
+import { RouterPath } from 'src/router/constants';
 import type { LibraryStateContext } from '../../types';
 import type { BookAttributes } from 'src/features/library/types';
 
@@ -22,5 +22,5 @@ export function selectBookAction(props: {
         type: 'LOAD_BOOK',
         bookAttributes: selectedBook,
     });
-    props.context.navigator?.(Routes.BOOK);
+    props.context.navigator?.(RouterPath.BOOK);
 }

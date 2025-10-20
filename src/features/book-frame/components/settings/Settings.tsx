@@ -11,7 +11,7 @@ export function BookFrameSettings() {
     return (
         <Dropdown
             content={(
-                <List class="w-[50vw]">
+                <List className="w-[50vw]">
                     <ListItem>
                         <FontSize />
                     </ListItem>

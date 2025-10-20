@@ -1,10 +1,10 @@
-import type { Navigator } from '@solidjs/router';
+import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
 import type { DictionaryWord } from '../types';
 
 export interface DictionaryStateContext {
     dbController: DatabaseController<DictionaryWord>,
-    navigator?: Navigator,
+    navigator?: NavigateFunction,
 
     storedWords: DictionaryWord[],
 

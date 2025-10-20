@@ -1,4 +1,3 @@
-import { Show } from 'solid-js';
 import { useBookFrameStateSelect } from 'src/features/book-frame/state';
 import { DEBUG_ENABLED } from './constants';
 import './style.css';
@@ -8,19 +7,21 @@ export default function Debug() {
     const chapterRect = useBookFrameStateSelect('chapterRect');
     const scrollPosition = useBookFrameStateSelect('scrollPosition');
 
+    if (!DEBUG_ENABLED) {
+        return null;
+    }
+
     return (
-        <Show when={DEBUG_ENABLED}>
-            <div class="debug-overlay">
-                <div>
-                    Screen size: {screenRect().width}x{screenRect().height}
-                </div>
-                <div>
-                    Chapter size: {chapterRect().width}x{chapterRect().height}
-                </div>
-                <div>
-                    Scroll position: {scrollPosition()}
-                </div>
+        <div className="debug-overlay">
+            <div>
+                Screen size: {screenRect.width}x{screenRect.height}
             </div>
-        </Show>
+            <div>
+                Chapter size: {chapterRect.width}x{chapterRect.height}
+            </div>
+            <div>
+                Scroll position: {scrollPosition}
+            </div>
+        </div>
     );
 }

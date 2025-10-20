@@ -1,44 +1,44 @@
-import { createSignal, type JSX } from 'solid-js';
-import Popover, { type PopoverProps } from '@suid/material/Popover';
+import { useState } from 'react';
+import Popover, { type PopoverProps } from '@mui/material/Popover';
 
-interface Props extends Omit<PopoverProps, 'onClose' | 'children' | 'open'> {
-    content: JSX.Element | ((close: () => void) => JSX.Element);
-    children: JSX.Element;
-    id?: string;
+interface Props extends Omit<PopoverProps, 'onClose' | 'open' | 'content'> {
+    content: React.ReactNode | ((close: () => void) => React.ReactNode),
     onClose?: () => void,
 }
 
-export function Dropdown(props: Props) {
-    const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
+export function Dropdown({
+    content,
+    children,
+    onClose,
+    anchorOrigin,
+    ...popoverProps
+}: Props) {
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const isOpen = () => Boolean(anchorEl());
+    const handleTriggerClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
     const closeHandler = () => {
         setAnchorEl(null);
-        props.onClose?.();
+        onClose?.();
     };
 
     return <>
-        <span
-            class="inline-flex"
-            onClick={(e) => setAnchorEl(e.currentTarget)}
-        >
-            {props.children}
+        <span className="inline-flex" onClick={handleTriggerClick}>
+            {children}
         </span>
         <Popover
-            {...props}
-            open={isOpen()}
-            anchorEl={anchorEl()}
-            anchorOrigin={props.anchorOrigin ?? {
+            {...popoverProps}
+            open={!!anchorEl}
+            anchorEl={anchorEl}
+            anchorOrigin={anchorOrigin ?? {
                 vertical: 'bottom',
                 horizontal: 'left',
             }}
             onClose={closeHandler}
         >
-            {typeof props.content === 'function'
-                ? props.content(closeHandler)
-                : props.content
-            }
+            {typeof content === 'function' ? content(closeHandler) : content}
         </Popover>
     </>;
 }

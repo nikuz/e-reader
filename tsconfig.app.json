@@ -2,11 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "target": "ESNext",
     "noEmit": true,
     "skipLibCheck": true,
-    "jsxImportSource": "solid-js",
     "useDefineForClassFields": true,
 
     /* modules */

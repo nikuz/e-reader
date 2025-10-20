@@ -1,16 +1,18 @@
-import { onCleanup } from 'solid-js';
+import { useEffect, useRef, type SyntheticEvent } from 'react';
 import { FrameEventObserver } from '../../injections';
 import { useBookFrameStateSelect, bookFrameStateMachineActor } from '../../state';
 
 export function BookFrameIFrame() {
     const chapterUrl = useBookFrameStateSelect('chapterUrl');
-    let eventObserver: FrameEventObserver;
+    const eventObserverRef = useRef<FrameEventObserver | null>(null);
 
-    const frameContentLoadHandler = (event: Event) => {
-        const iframeEl = event.target as HTMLIFrameElement;
+    const frameContentLoadHandler = (event: SyntheticEvent<HTMLIFrameElement>) => {
+        const iframeEl = event.currentTarget;
 
-        eventObserver = new FrameEventObserver(iframeEl);
-        eventObserver.subscribe();
+        eventObserverRef.current?.unsubscribe();
+        const observer = new FrameEventObserver(iframeEl);
+        observer.subscribe();
+        eventObserverRef.current = observer;
 
         bookFrameStateMachineActor.send({
             type: 'CHAPTER_LOAD',
@@ -18,14 +20,16 @@ export function BookFrameIFrame() {
         });
     };
 
-    onCleanup(() => {
-        eventObserver?.unsubscribe();
-    });
+    useEffect(() => {
+        return () => {
+            eventObserverRef.current?.unsubscribe();
+        };
+    }, []);
 
     return (
         <iframe
-            src={chapterUrl()}
-            class="w-full h-full border-0 bg-black"
+            src={chapterUrl}
+            className="w-full h-full border-0 bg-black"
             sandbox="allow-same-origin allow-scripts"
             onLoad={frameContentLoadHandler}
         />

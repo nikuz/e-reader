@@ -1,5 +1,5 @@
-import { onMount } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, IconButton, Typography } from 'src/design-system/components';
 import { ArrowBackIosNewIcon, SettingsIcon } from 'src/design-system/icons';
 import { dictionaryStateMachineActor } from './state';
@@ -7,16 +7,16 @@ import { dictionaryStateMachineActor } from './state';
 export default function Dictionary() {
     const navigate = useNavigate();
 
-    onMount(() => {
+    useEffect(() => {
         dictionaryStateMachineActor.send({ type: 'INITIALIZE' });
-    });
+    }, []);
 
     const navigateToLibraryHandler = () => {
         navigate(-1);
     };
 
     return (
-        <AppBar position="absolute">
+        <AppBar position="static">
             <Toolbar>
                 <IconButton
                     size="large"

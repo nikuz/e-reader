@@ -1,10 +1,9 @@
-import { createTheme, createPalette, ThemeProvider } from '@suid/material/styles';
-// export { ThemeProvider } from '@suid/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const darkTheme = createTheme({
-    palette: createPalette({
+    palette: {
         mode: 'dark',
-    }),
+    },
 });
 
 export {
