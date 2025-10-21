@@ -3,7 +3,7 @@ import { SettingsGroup } from './types';
 const fontCSSProperties = {
     fontSize: '18px',
     fontFamily: 'Inter, Avenir, Helvetica, Arial, sans-serif',
-    color: '#FFF',
+    color: '#FFFFFF',
     lineHeight: '1.5em',
 };
 
@@ -39,6 +39,6 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
 
     toCss(): string {
         const cssProps = this.getCssProps(this.toObject());
-        return `* { ${cssProps} }`;
+        return `body { ${cssProps} }`;
     }
 }

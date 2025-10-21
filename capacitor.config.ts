@@ -11,10 +11,10 @@ const config: CapacitorConfig = {
             androidIsEncryption: false,
         }
     },
-    // server: {
-    //     url: "http://192.168.1.70:3000",
-    //     cleartext: true,
-    // },
+    server: {
+        url: "http://192.168.1.70:3000",
+        cleartext: true,
+    },
 };
 
 export default config;

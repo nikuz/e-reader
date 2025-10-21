@@ -5,7 +5,11 @@ import {
     ListItem,
 } from 'src/design-system/components';
 import { SettingsIcon } from 'src/design-system/icons';
-import { FontSize } from 'src/features/settings/components';
+import {
+    FontSize,
+    FontLineHeight,
+    FontColor,
+} from 'src/features/settings/components';
 
 export function BookFrameSettings() {
     return (
@@ -14,6 +18,12 @@ export function BookFrameSettings() {
                 <List className="w-[50vw]">
                     <ListItem>
                         <FontSize />
+                    </ListItem>
+                    <ListItem>
+                        <FontLineHeight />
+                    </ListItem>
+                    <ListItem>
+                        <FontColor />
                     </ListItem>
                 </List>
             )}

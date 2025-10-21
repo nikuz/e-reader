@@ -12,12 +12,19 @@ interface Props {
 }
 
 export function Stepper({ label, value, step = 1, onChange }: Props) {
+    const fixValue = (value: number): number => {
+        if (step - Math.trunc(step) !== 0) {
+            return Number(value.toFixed(1));
+        }
+        return value;
+    };
+
     const decreaseHandler = () => {
-        onChange(value - step);
+        onChange(fixValue(value - step));
     };
 
     const increaseHandler = () => {
-        onChange(value + step);
+        onChange(fixValue(value + step));
     };
 
     return (
