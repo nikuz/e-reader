@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { Toast, PageLoader } from 'src/design-system/components';
+import { RouterPath } from 'src/router/constants';
 import {
     BookFrameTopMenu,
     BookFrameIFrame,
@@ -13,12 +15,14 @@ import {
 } from './state';
 
 export default function BookFrame() {
+    const navigate = useNavigate();
     const chapterUrl = useBookFrameStateSelect('chapterUrl');
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
     const bookIsLoading = useBookLoaderStateMatch(['LOADING_BOOK']);
 
     const closeErrorHandler = () => {
         bookFrameStateMachineActor.send({ type: 'CLOSE_BOOK_LOAD_ERROR' });
+        navigate(RouterPath.LIBRARY);
     };
 
     return <>

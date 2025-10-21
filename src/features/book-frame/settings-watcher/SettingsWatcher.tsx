@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useSettingsStateSelect } from 'src/features/settings/state';
+import { useLast } from 'src/hooks';
 import { bookFrameStateMachineActor, useBookFrameStateSnapshot } from '../state';
 import type {
     SettingsWatcherWorker,
@@ -10,6 +11,7 @@ const worker: SettingsWatcherWorker = new Worker(new URL('./worker', import.meta
 
 export function SettingsWatcher() {
     const settingsCSS = useSettingsStateSelect('settingsCSS');
+    const lastSettingsCSS = useLast(settingsCSS);
     const bookAttributesSnapshot = useBookFrameStateSnapshot('bookAttributes');
     const currentChapterUrlSnapshot = useBookFrameStateSnapshot('chapterUrl');
 
@@ -23,6 +25,10 @@ export function SettingsWatcher() {
     }, []);
     
     useEffect(() => {
+        if (!lastSettingsCSS || settingsCSS === lastSettingsCSS) {
+            return;
+        }
+        
         bookFrameStateMachineActor.send({
             type: 'UPDATE_SETTINGS_CSS',
             settingsCSS,
@@ -37,7 +43,7 @@ export function SettingsWatcher() {
                 currentChapterUrl: currentChapterUrlSnapshot(),
             });
         }
-    }, [settingsCSS, bookAttributesSnapshot, currentChapterUrlSnapshot]);
+    }, [settingsCSS, lastSettingsCSS, bookAttributesSnapshot, currentChapterUrlSnapshot]);
 
     useEffect(() => {
         worker.addEventListener('message', workerMessageHandler);

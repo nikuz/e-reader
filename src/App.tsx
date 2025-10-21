@@ -19,6 +19,7 @@ export default function App() {
         if (isLibraryInitializing || isRouterInitialized.current) {
             return;
         }
+        isRouterInitialized.current = true;
         if (lastSelectedBook && location.pathname !== RouterPath.LIBRARY) {
             bookFrameStateMachineActor.send({
                 type: 'LOAD_BOOK',
@@ -30,7 +31,6 @@ export default function App() {
         } else if (!lastSelectedBook && location.pathname !== RouterPath.LIBRARY) {
             navigate(RouterPath.LIBRARY);
         }
-        isRouterInitialized.current = true;
     }, [isLibraryInitializing, lastSelectedBook, location, navigate]);
 
     return (
