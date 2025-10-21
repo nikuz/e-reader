@@ -17,6 +17,10 @@ export const saveFontSettingsActor = fromPromise(async (props: {
             currentFontSettings.fontSize = event.value;
             break;
         
+        case 'SET_FONT_OVERRIDE_BOOK_FONTS':
+            currentFontSettings.overrideBookFonts = event.value;
+            break;
+        
         case 'SET_FONT_FAMILY':
             currentFontSettings.fontFamily = event.value;
             break;

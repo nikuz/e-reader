@@ -1,13 +1,30 @@
 import { SettingsGroup } from './types';
 
-const fontCSSProperties = {
+const defaultFontValues = {
     fontSize: '18px',
-    fontFamily: 'Inter, Avenir, Helvetica, Arial, sans-serif',
     color: '#FFFFFF',
     lineHeight: '1.5em',
+    overrideBookFonts: false,
+    fontFamily: 'MerriweatherSans-Italic',
 };
 
-type FontProps = typeof fontCSSProperties;
+export const fontsList: {
+    name: string,
+    value: string,
+    url?: string,
+}[] = [
+    {
+        name: 'System default',
+        value: 'Inter, Avenir, Helvetica, Arial, sans-serif',
+    },
+    {
+        name: 'Merriweather Sans',
+        value: 'MerriweatherSans-Italic',
+        url: '/fonts/MerriweatherSans-Italic.ttf',
+    }
+];
+
+type FontProps = typeof defaultFontValues;
 
 export type FontSettings = SettingsGroup<FontProps> & FontProps;
 
@@ -15,22 +32,24 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
     static id = 'font';
     
     declare fontSize: string;
-    declare fontFamily: string;
     declare color: string;
     declare lineHeight: string;
+    declare overrideBookFonts: boolean;
+    declare fontFamily: string;
     
     constructor(overrides?: Partial<FontSettings>) {
         super();
-        Object.assign(this, fontCSSProperties, overrides);
+        Object.assign(this, defaultFontValues, overrides);
     }
 
-    toObject() {
-        const result = {} as FontProps;
-        for (const key in fontCSSProperties) {
-            const keyTyped = key as keyof FontProps;
-            result[keyTyped] = this[keyTyped];
-        }
-        return result;
+    toObject(): FontProps {
+        return {
+            fontSize: this.fontSize,
+            color: this.color,
+            lineHeight: this.lineHeight,
+            overrideBookFonts: this.overrideBookFonts,
+            fontFamily: this.fontFamily,
+        };
     }
 
     toString() {
@@ -38,7 +57,36 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
     }
 
     toCss(): string {
-        const cssProps = this.getCssProps(this.toObject());
-        return `body { ${cssProps} }`;
+        const bodyCss = this.getCssProps({
+            fontSize: this.fontSize,
+            lineHeight: this.lineHeight,
+        });
+        const allCssProps: Partial<FontProps> = {
+            color: this.color,
+        };
+        if (this.overrideBookFonts) {
+            allCssProps.fontFamily = this.fontFamily;
+        }
+        const allCss = this.getCssProps(allCssProps);
+        const fontsCss = [];
+
+        for (const font of fontsList) {
+            if (font.url) {
+                fontsCss.push(`
+                    @font-face {
+                        font-family: ${font.value};
+                        src: url(${window.location.origin}${font.url});
+                        font-style: normal;
+                        font-weight: normal;
+                    }
+                `);
+            }
+        }
+
+        return `
+            ${fontsCss.join('')}
+            body { ${bodyCss} }
+            * { ${allCss} }
+        `;
     }
 }

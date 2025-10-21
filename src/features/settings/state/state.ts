@@ -32,6 +32,7 @@ export const settingsStateMachine = setup({
         IDLE: {
             on: {
                 SET_FONT_SIZE: 'SAVE_FONT_SETTINGS',
+                SET_FONT_OVERRIDE_BOOK_FONTS: 'SAVE_FONT_SETTINGS',
                 SET_FONT_FAMILY: 'SAVE_FONT_SETTINGS',
                 SET_FONT_COLOR: 'SAVE_FONT_SETTINGS',
                 SET_FONT_LINE_HEIGHT: 'SAVE_FONT_SETTINGS',

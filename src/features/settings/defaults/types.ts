@@ -1,8 +1,8 @@
-export abstract class SettingsGroup<T extends Record<string, string>> {
+export abstract class SettingsGroup<T extends Record<string, string | boolean | number>> {
     abstract toObject(): T;
     abstract toString(): string;
     
-    getCssProps(properties: Record<string, string>): string {
+    getCssProps(properties: Record<string, string | boolean | number>): string {
         let result = '';
 
         for (const key in properties) {

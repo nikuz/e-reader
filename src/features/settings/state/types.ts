@@ -13,6 +13,11 @@ export interface SetFontSizeEvent {
     value: string,
 }
 
+export interface SetFontOverrideBookFonts {
+    type: 'SET_FONT_OVERRIDE_BOOK_FONTS',
+    value: boolean,
+}
+
 export interface SetFontFamilyEvent {
     type: 'SET_FONT_FAMILY',
     value: string,
@@ -29,6 +34,7 @@ export interface SetFontLineHeightEvent {
 }
 
 export type SettingsStateFontEvents = SetFontSizeEvent
+    | SetFontOverrideBookFonts
     | SetFontFamilyEvent
     | SetFontColorEvent
     | SetFontLineHeightEvent;

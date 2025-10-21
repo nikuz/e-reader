@@ -9,6 +9,8 @@ import {
     FontSize,
     FontLineHeight,
     FontColor,
+    FontOverrideBookFonts,
+    FontFamily,
 } from 'src/features/settings/components';
 
 export function BookFrameSettings() {
@@ -24,6 +26,12 @@ export function BookFrameSettings() {
                     </ListItem>
                     <ListItem>
                         <FontColor />
+                    </ListItem>
+                    <ListItem>
+                        <FontOverrideBookFonts />
+                    </ListItem>
+                    <ListItem>
+                        <FontFamily />
                     </ListItem>
                 </List>
             )}
