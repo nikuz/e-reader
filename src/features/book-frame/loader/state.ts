@@ -1,7 +1,8 @@
-import { setup, sendParent, assign } from 'xstate';
+import { setup, sendParent, assign, enqueueActions } from 'xstate';
 import { xStateUtils } from 'src/utils';
 import type { BookLoadSuccessEvent, BookLoadErrorEvent } from '../state/types';
 import { bookLoaderActor, readProgressSaverActor } from './actors';
+import { revokePrevBookUrlsAction } from './actions';
 import type {
     BookLoaderStateEvents,
     LoadBookEvent,
@@ -24,7 +25,10 @@ export const bookLoaderStateMachine = setup({
     states: {
         IDLE: {
             on: {
-                LOAD_BOOK: 'LOADING_BOOK',
+                LOAD_BOOK: {
+                    target: 'LOADING_BOOK',
+                    actions: enqueueActions(revokePrevBookUrlsAction),
+                },
             },
         },
 
