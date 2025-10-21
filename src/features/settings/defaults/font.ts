@@ -8,7 +8,7 @@ const defaultFontValues = {
     wordSpacing: '0px',
     letterSpacing: '0px',
     overrideBookFonts: false,
-    fontFamily: fontsList.find(item => item.name === 'System default')?.value ?? '',
+    fontFamily: fontsList.find(item => item.id === 'default')?.value ?? '',
 };
 
 type FontProps = typeof defaultFontValues;
