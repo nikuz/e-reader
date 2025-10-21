@@ -20,10 +20,18 @@ export function Toast({ children, color, className, withToolbar, onClose }: Prop
             className={className}
             sx={{
                 marginTop: (theme: Theme) => (withToolbar ? `${theme.mixins.toolbar.minHeight}px` : 0),
+                maxWidth: '80%',
             }}
             onClose={onClose}
         >
-            <Alert severity={color} onClose={onClose}>
+            <Alert
+                severity={color}
+                sx={{
+                    width: '100%',
+                    wordWrap: 'break-word',
+                }}
+                onClose={onClose}
+            >
                 {children}
             </Alert>
         </Snackbar>
