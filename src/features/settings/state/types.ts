@@ -4,6 +4,7 @@ export interface SettingsStateContext {
     font: FontSettings,
 
     settingsCSS: string,
+    fontCSS: string,
 
     errorMessage?: string,
 }
@@ -33,11 +34,23 @@ export interface SetFontLineHeightEvent {
     value: string,
 }
 
+export interface SetFontWordSpacingEvent {
+    type: 'SET_FONT_WORD_SPACING',
+    value: string,
+}
+
+export interface SetFontLetterSpacingEvent {
+    type: 'SET_FONT_LETTER_SPACING',
+    value: string,
+}
+
 export type SettingsStateFontEvents = SetFontSizeEvent
     | SetFontOverrideBookFonts
     | SetFontFamilyEvent
     | SetFontColorEvent
-    | SetFontLineHeightEvent;
+    | SetFontLineHeightEvent
+    | SetFontWordSpacingEvent
+    | SetFontLetterSpacingEvent;
 
 export type SettingsStateEvents = 
     | SettingsStateFontEvents;

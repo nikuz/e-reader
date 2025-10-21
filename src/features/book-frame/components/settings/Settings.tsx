@@ -1,40 +1,102 @@
+import { useState, useRef, useEffect } from 'react';
 import {
     Dropdown,
     IconButton,
     List,
     ListItem,
+    Accordion,
+    type AccordionProps,
+    AccordionSummary,
+    type AccordionSummaryProps,
+    accordionSummaryClasses,
+    AccordionDetails,
+    Typography,
 } from 'src/design-system/components';
-import { SettingsIcon } from 'src/design-system/icons';
+import { styled } from 'src/design-system/styles';
+import { SettingsIcon, ArrowForwardIosSharpIcon } from 'src/design-system/icons';
 import {
     FontSize,
     FontLineHeight,
     FontColor,
     FontOverrideBookFonts,
     FontFamily,
+    FontWordSpacing,
+    FontLetterSpacing,
 } from 'src/features/settings/components';
 
 export function BookFrameSettings() {
+    const [expandedGroup, setExpandedGroup] = useState<'font' | 'layout'>('font');
+    const closeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+    const groupChangeHandler = (group: 'font' | 'layout') => () => {
+        setExpandedGroup(group);
+    };
+
+    const closeSettingsHandler = () => {
+        if (expandedGroup === 'font') {
+            return;
+        }
+        closeTimerRef.current = setTimeout(() => setExpandedGroup('font'), 300);
+    };
+
+    useEffect(() => {
+        return () => clearTimeout(closeTimerRef.current);
+    }, []);
+
     return (
         <Dropdown
-            content={(
-                <List className="w-[50vw]">
-                    <ListItem>
-                        <FontSize />
-                    </ListItem>
-                    <ListItem>
-                        <FontLineHeight />
-                    </ListItem>
-                    <ListItem>
-                        <FontColor />
-                    </ListItem>
-                    <ListItem>
-                        <FontOverrideBookFonts />
-                    </ListItem>
-                    <ListItem>
-                        <FontFamily />
-                    </ListItem>
-                </List>
-            )}
+            content={[
+                <CustomAccordion
+                    key="font"
+                    expanded={expandedGroup === 'font'}
+                    onChange={groupChangeHandler('font')}
+                >
+                    <CustomAccordionSummary>
+                        <Typography component="span">Fonts</Typography>
+                    </CustomAccordionSummary>
+                    <AccordionDetails>
+                        <List className="w-[50vw]">
+                            <ListItem>
+                                <FontSize />
+                            </ListItem>
+                            <ListItem>
+                                <FontLineHeight />
+                            </ListItem>
+                            <ListItem>
+                                <FontColor />
+                            </ListItem>
+                            <ListItem>
+                                <FontOverrideBookFonts />
+                            </ListItem>
+                            <ListItem>
+                                <FontFamily />
+                            </ListItem>
+                            <ListItem>
+                                <FontWordSpacing />
+                            </ListItem>
+                            <ListItem>
+                                <FontLetterSpacing />
+                            </ListItem>
+                        </List>
+                    </AccordionDetails>
+                </CustomAccordion>,
+                <CustomAccordion
+                    key="layout"
+                    expanded={expandedGroup === 'layout'}
+                    onChange={groupChangeHandler('layout')}
+                >
+                    <CustomAccordionSummary>
+                        <Typography component="span">Layout</Typography>
+                    </CustomAccordionSummary>
+                    <AccordionDetails>
+                        <List className="w-[50vw]">
+                            <ListItem>
+                                Some layout settings
+                            </ListItem>
+                        </List>
+                    </AccordionDetails>
+                </CustomAccordion>
+            ]}
             anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'right',
@@ -43,6 +105,7 @@ export function BookFrameSettings() {
                 vertical: 'top',
                 horizontal: 'right',
             }}
+            onClose={closeSettingsHandler}
         >
             <IconButton
                 size="large"
@@ -56,3 +119,35 @@ export function BookFrameSettings() {
         </Dropdown>
     );
 }
+
+const CustomAccordion = styled((props: AccordionProps) => (
+    <Accordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    '&:last-child': {
+        borderBottom: 0,
+    },
+    '&::before': {
+        display: 'none',
+    },
+}));
+
+const CustomAccordionSummary = styled((props: AccordionSummaryProps) => (
+    <AccordionSummary
+        expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+        {...props}
+    />
+))(({ theme }) => ({
+    backgroundColor: 'rgba(0, 0, 0, .03)',
+    flexDirection: 'row-reverse',
+    [`& .${accordionSummaryClasses.expandIconWrapper}.${accordionSummaryClasses.expanded}`]:
+    {
+        transform: 'rotate(90deg)',
+    },
+    [`& .${accordionSummaryClasses.content}`]: {
+        marginLeft: theme.spacing(1),
+    },
+    ...theme.applyStyles('dark', {
+        backgroundColor: 'rgba(255, 255, 255, .05)',
+    }),
+}));

@@ -20,6 +20,8 @@ export function FontLineHeight() {
             label="Line height"
             value={lineHeight}
             step={0.1}
+            min={1}
+            max={3}
             onChange={changeHandler}
         />
     );

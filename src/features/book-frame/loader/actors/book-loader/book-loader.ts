@@ -5,7 +5,7 @@ import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
-import { INJECTED_CSS_PLACEHOLDER } from '../../../constants';
+import { INJECTED_CSS_PLACEHOLDER, FONT_CSS_PLACEHOLDER } from '../../../constants';
 import {
     webRetrieveStaticContent,
     getReadProgressStorageKey,
@@ -25,6 +25,7 @@ export const bookLoaderActor = fromPromise(async (props: {
     const spine = [ ...bookAttributes.spine ];
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const settingsCSS = settingsSnapshot.settingsCSS;
+    const fontCSS = settingsSnapshot.fontCSS;
     const injectedCSS = getInjectedCSS(settingsCSS);
     const readProgress = await Preferences.get({ key: getReadProgressStorageKey(bookAttributes) });
 
@@ -41,7 +42,9 @@ export const bookLoaderActor = fromPromise(async (props: {
                 });
 
                 const originalContent = fileReadResponse.data as string;
-                const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCSS);
+                const modifiedContent = originalContent
+                    .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
+                    .replace(FONT_CSS_PLACEHOLDER, fontCSS);
 
                 const blob = new Blob([modifiedContent], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
@@ -72,7 +75,9 @@ export const bookLoaderActor = fromPromise(async (props: {
 
             const serializer = new XMLSerializer();
             const originalContent = serializer.serializeToString(xmlDoc);
-            const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, injectedCSS);
+            const modifiedContent = originalContent
+                .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
+                .replace(FONT_CSS_PLACEHOLDER, fontCSS);
 
             const blob = new Blob([modifiedContent], { type: 'text/html' });
             const blobUrl = URL.createObjectURL(blob);

@@ -31,12 +31,26 @@ export { default as DialogTitle } from '@mui/material/DialogTitle';
 export { default as AppBar } from '@mui/material/AppBar';
 export { default as Toolbar } from '@mui/material/Toolbar';
 export { default as Snackbar } from '@mui/material/Snackbar';
-export { default as Select } from '@mui/material/Select';
+export {
+    default as Select,
+    type SelectChangeEvent,
+} from '@mui/material/Select';
 export { default as MenuItem } from '@mui/material/MenuItem';
 export { default as FormControl } from '@mui/material/FormControl';
 export { default as InputLabel } from '@mui/material/InputLabel';
 export { default as OutlinedInput } from '@mui/material/OutlinedInput';
 export { default as Switch } from '@mui/material/Switch';
+export {
+    default as Accordion,
+    type AccordionProps,
+} from '@mui/material/Accordion';
+export { default as AccordionActions } from '@mui/material/AccordionActions';
+export {
+    default as AccordionSummary,
+    accordionSummaryClasses,
+    type AccordionSummaryProps,
+} from '@mui/material/AccordionSummary';
+export { default as AccordionDetails } from '@mui/material/AccordionDetails';
 export { default as Slide } from '@mui/material/Slide';
 export { default as Fade } from '@mui/material/Fade';
 

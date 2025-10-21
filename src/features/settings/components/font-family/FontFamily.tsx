@@ -2,16 +2,16 @@ import {
     Box,
     Typography,
     Select,
+    type SelectChangeEvent,
     MenuItem,
     FormControl,
     OutlinedInput,
 } from 'src/design-system/components';
-import type { SelectChangeEvent } from 'src/design-system/types';
+import { fontsList } from 'src/static-injections/fonts';
 import {
     useSettingsStateSelect,
     settingsStateMachineActor,
 } from '../../state';
-import { fontsList } from '../../defaults/font';
 
 export function FontFamily() {
     const fontSettings = useSettingsStateSelect('font');

@@ -32,6 +32,14 @@ export const saveFontSettingsActor = fromPromise(async (props: {
         case 'SET_FONT_LINE_HEIGHT':
             currentFontSettings.lineHeight = event.value;
             break;
+        
+        case 'SET_FONT_WORD_SPACING':
+            currentFontSettings.wordSpacing = event.value;
+            break;
+        
+        case 'SET_FONT_LETTER_SPACING':
+            currentFontSettings.letterSpacing = event.value;
+            break;
     }
 
     const newFontSettings = new DefaultFontSettings(currentFontSettings);

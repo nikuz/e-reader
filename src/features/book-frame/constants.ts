@@ -3,3 +3,5 @@ export const INJECTED_CSS_START_COMMENT = '/* injected CSS start */';
 export const INJECTED_CSS_END_COMMENT = '/* injected CSS end */';
 export const INJECTED_CSS_ID = 'injected_css';
 export const INJECTED_CSS_PLACEHOLDER = '{injected_css}';
+export const FONT_CSS_ID = 'font_css';
+export const FONT_CSS_PLACEHOLDER = '{font_css}';

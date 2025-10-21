@@ -11,5 +11,6 @@ export function generateSettingsCSSAction(props: {
 
     props.enqueue.assign({
         settingsCSS: css.join(''),
+        fontCSS: fontSettings.getFontCss(),
     });
 }

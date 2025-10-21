@@ -96,6 +96,11 @@ export interface UpdateSettingsCSSEvent {
     settingsCSS: string,
 }
 
+export interface UpdateFontCSSEvent {
+    type: 'UPDATE_FONT_CSS',
+    fontCSS: string,
+}
+
 export interface HideMenuPanelsEvent {
     type: 'HIDE_MENU_PANELS',
 }
@@ -118,4 +123,5 @@ export type BookFrameStateEvents =
     | SaveReadProgressEvent
     | UpdateBookAttributesEvent
     | UpdateSettingsCSSEvent
+    | UpdateFontCSSEvent
     | HideMenuPanelsEvent;

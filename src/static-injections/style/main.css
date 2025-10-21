@@ -52,8 +52,3 @@ div,
 span {
     user-select: auto;
 }
-
-/* 
-to invert image colors:
-filter: invert(100%);
- */

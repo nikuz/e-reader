@@ -1,32 +1,21 @@
+import { fontsList } from 'src/static-injections/fonts';
 import { SettingsGroup } from './types';
 
 const defaultFontValues = {
     fontSize: '18px',
     color: '#FFFFFF',
     lineHeight: '1.5em',
+    wordSpacing: '0px',
+    letterSpacing: '0px',
     overrideBookFonts: false,
-    fontFamily: 'MerriweatherSans-Italic',
+    fontFamily: fontsList.find(item => item.name === 'System default')?.value ?? '',
 };
-
-export const fontsList: {
-    name: string,
-    value: string,
-    url?: string,
-}[] = [
-    {
-        name: 'System default',
-        value: 'Inter, Avenir, Helvetica, Arial, sans-serif',
-    },
-    {
-        name: 'Merriweather Sans',
-        value: 'MerriweatherSans-Italic',
-        url: '/fonts/MerriweatherSans-Italic.ttf',
-    }
-];
 
 type FontProps = typeof defaultFontValues;
 
-export type FontSettings = SettingsGroup<FontProps> & FontProps;
+export type FontSettings = SettingsGroup<FontProps>
+    & FontProps
+    & { getFontCss: () => string };
 
 export class DefaultFontSettings extends SettingsGroup<FontProps> implements FontSettings {
     static id = 'font';
@@ -34,6 +23,8 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
     declare fontSize: string;
     declare color: string;
     declare lineHeight: string;
+    declare wordSpacing: string;
+    declare letterSpacing: string;
     declare overrideBookFonts: boolean;
     declare fontFamily: string;
     
@@ -47,6 +38,8 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
             fontSize: this.fontSize,
             color: this.color,
             lineHeight: this.lineHeight,
+            wordSpacing: this.wordSpacing,
+            letterSpacing: this.letterSpacing,
             overrideBookFonts: this.overrideBookFonts,
             fontFamily: this.fontFamily,
         };
@@ -60,6 +53,8 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
         const bodyCss = this.getCssProps({
             fontSize: this.fontSize,
             lineHeight: this.lineHeight,
+            wordSpacing: this.wordSpacing,
+            letterSpacing: this.letterSpacing,
         });
         const allCssProps: Partial<FontProps> = {
             color: this.color,
@@ -68,25 +63,30 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
             allCssProps.fontFamily = this.fontFamily;
         }
         const allCss = this.getCssProps(allCssProps);
-        const fontsCss = [];
+        
+        return `    
+            body { ${bodyCss} }
+            :not(a) { ${allCss} }
+        `;
+    }
 
-        for (const font of fontsList) {
-            if (font.url) {
-                fontsCss.push(`
-                    @font-face {
-                        font-family: ${font.value};
-                        src: url(${window.location.origin}${font.url});
-                        font-style: normal;
-                        font-weight: normal;
-                    }
-                `);
-            }
+    getFontCss(): string {
+        if (!this.overrideBookFonts) {
+            return '';
+        }
+
+        const selectedFont = fontsList.find(item => item.value === this.fontFamily);
+        if (!selectedFont) {
+            return '';
         }
 
         return `
-            ${fontsCss.join('')}
-            body { ${bodyCss} }
-            * { ${allCss} }
+            @font-face {
+                font-family: ${selectedFont.value};
+                src: url(${window.location.origin}${selectedFont.url});
+                font-style: normal;
+                font-weight: normal;
+            }
         `;
     }
 }

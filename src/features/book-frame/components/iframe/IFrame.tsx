@@ -1,6 +1,6 @@
 import { useEffect, useRef, type SyntheticEvent } from 'react';
-import { FrameEventObserver } from '../../injections';
 import { useBookFrameStateSelect, bookFrameStateMachineActor } from '../../state';
+import { FrameEventObserver } from './event-listeners';
 
 export function BookFrameIFrame() {
     const chapterUrl = useBookFrameStateSelect('chapterUrl');

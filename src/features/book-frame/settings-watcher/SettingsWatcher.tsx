@@ -12,6 +12,8 @@ const worker: SettingsWatcherWorker = new Worker(new URL('./worker', import.meta
 export function SettingsWatcher() {
     const settingsCSS = useSettingsStateSelect('settingsCSS');
     const lastSettingsCSS = useLast(settingsCSS);
+    const fontCSS = useSettingsStateSelect('fontCSS');
+    const lastFontCSS = useLast(fontCSS);
     const bookAttributesSnapshot = useBookFrameStateSnapshot('bookAttributes');
     const currentChapterUrlSnapshot = useBookFrameStateSnapshot('chapterUrl');
 
@@ -25,14 +27,22 @@ export function SettingsWatcher() {
     }, []);
     
     useEffect(() => {
-        if (!lastSettingsCSS || settingsCSS === lastSettingsCSS) {
+        if (!lastSettingsCSS || (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS)) {
             return;
         }
         
-        bookFrameStateMachineActor.send({
-            type: 'UPDATE_SETTINGS_CSS',
-            settingsCSS,
-        });
+        if (settingsCSS !== lastSettingsCSS) {
+            bookFrameStateMachineActor.send({
+                type: 'UPDATE_SETTINGS_CSS',
+                settingsCSS,
+            });
+        }
+        if (fontCSS !== lastFontCSS) {
+            bookFrameStateMachineActor.send({
+                type: 'UPDATE_FONT_CSS',
+                fontCSS,
+            });
+        }
 
         const bookAttributes = bookAttributesSnapshot();
         if (bookAttributes) {
@@ -40,10 +50,11 @@ export function SettingsWatcher() {
                 type: 'SETTINGS_CSS_CHANGE',
                 bookAttributes,
                 settingsCSS,
+                fontCSS,
                 currentChapterUrl: currentChapterUrlSnapshot(),
             });
         }
-    }, [settingsCSS, lastSettingsCSS, bookAttributesSnapshot, currentChapterUrlSnapshot]);
+    }, [settingsCSS, lastSettingsCSS, fontCSS, lastFontCSS, bookAttributesSnapshot, currentChapterUrlSnapshot]);
 
     useEffect(() => {
         worker.addEventListener('message', workerMessageHandler);

@@ -4,23 +4,24 @@ import {
     settingsStateMachineActor,
 } from '../../state';
 
-export function FontSize() {
+export function FontWordSpacing() {
     const fontSettings = useSettingsStateSelect('font');
-    const fontSize = parseInt(fontSettings.fontSize, 10);
+    const wordSpacing = parseFloat(fontSettings.wordSpacing);
 
     const changeHandler = (value: number) => {
         settingsStateMachineActor.send({
-            type: 'SET_FONT_SIZE',
+            type: 'SET_FONT_WORD_SPACING',
             value: `${value}px`,
         });
     };
 
     return (
         <Stepper
-            label="Font size"
-            value={fontSize}
-            min={10}
-            max={30}
+            label="Word spacing"
+            value={wordSpacing}
+            step={1}
+            min={0}
+            max={10}
             onChange={changeHandler}
         />
     );

@@ -24,6 +24,7 @@ export const settingsStateMachine = setup({
     context: {
         font: new DefaultFontSettings(),
         settingsCSS: '',
+        fontCSS: '',
     },
 
     initial: 'INITIALIZING',
@@ -36,6 +37,8 @@ export const settingsStateMachine = setup({
                 SET_FONT_FAMILY: 'SAVE_FONT_SETTINGS',
                 SET_FONT_COLOR: 'SAVE_FONT_SETTINGS',
                 SET_FONT_LINE_HEIGHT: 'SAVE_FONT_SETTINGS',
+                SET_FONT_WORD_SPACING: 'SAVE_FONT_SETTINGS',
+                SET_FONT_LETTER_SPACING: 'SAVE_FONT_SETTINGS',
             },
         },
 

@@ -1,5 +1,5 @@
 import { getInjectedCSS } from '../../utils/get-injected-css';
-import { INJECTED_CSS_PLACEHOLDER } from '../../constants';
+import { INJECTED_CSS_PLACEHOLDER, FONT_CSS_ID } from '../../constants';
 import type {
     SettingsWatcherWorkerMessage,
     SettingsCSSChangeMessage,
@@ -18,6 +18,7 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
     const {
         bookAttributes,
         settingsCSS,
+        fontCSS,
         currentChapterUrl,
     } = event;
 
@@ -34,7 +35,9 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
                 URL.revokeObjectURL(chapter.url);
             }
 
-            const modifiedContent = chapter.content.replace(INJECTED_CSS_PLACEHOLDER, injectedCSS);
+            const modifiedContent = chapter.content
+                .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
+                .replace(FONT_CSS_ID, fontCSS);
             const blob = new Blob([modifiedContent], { type: 'text/html' });
             const blobUrl = URL.createObjectURL(blob);
             chapter.url = blobUrl;

@@ -13,6 +13,7 @@ import {
     frameResizeAction,
     selectTextAction,
     updateSettingsCSSAction,
+    updateFontCSSAction,
     updateBookAttributesAction,
 } from './actions';
 import type {
@@ -86,6 +87,9 @@ export const bookFrameStateMachine = setup({
                 },
                 UPDATE_SETTINGS_CSS: {
                     actions: enqueueActions(updateSettingsCSSAction),
+                },
+                UPDATE_FONT_CSS: {
+                    actions: enqueueActions(updateFontCSSAction),
                 },
                 UPDATE_BOOK_ATTRIBUTES: {
                     actions: enqueueActions(updateBookAttributesAction),

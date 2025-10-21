@@ -8,10 +8,19 @@ interface Props {
     label: string,
     value: number,
     step?: number,
+    min?: number,
+    max?: number,
     onChange: (value: number) => void,
 }
 
-export function Stepper({ label, value, step = 1, onChange }: Props) {
+export function Stepper({
+    label,
+    value,
+    step = 1,
+    min,
+    max,
+    onChange,
+}: Props) {
     const fixValue = (value: number): number => {
         if (step - Math.trunc(step) !== 0) {
             return Number(value.toFixed(1));
@@ -19,12 +28,25 @@ export function Stepper({ label, value, step = 1, onChange }: Props) {
         return value;
     };
 
+    const clampValue = (value: number): number => {
+        let clampedValue = value;
+
+        if (min !== undefined) {
+            clampedValue = Math.max(clampedValue, min);
+        }
+        if (max !== undefined) {
+            clampedValue = Math.min(clampedValue, max);
+        }
+
+        return clampedValue;
+    };
+
     const decreaseHandler = () => {
-        onChange(fixValue(value - step));
+        onChange(clampValue(fixValue(value - step)));
     };
 
     const increaseHandler = () => {
-        onChange(fixValue(value + step));
+        onChange(clampValue(fixValue(value + step)));
     };
 
     return (
@@ -36,10 +58,18 @@ export function Stepper({ label, value, step = 1, onChange }: Props) {
                 {value}
             </Typography>
             <ButtonGroup variant="outlined" size="small">
-                <Button sx={{ pl: 0, pr: 0 }} onClick={decreaseHandler}>
+                <Button
+                    disabled={value === min}
+                    sx={{ pl: 0, pr: 0 }}
+                    onClick={decreaseHandler}
+                >
                     <RemoveIcon />
                 </Button>
-                <Button sx={{ pl: 0, pr: 0 }} onClick={increaseHandler}>
+                <Button
+                    disabled={value === max}
+                    sx={{ pl: 0, pr: 0 }}
+                    onClick={increaseHandler}
+                >
                     <AddIcon />
                 </Button>
             </ButtonGroup>

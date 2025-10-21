@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Popover, { type PopoverProps } from '@mui/material/Popover';
 
 interface Props extends Omit<PopoverProps, 'onClose' | 'open' | 'content'> {
-    content: React.ReactNode | ((close: () => void) => React.ReactNode),
+    content: React.ReactNode | React.ReactNode[] | ((close: () => void) => React.ReactNode),
     onClose?: () => void,
 }
 

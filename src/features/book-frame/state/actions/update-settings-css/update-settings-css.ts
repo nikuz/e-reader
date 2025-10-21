@@ -11,10 +11,8 @@ export function updateSettingsCSSAction(props: {
     const iframeDocument = iframeEl?.contentDocument;
     const injectedCSSNode = iframeDocument?.getElementById(INJECTED_CSS_ID);
     
-    if (!iframeDocument || !injectedCSSNode) {
-        return;
+    if (injectedCSSNode) {
+        const injectedCSS = getInjectedCSS(props.event.settingsCSS);
+        injectedCSSNode.textContent = injectedCSS;
     }
-    
-    const injectedCSS = getInjectedCSS(props.event.settingsCSS);
-    injectedCSSNode.textContent = injectedCSS;
 }

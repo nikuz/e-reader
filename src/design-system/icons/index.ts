@@ -10,3 +10,5 @@ export { default as FormatListBulletedIcon } from '@mui/icons-material/FormatLis
 export { default as SearchIcon } from '@mui/icons-material/Search';
 export { default as MoreHorizIcon } from '@mui/icons-material/MoreHoriz';
 export { default as RemoveIcon } from '@mui/icons-material/Remove';
+export { default as ExpandMoreIcon } from '@mui/icons-material/ExpandMore';
+export { default as ArrowForwardIosSharpIcon } from '@mui/icons-material/ArrowForwardIosSharp';
