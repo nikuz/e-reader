@@ -46,7 +46,7 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
             case 'underline':
                 cssValue = this.getCssProps({
                     backgroundColor: 'transparent',
-                    textDecoration: `underline 0.2em ${this.highlightColor}`,
+                    textDecoration: `underline 2px ${this.highlightColor}`,
                     textDecorationSkipInk: 'none',
                 });
                 break;
@@ -54,14 +54,14 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
             case 'strikethrough':
                 cssValue = this.getCssProps({
                     backgroundColor: 'transparent',
-                    textDecoration: `line-through 0.2em ${this.highlightColor}`,
+                    textDecoration: `line-through 1px ${this.highlightColor}`,
                 });
                 break;
 
             case 'squiggly':
                 cssValue = this.getCssProps({
                     backgroundColor: 'transparent',
-                    textDecoration: `underline wavy 0.2em ${this.highlightColor}`,
+                    textDecoration: `underline wavy 2px ${this.highlightColor}`,
                     textDecorationSkipInk: 'none',
                 });
                 break;
