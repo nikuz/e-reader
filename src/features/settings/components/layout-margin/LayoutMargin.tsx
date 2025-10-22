@@ -53,7 +53,6 @@ export function LayoutMargin({ side }: Props) {
                 break;
         }
 
-        console.log(eventType);
         if (eventType) {
             settingsStateMachineActor.send({
                 type: eventType,

@@ -29,6 +29,7 @@ import {
 export function BookFrameSettings() {
     const [expandedGroup, setExpandedGroup] = useState<'font' | 'layout'>('font');
     const closeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const marginSides = ['left', 'right', 'top', 'bottom'] as const;
 
     const groupChangeHandler = (group: 'font' | 'layout') => () => {
         setExpandedGroup(group);
@@ -95,18 +96,11 @@ export function BookFrameSettings() {
                             <ListItem>
                                 <LayoutParagraphMargin />
                             </ListItem>
-                            <ListItem>
-                                <LayoutMargin side="left" />
-                            </ListItem>
-                            <ListItem>
-                                <LayoutMargin side="right" />
-                            </ListItem>
-                            <ListItem>
-                                <LayoutMargin side="top" />
-                            </ListItem>
-                            <ListItem>
-                                <LayoutMargin side="bottom" />
-                            </ListItem>
+                            {marginSides.map(side => (
+                                <ListItem key={side}>
+                                    <LayoutMargin side={side} />
+                                </ListItem>
+                            ))}
                         </List>
                     </AccordionDetails>
                 </CustomAccordion>
