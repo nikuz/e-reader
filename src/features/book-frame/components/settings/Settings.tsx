@@ -129,7 +129,13 @@ export function BookFrameSettings() {
 }
 
 const CustomAccordion = styled((props: AccordionProps) => (
-    <Accordion disableGutters elevation={0} square {...props} />
+    <Accordion
+        disableGutters
+        elevation={0}
+        square
+        slotProps={{ transition: { timeout: 150 } }}
+        {...props}
+    />
 ))(({ theme }) => ({
     borderBottom: `1px solid ${theme.palette.divider}`,
     '&:last-child': {
