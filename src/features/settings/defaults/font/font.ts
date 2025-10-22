@@ -1,5 +1,5 @@
 import { fontsList } from 'src/static-injections/fonts';
-import { SettingsGroup } from './types';
+import { SettingsGroup } from '../types';
 
 const defaultFontValues = {
     fontSize: '18px',

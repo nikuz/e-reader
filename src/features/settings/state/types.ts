@@ -1,7 +1,8 @@
-import type { FontSettings } from '../defaults';
+import type { FontSettings, LayoutSettings } from '../defaults';
 
 export interface SettingsStateContext {
     font: FontSettings,
+    layout: LayoutSettings,
 
     settingsCSS: string,
     fontCSS: string,
@@ -44,6 +45,31 @@ export interface SetFontLetterSpacingEvent {
     value: string,
 }
 
+export interface SetLayoutParagraphMarginEvent {
+    type: 'SET_LAYOUT_PARAGRAPH_MARGIN',
+    value: string,
+}
+
+export interface SetLayoutMarginLeftEvent {
+    type: 'SET_LAYOUT_MARGIN_LEFT',
+    value: string,
+}
+
+export interface SetLayoutMarginRightEvent {
+    type: 'SET_LAYOUT_MARGIN_RIGHT',
+    value: string,
+}
+
+export interface SetLayoutMarginTopEvent {
+    type: 'SET_LAYOUT_MARGIN_TOP',
+    value: string,
+}
+
+export interface SetLayoutMarginBottomEvent {
+    type: 'SET_LAYOUT_MARGIN_BOTTOM',
+    value: string,
+}
+
 export type SettingsStateFontEvents = SetFontSizeEvent
     | SetFontOverrideBookFonts
     | SetFontFamilyEvent
@@ -52,5 +78,12 @@ export type SettingsStateFontEvents = SetFontSizeEvent
     | SetFontWordSpacingEvent
     | SetFontLetterSpacingEvent;
 
+export type SettingsStateLayoutEvents = SetLayoutParagraphMarginEvent
+    | SetLayoutMarginLeftEvent
+    | SetLayoutMarginRightEvent
+    | SetLayoutMarginTopEvent
+    | SetLayoutMarginBottomEvent;
+
 export type SettingsStateEvents = 
-    | SettingsStateFontEvents;
+    | SettingsStateFontEvents
+    | SettingsStateLayoutEvents;

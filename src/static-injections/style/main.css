@@ -31,9 +31,14 @@ body {
     }
 }
 
-p {
-    padding: 0 1rem;
+/* body {
+    padding: 20px 0;
+    height: calc(100% - 40px);
 }
+
+body > * {
+    margin: 0 1rem;
+} */
 
 img {
     max-width: 100%;

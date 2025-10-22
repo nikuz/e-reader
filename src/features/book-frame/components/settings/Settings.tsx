@@ -22,6 +22,8 @@ import {
     FontFamily,
     FontWordSpacing,
     FontLetterSpacing,
+    LayoutParagraphMargin,
+    LayoutMargin,
 } from 'src/features/settings/components';
 
 export function BookFrameSettings() {
@@ -91,7 +93,19 @@ export function BookFrameSettings() {
                     <AccordionDetails>
                         <List className="w-[50vw]">
                             <ListItem>
-                                Some layout settings
+                                <LayoutParagraphMargin />
+                            </ListItem>
+                            <ListItem>
+                                <LayoutMargin side="left" />
+                            </ListItem>
+                            <ListItem>
+                                <LayoutMargin side="right" />
+                            </ListItem>
+                            <ListItem>
+                                <LayoutMargin side="top" />
+                            </ListItem>
+                            <ListItem>
+                                <LayoutMargin side="bottom" />
                             </ListItem>
                         </List>
                     </AccordionDetails>

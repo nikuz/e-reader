@@ -1,18 +1,24 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { xStateUtils } from 'src/utils';
-import { DefaultFontSettings } from '../defaults';
-import { initializerActor, saveFontSettingsActor } from './actors';
+import { DefaultFontSettings, DefaultLayoutSettings } from '../defaults';
+import {
+    initializerActor,
+    saveFontSettingsActor,
+    saveLayoutSettingsActor,
+} from './actors';
 import { generateSettingsCSSAction } from './actions';
 import type {
     SettingsStateContext,
     SettingsStateEvents,
     SettingsStateFontEvents,
+    SettingsStateLayoutEvents,
 } from './types';
 
 export const settingsStateMachine = setup({
     actors: {
         initializerActor,
         saveFontSettingsActor,
+        saveLayoutSettingsActor,
     },
     types: {
         context: {} as SettingsStateContext,
@@ -23,6 +29,7 @@ export const settingsStateMachine = setup({
 
     context: {
         font: new DefaultFontSettings(),
+        layout: new DefaultLayoutSettings(),
         settingsCSS: '',
         fontCSS: '',
     },
@@ -39,6 +46,12 @@ export const settingsStateMachine = setup({
                 SET_FONT_LINE_HEIGHT: 'SAVE_FONT_SETTINGS',
                 SET_FONT_WORD_SPACING: 'SAVE_FONT_SETTINGS',
                 SET_FONT_LETTER_SPACING: 'SAVE_FONT_SETTINGS',
+
+                SET_LAYOUT_PARAGRAPH_MARGIN: 'SAVE_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_LEFT: 'SAVE_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_RIGHT: 'SAVE_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_TOP: 'SAVE_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_BOTTOM: 'SAVE_LAYOUT_SETTINGS',
             },
         },
 
@@ -78,6 +91,34 @@ export const settingsStateMachine = setup({
                     actions: [
                         assign(({ event }) => ({
                             font: event.output,
+                        })),
+                        enqueueActions(generateSettingsCSSAction),
+                    ],
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+        
+        SAVE_LAYOUT_SETTINGS: {
+            invoke: {
+                src: 'saveLayoutSettingsActor',
+                input: ({ event, context }) => ({
+                    event: event as SettingsStateLayoutEvents,
+                    layoutSettings: context.layout,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            layout: event.output,
                         })),
                         enqueueActions(generateSettingsCSSAction),
                     ],
