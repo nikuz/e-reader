@@ -12,7 +12,7 @@ export default function Debug() {
     }
 
     return (
-        <div className="debug-overlay">
+        <div className="debug-overlay z-[99999]">
             <div>
                 Screen size: {screenRect.width}x{screenRect.height}
             </div>

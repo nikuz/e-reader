@@ -3,6 +3,7 @@ import {
     FileStorageEncoding,
     FILE_STORAGE_DEFAULT_DIRECTORY,
 } from 'src/controllers';
+import { imageUtils } from 'src/utils';
 
 export async function retrieveStyles(props: {
     xmlDoc: Document,
@@ -58,8 +59,14 @@ export async function retrieveStyles(props: {
                     path: urlSrc,
                     encoding: FileStorageEncoding.UTF8,
                 });
+
+                let urlContent: Blob;
+                if (imageUtils.isImage(urlSrc)) {
+                    urlContent = imageUtils.base64ToBlob(urlFileContent.data);
+                } else {
+                    urlContent = new Blob([urlFileContent.data]); 
+                }
                 
-                const urlContent = new Blob([urlFileContent.data]);
                 const blobUrl = URL.createObjectURL(urlContent);
 
                 staticFileContent = staticFileContent.replace(urlValue, blobUrl);

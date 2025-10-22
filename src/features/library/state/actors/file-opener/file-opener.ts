@@ -2,7 +2,7 @@ import { fromPromise } from 'xstate';
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import JSZip from 'jszip';
 import type { DatabaseController } from 'src/controllers';
-import { pathUtils, fileReaderUtils } from 'src/utils';
+import { pathUtils, fileReaderUtils, imageUtils } from 'src/utils';
 import { createBookInDB, deleteBookFromDB } from '../../../db-service';
 import {
     retrieveBookAttributes,
@@ -127,7 +127,6 @@ async function createBookFoldersFromArchive(
     }
 }
 
-const imageRegex = /\.(jpg|jpeg|png|gif|bmp|svg|webp|ico)$/i;
 const fontRegex = /\.(ttf|otf|woff2?|eot)$/i;
 
 async function saveFileFromArchive(
@@ -139,7 +138,7 @@ async function saveFileFromArchive(
     }
 
     const filePath = pathUtils.join([bookDirectory, file.name]);
-    const isImage = imageRegex.test(filePath);
+    const isImage = imageUtils.isImage(filePath);
     const isFont = fontRegex.test(filePath);
     const isBinary = isImage || isFont;
 
