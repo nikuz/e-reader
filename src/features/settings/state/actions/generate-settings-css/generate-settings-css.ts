@@ -6,10 +6,12 @@ export function generateSettingsCSSAction(props: {
 }) {
     const fontSettings = props.context.font;
     const layoutSettings = props.context.layout;
+    const highlightSettings = props.context.highlight;
     const css: string[] = [];
 
     css.push(fontSettings.toCss());
     css.push(layoutSettings.toCss());
+    css.push(highlightSettings.toCss());
 
     props.enqueue.assign({
         settingsCSS: css.join(''),

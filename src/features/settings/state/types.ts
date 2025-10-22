@@ -1,8 +1,14 @@
-import type { FontSettings, LayoutSettings } from '../defaults';
+import type {
+    FontSettings,
+    LayoutSettings,
+    HighlightSettings,
+    HighlightType,
+} from '../defaults';
 
 export interface SettingsStateContext {
     font: FontSettings,
     layout: LayoutSettings,
+    highlight: HighlightSettings,
 
     settingsCSS: string,
     fontCSS: string,
@@ -70,6 +76,16 @@ export interface SetLayoutMarginBottomEvent {
     value: string,
 }
 
+export interface SetHighlightTypeEvent {
+    type: 'SET_HIGHLIGHT_TYPE',
+    value: HighlightType,
+}
+
+export interface SetHighlightColorEvent {
+    type: 'SET_HIGHLIGHT_COLOR',
+    value: string,
+}
+
 export type SettingsStateFontEvents = SetFontSizeEvent
     | SetFontOverrideBookFonts
     | SetFontFamilyEvent
@@ -84,6 +100,10 @@ export type SettingsStateLayoutEvents = SetLayoutParagraphMarginEvent
     | SetLayoutMarginTopEvent
     | SetLayoutMarginBottomEvent;
 
+export type SettingsStateHighlightEvents = SetHighlightTypeEvent
+    | SetHighlightColorEvent;
+
 export type SettingsStateEvents = 
     | SettingsStateFontEvents
-    | SettingsStateLayoutEvents;
+    | SettingsStateLayoutEvents
+    | SettingsStateHighlightEvents;

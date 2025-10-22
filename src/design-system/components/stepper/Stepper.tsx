@@ -101,7 +101,7 @@ function useRepeatPress(changeFn: () => void): RepeatHandlers {
         stopPress(ignoreClickRef.current ? false : true);
     }, [stopPress]);
 
-    const handleClick = useCallback((_event: ReactMouseEvent<HTMLButtonElement>) => {
+    const handleClick = useCallback(() => {
         if (ignoreClickRef.current) {
             ignoreClickRef.current = false;
             return;

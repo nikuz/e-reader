@@ -7,3 +7,5 @@ export * from './font-word-spacing';
 export * from './font-letter-spacing';
 export * from './layout-paragraph-margin';
 export * from './layout-margin';
+export * from './highlight-type';
+export * from './highlight-color';

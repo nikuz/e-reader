@@ -1,10 +1,11 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { xStateUtils } from 'src/utils';
-import { DefaultFontSettings, DefaultLayoutSettings } from '../defaults';
+import { DefaultFontSettings, DefaultLayoutSettings, DefaultHighlightSettings } from '../defaults';
 import {
     initializerActor,
     saveFontSettingsActor,
     saveLayoutSettingsActor,
+    saveHighlightSettingsActor,
 } from './actors';
 import { generateSettingsCSSAction } from './actions';
 import type {
@@ -12,6 +13,7 @@ import type {
     SettingsStateEvents,
     SettingsStateFontEvents,
     SettingsStateLayoutEvents,
+    SettingsStateHighlightEvents,
 } from './types';
 
 export const settingsStateMachine = setup({
@@ -19,6 +21,7 @@ export const settingsStateMachine = setup({
         initializerActor,
         saveFontSettingsActor,
         saveLayoutSettingsActor,
+        saveHighlightSettingsActor,
     },
     types: {
         context: {} as SettingsStateContext,
@@ -30,6 +33,7 @@ export const settingsStateMachine = setup({
     context: {
         font: new DefaultFontSettings(),
         layout: new DefaultLayoutSettings(),
+        highlight: new DefaultHighlightSettings(),
         settingsCSS: '',
         fontCSS: '',
     },
@@ -52,6 +56,9 @@ export const settingsStateMachine = setup({
                 SET_LAYOUT_MARGIN_RIGHT: 'SAVE_LAYOUT_SETTINGS',
                 SET_LAYOUT_MARGIN_TOP: 'SAVE_LAYOUT_SETTINGS',
                 SET_LAYOUT_MARGIN_BOTTOM: 'SAVE_LAYOUT_SETTINGS',
+
+                SET_HIGHLIGHT_TYPE: 'SAVE_HIGHLIGHT_SETTINGS',
+                SET_HIGHLIGHT_COLOR: 'SAVE_HIGHLIGHT_SETTINGS',
             },
         },
 
@@ -119,6 +126,34 @@ export const settingsStateMachine = setup({
                     actions: [
                         assign(({ event }) => ({
                             layout: event.output,
+                        })),
+                        enqueueActions(generateSettingsCSSAction),
+                    ],
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+
+        SAVE_HIGHLIGHT_SETTINGS: {
+            invoke: {
+                src: 'saveHighlightSettingsActor',
+                input: ({ event, context }) => ({
+                    event: event as SettingsStateHighlightEvents,
+                    highlightSettings: context.highlight,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            highlight: event.output,
                         })),
                         enqueueActions(generateSettingsCSSAction),
                     ],

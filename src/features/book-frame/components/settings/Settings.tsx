@@ -1,4 +1,3 @@
-import { useRef, useEffect } from 'react';
 import {
     Box,
     IconButton,
@@ -19,15 +18,12 @@ import {
     FontLetterSpacing,
     LayoutParagraphMargin,
     LayoutMargin,
+    HighlightType,
+    HighlightColor,
 } from 'src/features/settings/components';
 
 export function BookFrameSettings() {
-    const closeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const marginSides = ['left', 'right', 'top', 'bottom'] as const;
-
-    useEffect(() => {
-        return () => clearTimeout(closeTimerRef.current);
-    }, []);
 
     return (
         <Drawer
@@ -63,6 +59,24 @@ export function BookFrameSettings() {
                         </ListItem>
                         <ListItem>
                             <FontLetterSpacing />
+                        </ListItem>
+                    </List>
+
+                    <Divider />
+
+                    <Typography
+                        variant="h6"
+                        marginLeft={2}
+                        marginTop={2}
+                    >
+                        Highlight
+                    </Typography>
+                    <List sx={{ mb: 2 }}>
+                        <ListItem>
+                            <HighlightType />
+                        </ListItem>
+                        <ListItem>
+                            <HighlightColor />
                         </ListItem>
                     </List>
 
