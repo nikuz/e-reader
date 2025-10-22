@@ -51,6 +51,7 @@ export {
     type AccordionSummaryProps,
 } from '@mui/material/AccordionSummary';
 export { default as AccordionDetails } from '@mui/material/AccordionDetails';
+export { default as Divider } from '@mui/material/Divider';
 export { default as Slide } from '@mui/material/Slide';
 export { default as Fade } from '@mui/material/Fade';
 
@@ -58,3 +59,4 @@ export * from './toast';
 export * from './dropdown';
 export * from './page-loader';
 export * from './stepper';
+export * from './drawer';
