@@ -13,7 +13,8 @@ export interface BookFrameStateContext {
     scrollPosition: number,
     screenRect: Size,
 
-    frameInteractionStartTime?: number,
+    frameTouchStartTime?: number,
+    frameTouchMoveTime?: number,
     frameInteractionStartPosition?: Position,
     
     chapterUrl?: string,
@@ -22,6 +23,8 @@ export interface BookFrameStateContext {
     chapterRect: Size,
 
     textSelection?: Selection,
+    textSelectionBaseRange?: Range,
+    textSelectionCreateEndtimeTime?: number,
 
     menuPanelsVisible: boolean,
 

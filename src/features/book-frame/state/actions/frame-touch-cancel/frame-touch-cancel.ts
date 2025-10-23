@@ -5,7 +5,8 @@ export function frameTouchCancelAction(props: {
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
     props.enqueue.assign({
-        frameInteractionStartTime: undefined,
+        frameTouchStartTime: undefined,
+        frameTouchMoveTime: undefined,
         frameInteractionStartPosition: undefined,
     });
 }

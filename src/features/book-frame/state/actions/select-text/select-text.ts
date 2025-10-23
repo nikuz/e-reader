@@ -70,6 +70,8 @@ export function selectTextAction(props: {
     if (selection) {
         props.enqueue.assign({
             textSelection: selection,
+            textSelectionBaseRange: selectionRange.cloneRange(),
+            textSelectionCreateEndtimeTime: Date.now(),
         });
     }
 }

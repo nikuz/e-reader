@@ -5,20 +5,9 @@ export function frameTouchStartAction(props: {
     context: BookFrameStateContext,
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
-    const textSelection = props.context.textSelection;
-
-    if (textSelection?.toString().length) {
-        textSelection?.removeAllRanges();
-
-        props.enqueue.assign({
-            textSelection: undefined,
-        });
-
-        return;
-    }
-
     props.enqueue.assign({
-        frameInteractionStartTime: performance.now(),
+        frameTouchStartTime: Date.now(),
         frameInteractionStartPosition: props.event.position,
+        textSelectionBaseRange: undefined,
     });
 }
