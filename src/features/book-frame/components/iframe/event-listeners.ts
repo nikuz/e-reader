@@ -30,6 +30,9 @@ export class FrameEventObserver {
         // disable default text selection contextual menu
         this.window.addEventListener('contextmenu', this.contextMenuHandler);
 
+        // disable default text drag behavior
+        this.window.addEventListener('dragstart', this.dragStartEventHandler);
+
         this.window.addEventListener('resize', this.windowResizeHandler);
 
         if (this.document?.body) {
@@ -56,6 +59,7 @@ export class FrameEventObserver {
         }
 
         this.window.removeEventListener('contextmenu', this.contextMenuHandler);
+        this.window.removeEventListener('dragstart', this.dragStartEventHandler);
         this.window.removeEventListener('resize', this.windowResizeHandler);
 
         if (this.document?.body) {
@@ -141,6 +145,11 @@ export class FrameEventObserver {
                 textSelection: selection,
             }));
         }
+    };
+
+    dragStartEventHandler = (event: DragEvent) => {
+        // Prevent the browser from converting a long-press text selection into a drag-and-drop gesture.
+        event.preventDefault();
     };
     
     windowResizeHandler = () => {
