@@ -6,6 +6,7 @@ import {
     BookFrameIFrame,
     BookFrameSettings,
     BookFrameTabBar,
+    BookFrameTextSelectionControls,
 } from './components';
 import { SettingsWatcher } from './settings-watcher';
 import {
@@ -49,6 +50,8 @@ export default function BookFrame() {
         {!bookIsLoading && !bookLoadErrorMessage && chapterUrl && (
             <BookFrameIFrame />
         )}
+
+        <BookFrameTextSelectionControls />
 
         <BookFrameTabBar />
 
