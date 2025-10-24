@@ -8,10 +8,10 @@ export function pageTurnPrevAction(props: {
     },
 }) {
     const iframeEl = props.context.iframeEl;
-    const window = iframeEl?.contentWindow;
+    const iframeWindow = iframeEl?.contentWindow;
     const bookAttributes = props.context.bookAttributes;
 
-    if (!window || !bookAttributes) {
+    if (!iframeWindow || !bookAttributes) {
         return;
     }
 
@@ -26,7 +26,7 @@ export function pageTurnPrevAction(props: {
     
     // scroll within the chapter
     if (prevScrollPosition >= 0) {
-        window.scrollTo({ left: prevScrollPosition });
+        iframeWindow.scrollTo({ left: prevScrollPosition });
         contextUpdate.readProgress = {
             ...readProgress,
             page: prevPage,

@@ -7,6 +7,7 @@ export interface LibraryStateContext {
     navigator?: NavigateFunction,
 
     storedBooks: BookAttributes[],
+    rawStoredBooks: BookAttributes[],
     lastSelectedBook?: BookAttributes,
 
     errorMessage?: string,
@@ -34,9 +35,15 @@ export interface RemoveBookEvent {
     bookAttributes: BookAttributes,
 }
 
+export interface UpdateBookHighlightsEvent {
+    type: 'UPDATE_BOOK_HIGHLIGHTS',
+    bookAttributes: BookAttributes,
+}
+
 export type LibraryStateEvents =
     | SetNavigatorEvent
     | OpenFileEvent
     | CloseErrorToastEvent
     | SelectBookEvent
-    | RemoveBookEvent;
+    | RemoveBookEvent
+    | UpdateBookHighlightsEvent;

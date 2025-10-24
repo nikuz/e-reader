@@ -12,6 +12,7 @@ export interface SettingsStateContext {
 
     settingsCSS: string,
     fontCSS: string,
+    highlightsCSSValue: string,
 
     errorMessage?: string,
 }

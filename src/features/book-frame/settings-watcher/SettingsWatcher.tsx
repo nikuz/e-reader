@@ -14,6 +14,8 @@ export function SettingsWatcher() {
     const lastSettingsCSS = useLast(settingsCSS);
     const fontCSS = useSettingsStateSelect('fontCSS');
     const lastFontCSS = useLast(fontCSS);
+    const highlightsCSSValue = useSettingsStateSelect('highlightsCSSValue');
+    const lastHighlightsCSSValue = useLast(highlightsCSSValue);
     const bookAttributesSnapshot = useBookFrameStateSnapshot('bookAttributes');
     const currentChapterUrlSnapshot = useBookFrameStateSnapshot('chapterUrl');
 
@@ -27,20 +29,27 @@ export function SettingsWatcher() {
     }, []);
     
     useEffect(() => {
-        if (!lastSettingsCSS || (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS)) {
+        if (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS && highlightsCSSValue === lastHighlightsCSSValue) {
             return;
         }
         
-        if (settingsCSS !== lastSettingsCSS) {
+        if (lastSettingsCSS && settingsCSS !== lastSettingsCSS) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_SETTINGS_CSS',
                 settingsCSS,
             });
         }
-        if (fontCSS !== lastFontCSS) {
+        if (lastFontCSS && fontCSS !== lastFontCSS) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_FONT_CSS',
                 fontCSS,
+            });
+        }
+
+        if (lastHighlightsCSSValue && highlightsCSSValue !== lastHighlightsCSSValue) {
+            bookFrameStateMachineActor.send({
+                type: 'UPDATE_HIGHLIGHTS_CSS',
+                highlightsCSSValue,
             });
         }
 
@@ -51,10 +60,20 @@ export function SettingsWatcher() {
                 bookAttributes,
                 settingsCSS,
                 fontCSS,
+                highlightsCSSValue,
                 currentChapterUrl: currentChapterUrlSnapshot(),
             });
         }
-    }, [settingsCSS, lastSettingsCSS, fontCSS, lastFontCSS, bookAttributesSnapshot, currentChapterUrlSnapshot]);
+    }, [
+        settingsCSS,
+        lastSettingsCSS,
+        fontCSS,
+        lastFontCSS,
+        highlightsCSSValue,
+        lastHighlightsCSSValue,
+        bookAttributesSnapshot,
+        currentChapterUrlSnapshot,
+    ]);
 
     useEffect(() => {
         worker.addEventListener('message', workerMessageHandler);

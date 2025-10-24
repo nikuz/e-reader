@@ -14,7 +14,11 @@ const defaultHighlightValues: HighlightProps = {
     highlightColor: '#FFEB3B',
 };
 
-export type HighlightSettings = SettingsGroup<HighlightProps> & HighlightProps;
+export type HighlightSettings = SettingsGroup<HighlightProps>
+    & HighlightProps
+    & {
+        getHighlightCssValue: () => string,
+    };
 
 export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> implements HighlightSettings {
     static id = 'highlight';
@@ -39,7 +43,7 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
         return JSON.stringify(this.toObject());
     }
 
-    toCss(): string {
+    getHighlightCssValue(): string {
         let cssValue = '';
 
         switch (this.selectedHighlightType) {
@@ -75,8 +79,12 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
                 break;
         }
 
-        return `
-            ::selection { ${cssValue} }
-        `;
+        return cssValue;
+    }
+
+    toCss(): string {
+        const cssValue = this.getHighlightCssValue();
+
+        return `::selection { ${cssValue} }`;
     }
 }

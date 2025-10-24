@@ -4,6 +4,8 @@ import {
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_ID,
     FONT_CSS_PLACEHOLDER,
+    HIGHLIGHTS_CSS_ID,
+    HIGHLIGHTS_CSS_PLACEHOLDER,
 } from 'src/features/book-frame/constants';
 import { pathUtils } from 'src/utils';
 import { replaceStyleUrls } from './styles';
@@ -40,9 +42,16 @@ export async function replaceStaticContentUrls(props: {
     });
     
     const fontsStyleNode = `<style id="${FONT_CSS_ID}">${FONT_CSS_PLACEHOLDER}</style>`;
+    const highlightsStyleNode = `<style id="${HIGHLIGHTS_CSS_ID}">${HIGHLIGHTS_CSS_PLACEHOLDER}</style>`;
     const injectedStyleNode = `<style id="${INJECTED_CSS_ID}">${INJECTED_CSS_PLACEHOLDER}</style>`;
     
-    modifiedFileContent = modifiedFileContent.replace('</head>', `${fontsStyleNode}${injectedStyleNode}</head>`);
+    modifiedFileContent = modifiedFileContent.replace(
+        '</head>',
+        `${fontsStyleNode}
+        ${highlightsStyleNode}
+        ${injectedStyleNode}
+        </head>`
+    );
     
     await FileStorageController.writeFile({
         path: fileFullPath,

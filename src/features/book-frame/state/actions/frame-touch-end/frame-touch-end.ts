@@ -32,16 +32,20 @@ export function frameTouchEndAction(props: {
             || (frameTouchMoveTime && frameTouchMoveTime > textSelectionCreateEndtimeTime)
         )
     ) {
+        // remove old highlight
         textSelection?.removeAllRanges();
         contextUpdate.textSelection = undefined;
         contextUpdate.textSelectionCreateEndtimeTime = undefined;
+    } else if (hasSelectedText) {
+        // store new highlight
+        props.enqueue.raise({ type: 'STORE_HIGHLIGHT' });
     }
     
     const iframeEl = props.context.iframeEl;
-    const contentWindow = iframeEl?.contentWindow;
+    const iframeWindow = iframeEl?.contentWindow;
     const iframeDocument = iframeEl?.contentDocument;
 
-    if (!iframeEl || !contentWindow || !iframeDocument || frameTouchMoveTime) {
+    if (!iframeEl || !iframeWindow || !iframeDocument || frameTouchMoveTime) {
         props.enqueue.assign(contextUpdate);
         return;
     }
@@ -54,7 +58,7 @@ export function frameTouchEndAction(props: {
     } else if (!hasSelectedText) {
         const position = props.event.position;
         const bodyRect = iframeDocument.body.getBoundingClientRect();
-        const x = position.x - contentWindow.scrollX;
+        const x = position.x - iframeWindow.scrollX;
 
         // left side touch
         if (x < bodyRect.width / 100 * 30) {

@@ -17,6 +17,7 @@ export default function AppRouter() {
                     <Route path={RouterPath.LIBRARY} element={<Library />} />
                     <Route path={RouterPath.BOOK} element={<BookFrame />} />
                     <Route path={RouterPath.DICTIONARY} element={<Dictionary />} />
+                    <Route path="*" element={null} /> 
                 </Route>
             </Routes>
         </BrowserRouter>

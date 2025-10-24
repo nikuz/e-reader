@@ -5,11 +5,16 @@ import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
-import { INJECTED_CSS_PLACEHOLDER, FONT_CSS_PLACEHOLDER } from '../../../constants';
+import {
+    INJECTED_CSS_PLACEHOLDER,
+    FONT_CSS_PLACEHOLDER,
+    HIGHLIGHTS_CSS_PLACEHOLDER,
+} from '../../../constants';
 import {
     webRetrieveStaticContent,
     getReadProgressStorageKey,
     getInjectedCSS,
+    generateChapterHighlightsCss,
 } from '../../../utils';
 import type { BookReadProgress } from 'src/features/book-frame/types';
 
@@ -26,6 +31,7 @@ export const bookLoaderActor = fromPromise(async (props: {
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const settingsCSS = settingsSnapshot.settingsCSS;
     const fontCSS = settingsSnapshot.fontCSS;
+    const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
     const injectedCSS = getInjectedCSS(settingsCSS);
     const readProgress = await Preferences.get({ key: getReadProgressStorageKey(bookAttributes) });
 
@@ -35,6 +41,7 @@ export const bookLoaderActor = fromPromise(async (props: {
             jobs.push((async () => {
                 const chapter = spine[key];
                 const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapter.filePath]);
+                const highlightCSS = generateChapterHighlightsCss(bookAttributes.highlights[key], highlightsCSSValue);
 
                 const fileReadResponse = await FileStorageController.readFile({
                     path: chapterFullPath,
@@ -44,7 +51,8 @@ export const bookLoaderActor = fromPromise(async (props: {
                 const originalContent = fileReadResponse.data as string;
                 const modifiedContent = originalContent
                     .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
-                    .replace(FONT_CSS_PLACEHOLDER, fontCSS);
+                    .replace(FONT_CSS_PLACEHOLDER, fontCSS)
+                    .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
 
                 const blob = new Blob([modifiedContent], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
@@ -64,6 +72,7 @@ export const bookLoaderActor = fromPromise(async (props: {
         for (const key in spine) {
             const chapter = spine[key];
             const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapter.filePath]);
+            const highlightCSS = generateChapterHighlightsCss(bookAttributes.highlights[key], highlightsCSSValue);
 
             const fileContent = await FileStorageController.readFile({
                 path: chapterFullPath,
@@ -77,7 +86,8 @@ export const bookLoaderActor = fromPromise(async (props: {
             const originalContent = serializer.serializeToString(xmlDoc);
             const modifiedContent = originalContent
                 .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
-                .replace(FONT_CSS_PLACEHOLDER, fontCSS);
+                .replace(FONT_CSS_PLACEHOLDER, fontCSS)
+                .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
 
             const blob = new Blob([modifiedContent], { type: 'text/html' });
             const blobUrl = URL.createObjectURL(blob);

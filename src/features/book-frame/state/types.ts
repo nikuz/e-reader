@@ -104,8 +104,17 @@ export interface UpdateFontCSSEvent {
     fontCSS: string,
 }
 
+export interface UpdateHighlightsCSSEvent {
+    type: 'UPDATE_HIGHLIGHTS_CSS',
+    highlightsCSSValue: string,
+}
+
 export interface HideMenuPanelsEvent {
     type: 'HIDE_MENU_PANELS',
+}
+
+export interface StoreHighlightAction {
+    type: 'STORE_HIGHLIGHT',
 }
 
 export type BookFrameStateEvents =
@@ -127,4 +136,6 @@ export type BookFrameStateEvents =
     | UpdateBookAttributesEvent
     | UpdateSettingsCSSEvent
     | UpdateFontCSSEvent
-    | HideMenuPanelsEvent;
+    | UpdateHighlightsCSSEvent
+    | HideMenuPanelsEvent
+    | StoreHighlightAction;

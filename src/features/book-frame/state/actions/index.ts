@@ -11,3 +11,5 @@ export * from './select-text';
 export * from './update-book-attributes';
 export * from './update-settings-css';
 export * from './update-font-css';
+export * from './store-highlight';
+export * from './update-highlights-css';

@@ -18,6 +18,7 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         dirname: '',
 
         spine: [],
+        highlights: [],
         addedAt: Date.now(),
     };
 

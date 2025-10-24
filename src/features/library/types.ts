@@ -16,6 +16,9 @@ export interface BookAttributes {
     // spine
     spine: BookChapter[],
 
+    // highlights
+    highlights: BookHighlight[][],
+
     addedAt: number,
 }
 
@@ -34,3 +37,12 @@ export interface BookNavigationEpub2NavPoint {
 export interface BookNavigationEpub2 {
     navMap: BookNavigationEpub2NavPoint[];
 }
+
+export interface BookHighlight {
+    id: string,
+    startXPath: string,
+    startOffset: number,
+    endXPath: string,
+    endOffset: number,
+    range?: Range,
+};

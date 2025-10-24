@@ -8,7 +8,8 @@ export const initiation: DatabaseMigration = {
             id string PRIMARY KEY,
             title TEXT NOT NULL,
             author TEXT NOT NULL,
-            attributes TEXT NOT NULL
+            attributes TEXT NOT NULL,
+            highlights TEXT
         );`
     ],
 };

@@ -8,7 +8,7 @@ import {
     fileOpenerActor,
     bookSelectorActor,
     bookRemoverActor,
-    cleanupActor,
+    highlightUpdaterActor,
 } from './actors';
 import { addOpenedBookAction, selectBookAction } from './actions';
 import type {
@@ -17,6 +17,7 @@ import type {
     OpenFileEvent,
     RemoveBookEvent,
     SelectBookEvent,
+    UpdateBookHighlightsEvent,
 } from './types';
 
 export const libraryStateMachine = setup({
@@ -25,7 +26,7 @@ export const libraryStateMachine = setup({
         fileOpenerActor,
         bookSelectorActor,
         bookRemoverActor,
-        cleanupActor,
+        highlightUpdaterActor,
     },
     types: {
         context: {} as LibraryStateContext,
@@ -37,6 +38,7 @@ export const libraryStateMachine = setup({
     context: {
         dbController: new DatabaseController<BookAttributes>(LIBRARY_DB_CONFIG),
         storedBooks: [],
+        rawStoredBooks: [],
     },
 
     initial: 'INITIALIZING',
@@ -50,6 +52,7 @@ export const libraryStateMachine = setup({
                     actions: assign(() => ({ errorMessage: undefined })),
                 },
                 SELECT_BOOK: 'SELECTING_BOOK',
+                UPDATE_BOOK_HIGHLIGHTS: 'UPDATING_BOOK_HIGHLIGHTS',
             },
         },
 
@@ -63,14 +66,20 @@ export const libraryStateMachine = setup({
                     target: 'IDLE',
                     actions: assign(({ event }) => ({
                         storedBooks: event.output.books,
+                        rawStoredBooks: [...event.output.books.map(item => ({
+                            ...item,
+                        }))],
                         lastSelectedBook: event.output.lastSelectedBook,
                     })),
                 },
                 onError: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        errorMessage: event.error?.toString(),
-                    })),
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
                 },
             },
         },
@@ -147,21 +156,23 @@ export const libraryStateMachine = setup({
             },
         },
 
-        CLEANING_UP: {
+        UPDATING_BOOK_HIGHLIGHTS: {
             invoke: {
-                src: 'cleanupActor',
-                input: ({ context }) => ({
+                src: 'highlightUpdaterActor',
+                input: ({ event, context }) => ({
+                    bookAttributes: (event as UpdateBookHighlightsEvent).bookAttributes,
+                    rawStoredBooks: context.rawStoredBooks,
                     dbController: context.dbController,
                 }),
-                onDone: {
-                    target: 'IDLE',
-                    actions: assign(() => ({ storedBooks: [] })),
-                },
+                onDone: 'IDLE',
                 onError: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        errorMessage: event.error?.toString(),
-                    })),
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
                 },
             },
         },
