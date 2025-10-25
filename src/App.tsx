@@ -26,10 +26,14 @@ export default function App() {
                 book: lastSelectedBook,
             });
             if (location.pathname !== RouterPath.BOOK) {
-                navigate(RouterPath.BOOK);
+                requestAnimationFrame(() => {
+                    navigate(RouterPath.BOOK, { replace: true });
+                });
             }
         } else if (!lastSelectedBook && location.pathname !== RouterPath.LIBRARY) {
-            navigate(RouterPath.LIBRARY);
+            requestAnimationFrame(() => {
+                navigate(RouterPath.LIBRARY, { replace: true });
+            });
         }
     }, [lastSelectedBook, location, navigate]);
 
@@ -39,9 +43,6 @@ export default function App() {
                 square
                 elevation={0}
                 className="relative h-full overflow-hidden"
-                sx={{
-                    padding: 'env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0',
-                }}
             >
                 <Outlet />
                 <Debug />

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Toast, PageLoader } from 'src/design-system/components';
+import { Box, Toast, PageLoader } from 'src/design-system/components';
 import { RouterPath } from 'src/router/constants';
 import {
     BookFrameTopMenu,
@@ -26,35 +26,42 @@ export default function BookFrame() {
         navigate(RouterPath.LIBRARY);
     };
 
-    return <>
-        <BookFrameTopMenu>
-            <BookFrameSettings />
-        </BookFrameTopMenu>
+    return (
+        <Box
+            className="h-full bg-black"
+            sx={{
+                padding: 'env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0',
+            }}
+        >
+            <BookFrameTopMenu>
+                <BookFrameSettings />
+            </BookFrameTopMenu>
 
-        {bookIsLoading && (
-            <PageLoader />
-        )}
+            {bookIsLoading && (
+                <PageLoader />
+            )}
 
-        {!bookIsLoading && bookLoadErrorMessage && (
-            <Toast
-                color="error"
-                withToolbar
-                onClose={closeErrorHandler}
-            >
-                Book rendering error
-                <br />
-                {bookLoadErrorMessage}
-            </Toast>
-        )}
+            {!bookIsLoading && bookLoadErrorMessage && (
+                <Toast
+                    color="error"
+                    withToolbar
+                    onClose={closeErrorHandler}
+                >
+                    Book rendering error
+                    <br />
+                    {bookLoadErrorMessage}
+                </Toast>
+            )}
 
-        {!bookIsLoading && !bookLoadErrorMessage && chapterUrl && (
-            <BookFrameIFrame />
-        )}
+            {!bookIsLoading && !bookLoadErrorMessage && chapterUrl && (
+                <BookFrameIFrame />
+            )}
 
-        <BookFrameTextSelectionControls />
+            <BookFrameTextSelectionControls />
 
-        <BookFrameTabBar />
+            <BookFrameTabBar />
 
-        <SettingsWatcher />
-    </>;
+            <SettingsWatcher />
+        </Box>
+    );
 }

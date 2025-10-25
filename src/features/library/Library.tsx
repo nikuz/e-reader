@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
+import { Box, AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
 import {
@@ -20,7 +20,12 @@ export default function Library() {
     };
 
     return (
-        <div className="h-full">
+        <Box
+            className="h-full"
+            sx={{
+                padding: 'env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0',
+            }}
+        >
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -52,6 +57,6 @@ export default function Library() {
             <AddBookButton />
 
             <StateSupplier />
-        </div>
+        </Box>
     );
 }
