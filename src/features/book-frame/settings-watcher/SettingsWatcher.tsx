@@ -16,14 +16,14 @@ export function SettingsWatcher() {
     const lastFontCSS = useLast(fontCSS);
     const highlightsCSSValue = useSettingsStateSelect('highlightsCSSValue');
     const lastHighlightsCSSValue = useLast(highlightsCSSValue);
-    const bookAttributesSnapshot = useBookFrameStateSnapshot('bookAttributes');
+    const bookSnapshot = useBookFrameStateSnapshot('book');
     const currentChapterUrlSnapshot = useBookFrameStateSnapshot('chapterUrl');
 
     const workerMessageHandler = useCallback((event: MessageEvent<WorkerBookAttributesUpdateMessage>) => {
         if (event.data.type === 'WORKER_BOOK_ATTRIBUTE_UPDATE') {
             bookFrameStateMachineActor.send({
-                ...event.data,
-                type: 'UPDATE_BOOK_ATTRIBUTES',
+                type: 'UPDATE_BOOK_SPINE',
+                spine: event.data.bookAttributes.spine,
             });
         }
     }, []);
@@ -53,11 +53,11 @@ export function SettingsWatcher() {
             });
         }
 
-        const bookAttributes = bookAttributesSnapshot();
-        if (bookAttributes) {
+        const book = bookSnapshot();
+        if (book) {
             worker.postMessage({
                 type: 'SETTINGS_CSS_CHANGE',
-                bookAttributes,
+                bookAttributes: book.toTransferableObject(),
                 settingsCSS,
                 fontCSS,
                 highlightsCSSValue,
@@ -71,7 +71,7 @@ export function SettingsWatcher() {
         lastFontCSS,
         highlightsCSSValue,
         lastHighlightsCSSValue,
-        bookAttributesSnapshot,
+        bookSnapshot,
         currentChapterUrlSnapshot,
     ]);
 

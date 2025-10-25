@@ -1,11 +1,11 @@
 import type { DoneActorEvent } from 'xstate';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { RouterPath } from 'src/router/constants';
-import type { BookAttributes } from 'src/types';
+import type { Book } from 'src/models';
 import type { LibraryStateContext } from '../../types';
 
 export function addOpenedBookAction(props: {
-    event: DoneActorEvent<BookAttributes | undefined>,
+    event: DoneActorEvent<Book | undefined>,
     context: LibraryStateContext,
     enqueue: { assign: (context: Partial<LibraryStateContext>) => void },
 }) {
@@ -27,7 +27,7 @@ export function addOpenedBookAction(props: {
 
     bookFrameStateMachineActor.send({
         type: 'LOAD_BOOK',
-        bookAttributes: newBook,
+        book: newBook,
     });
     props.context.navigator?.(RouterPath.BOOK);
 }

@@ -23,7 +23,7 @@ export default function App() {
         if (lastSelectedBook && location.pathname !== RouterPath.LIBRARY) {
             bookFrameStateMachineActor.send({
                 type: 'LOAD_BOOK',
-                bookAttributes: lastSelectedBook,
+                book: lastSelectedBook,
             });
             if (location.pathname !== RouterPath.BOOK) {
                 navigate(RouterPath.BOOK);

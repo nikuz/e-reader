@@ -1,11 +1,9 @@
 import { settingsStateMachineActor } from 'src/features/settings/state';
-// import { libraryStateMachineActor } from 'src/features/library/state';
+import { libraryStateMachineActor } from 'src/features/library/state';
 import type { BookHighlight } from 'src/types';
 import { getXpathForNode, generateChapterHighlightsCss } from '../../../utils';
 import { HIGHLIGHTS_CSS_ID, HIGHLIGHTS_SELECTOR_PREFIX } from '../../../constants';
-import type {
-    BookFrameStateContext,
-} from '../../types';
+import type { BookFrameStateContext } from '../../types';
 
 export function storeHighlightAction(props: {
     context: BookFrameStateContext,
@@ -13,7 +11,7 @@ export function storeHighlightAction(props: {
         assign: (context: Partial<BookFrameStateContext>) => void,
     },
 }) {
-    const bookAttributes = props.context.bookAttributes;
+    const book = props.context.book;
     const readProgress = props.context.readProgress;
     const iframeEl = props.context.iframeEl;
     const iframeWindow = iframeEl?.contentWindow;
@@ -21,13 +19,13 @@ export function storeHighlightAction(props: {
     const textSelection = props.context.textSelection;
     const selectionRange = textSelection?.getRangeAt(0);
 
-    if (!bookAttributes || !iframeDocument || !iframeWindow || !selectionRange) {
+    if (!book || !iframeDocument || !iframeWindow || !selectionRange) {
         return;
     }
 
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
-    const bookHighlights = [...bookAttributes.highlights];
+    const bookHighlights = [...book.highlights];
     const newHighlight: BookHighlight = {
         id: `${HIGHLIGHTS_SELECTOR_PREFIX}${Date.now()}`,
         startXPath: getXpathForNode(selectionRange.startContainer, iframeDocument),
@@ -46,17 +44,15 @@ export function storeHighlightAction(props: {
 
     iframeWindow.CSS?.highlights.set(newHighlight.id, new Highlight(selectionRange));
 
-    const updatedBookAttributes = {
-        ...bookAttributes,
-        highlights: bookHighlights,
-    };
+    const bookClone = book.clone();
+    bookClone.highlights = bookHighlights;
 
     props.enqueue.assign({
-        bookAttributes: updatedBookAttributes,
+        book: bookClone,
     });
 
-    // libraryStateMachineActor.send({
-    //     type: 'UPDATE_BOOK_HIGHLIGHTS',
-    //     bookAttributes: updatedBookAttributes,
-    // });
+    libraryStateMachineActor.send({
+        type: 'UPDATE_BOOK_HIGHLIGHTS',
+        book: bookClone,
+    });
 }

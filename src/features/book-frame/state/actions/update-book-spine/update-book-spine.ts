@@ -1,14 +1,22 @@
 import type { BookFrameStateContext, UpdateBookAttributesEvent } from '../../types';
 
-export function updateBookAttributesAction(props: {
+export function updateBookSpineAction(props: {
     event: UpdateBookAttributesEvent,
     context: BookFrameStateContext,
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
-    const bookAttributes = props.event.bookAttributes;
+    const book = props.context.book;
+    const newSpine = props.event.spine;
+
+    if (!book) {
+        return;
+    }
+
+    const bookClone = book.clone();
+    bookClone.spine = newSpine;
 
     props.enqueue.assign({
-        bookAttributes,
+        book: bookClone,
         deferredRevokeChapterUrl: props.context.chapterUrl,
     });
 }

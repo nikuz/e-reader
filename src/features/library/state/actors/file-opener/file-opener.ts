@@ -13,13 +13,14 @@ import {
     retrieveNavigationEpub2,
 } from '../../../utils';
 import { LIBRARY_DIRECTORY } from '../../../constants';
+import { Book } from 'src/models';
 
 export const fileOpenerActor = fromPromise(async (props: {
     input: {
         file: File,
         dbController: DatabaseController<BookAttributes>,
     },
-}): Promise<BookAttributes | undefined> => {
+}): Promise<Book | undefined> => {
     const { file } = props.input;
     const zip = new JSZip();
 
@@ -99,10 +100,10 @@ export const fileOpenerActor = fromPromise(async (props: {
 
     await createBookInDB(props.input.dbController, bookAttributes);
 
-    return {
-        ...bookAttributes,
-        cover: await getBookCoverObjectUrl(bookAttributes),
-    };
+    const newBook = new Book(bookAttributes);
+    newBook.cover = await getBookCoverObjectUrl(bookAttributes);
+
+    return newBook;
 });
 
 async function createBookFoldersFromArchive(

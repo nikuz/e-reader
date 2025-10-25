@@ -14,20 +14,20 @@ import {
     Button,
 } from 'src/design-system/components';
 import { MoreVertIcon } from 'src/design-system/icons';
-import type { BookAttributes } from 'src/types';
 import { libraryStateMachineActor } from '../../state';
+import type { Book } from 'src/models';
 
 interface Props {
-    bookAttributes: BookAttributes,
+    book: Book,
 }
 
-export function BookCard({ bookAttributes }: Props) {
+export function BookCard({ book }: Props) {
     const [isPromptOpen, setIsPromptOpen] = useState(false);
 
     const selectHandler = () => {
         libraryStateMachineActor.send({
             type: 'SELECT_BOOK',
-            bookAttributes,
+            book,
         });
     };
 
@@ -43,17 +43,17 @@ export function BookCard({ bookAttributes }: Props) {
         closePromptHandler();
         libraryStateMachineActor.send({
             type: 'REMOVE_BOOK',
-            bookAttributes,
+            book,
         });
     };
 
     return <>
         <Card className="min-h-80 cursor-pointer rounded-b-lg">
-            {bookAttributes.cover && (
+            {book.cover && (
                 <CardMedia
                     component="img"
-                    image={bookAttributes.cover}
-                    alt={bookAttributes.title}
+                    image={book.cover}
+                    alt={book.title}
                     onClick={cardClickHandler}
                 />
             )}
@@ -62,7 +62,7 @@ export function BookCard({ bookAttributes }: Props) {
                     className="flex-1 text-sm !py-2 !pl-2"
                     onClick={cardClickHandler}
                 >
-                    {bookAttributes.title}
+                    {book.title}
                 </Typography>
                 <Dropdown
                     content={(closeDropdown) => (
@@ -96,7 +96,7 @@ export function BookCard({ bookAttributes }: Props) {
             onClose={closePromptHandler}
         >
             <DialogTitle>
-                {`Remove "${bookAttributes.title}" from your library?`}
+                {`Remove "${book.title}" from your library?`}
             </DialogTitle>
             <DialogActions>
                 <Button onClick={closePromptHandler}>Cancel</Button>

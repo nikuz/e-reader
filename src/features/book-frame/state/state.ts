@@ -14,8 +14,9 @@ import {
     selectTextAction,
     updateSettingsCSSAction,
     updateFontCSSAction,
-    updateBookAttributesAction,
+    updateBookSpineAction,
     storeHighlightAction,
+    restoreHighlightsAction,
     updateHighlightsCSSAction,
 } from './actions';
 import type {
@@ -96,11 +97,14 @@ export const bookFrameStateMachine = setup({
                 UPDATE_HIGHLIGHTS_CSS: {
                     actions: enqueueActions(updateHighlightsCSSAction),
                 },
-                UPDATE_BOOK_ATTRIBUTES: {
-                    actions: enqueueActions(updateBookAttributesAction),
+                UPDATE_BOOK_SPINE: {
+                    actions: enqueueActions(updateBookSpineAction),
                 },
                 STORE_HIGHLIGHT: {
                     actions: enqueueActions(storeHighlightAction),
+                },
+                RESTORE_HIGHLIGHTS: {
+                    actions: enqueueActions(restoreHighlightsAction),
                 },
             },
         },

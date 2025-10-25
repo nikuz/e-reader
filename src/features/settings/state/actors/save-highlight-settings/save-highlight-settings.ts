@@ -14,7 +14,6 @@ export const saveHighlightSettingsActor = fromPromise(async (props: {
 
     switch (event.type) {
         case 'SET_HIGHLIGHT_TYPE':
-            console.log(event.value);
             currentHighlightSettings.selectedHighlightType = event.value;
             break;
 

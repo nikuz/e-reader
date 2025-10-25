@@ -1,11 +1,12 @@
 import type { ActorRefFrom } from 'xstate';
-import type { BookAttributes, Size, Position } from 'src/types';
+import type { Book } from 'src/models';
+import type { BookChapter, Size, Position } from 'src/types';
 import type { BookReadProgress } from '../types';
 import { bookLoaderStateMachine } from '../loader/state';
 import type { SaveReadProgressEvent } from '../loader/types';
 
 export interface BookFrameStateContext {
-    bookAttributes?: BookAttributes,
+    book?: Book,
     readProgress: BookReadProgress,
 
     iframeEl?: HTMLIFrameElement,
@@ -34,12 +35,12 @@ export interface BookFrameStateContext {
 
 export interface LoadBookEvent {
     type: 'LOAD_BOOK',
-    bookAttributes: BookAttributes,
+    book: Book,
 }
 
 export interface BookLoadSuccessEvent {
     type: 'BOOK_LOAD_SUCCESS',
-    bookAttributes: BookAttributes,
+    book: Book,
     readProgress?: BookReadProgress,
 }
 
@@ -89,8 +90,8 @@ export interface SetTextSelectionEvent {
 }
 
 export interface UpdateBookAttributesEvent {
-    type: 'UPDATE_BOOK_ATTRIBUTES',
-    bookAttributes: BookAttributes,
+    type: 'UPDATE_BOOK_SPINE',
+    spine: BookChapter[],
 }
 
 export interface UpdateSettingsCSSEvent {
@@ -116,6 +117,10 @@ export interface StoreHighlightAction {
     type: 'STORE_HIGHLIGHT',
 }
 
+export interface RestoreHighlightsAction {
+    type: 'RESTORE_HIGHLIGHTS',
+}
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -137,4 +142,5 @@ export type BookFrameStateEvents =
     | UpdateFontCSSEvent
     | UpdateHighlightsCSSEvent
     | HideMenuPanelsEvent
-    | StoreHighlightAction;
+    | StoreHighlightAction
+    | RestoreHighlightsAction;

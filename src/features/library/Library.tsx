@@ -33,7 +33,7 @@ export default function Library() {
 
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
                 {storedBooks.map((item) => (
-                    <BookCard key={item.eisbn} bookAttributes={item} />
+                    <BookCard key={item.eisbn} book={item} />
                 ))}
             </div>
 

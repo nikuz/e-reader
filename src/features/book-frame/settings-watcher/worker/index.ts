@@ -32,7 +32,7 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
     const spine = [...bookAttributes.spine];
  
     for (const key in spine) {
-        const chapter = { ...bookAttributes.spine[key] };
+        const chapter = { ...spine[key] };
         if (chapter.url && chapter.content) {
             // revoke old URL to prevent memory leak,
             // but keep current chapter url to prevent page flickering on settingsCSS change,

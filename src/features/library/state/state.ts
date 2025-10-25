@@ -10,7 +10,11 @@ import {
     bookRemoverActor,
     highlightUpdaterActor,
 } from './actors';
-import { addOpenedBookAction, selectBookAction } from './actions';
+import {
+    addOpenedBookAction,
+    selectBookAction,
+    updateBookHighlightAction,
+} from './actions';
 import type {
     LibraryStateContext,
     LibraryStateEvents,
@@ -38,7 +42,6 @@ export const libraryStateMachine = setup({
     context: {
         dbController: new DatabaseController<BookAttributes>(LIBRARY_DB_CONFIG),
         storedBooks: [],
-        rawStoredBooks: [],
     },
 
     initial: 'INITIALIZING',
@@ -66,9 +69,6 @@ export const libraryStateMachine = setup({
                     target: 'IDLE',
                     actions: assign(({ event }) => ({
                         storedBooks: event.output.books,
-                        rawStoredBooks: [...event.output.books.map(item => ({
-                            ...item,
-                        }))],
                         lastSelectedBook: event.output.lastSelectedBook,
                     })),
                 },
@@ -111,7 +111,7 @@ export const libraryStateMachine = setup({
             invoke: {
                 src: 'bookSelectorActor',
                 input: ({ event }) => ({
-                    bookAttributes: (event as SelectBookEvent).bookAttributes,
+                    book: (event as SelectBookEvent).book,
                 }),
                 onDone: {
                     target: 'IDLE',
@@ -133,7 +133,7 @@ export const libraryStateMachine = setup({
             invoke: {
                 src: 'bookRemoverActor',
                 input: ({ event, context }) => ({
-                    bookAttributes: (event as RemoveBookEvent).bookAttributes,
+                    bookAttributes: (event as RemoveBookEvent).book,
                     dbController: context.dbController,
                 }),
                 onDone: {
@@ -160,11 +160,13 @@ export const libraryStateMachine = setup({
             invoke: {
                 src: 'highlightUpdaterActor',
                 input: ({ event, context }) => ({
-                    bookAttributes: (event as UpdateBookHighlightsEvent).bookAttributes,
-                    rawStoredBooks: context.rawStoredBooks,
+                    book: (event as UpdateBookHighlightsEvent).book,
                     dbController: context.dbController,
                 }),
-                onDone: 'IDLE',
+                onDone: {
+                    target: 'IDLE',
+                    actions: enqueueActions(updateBookHighlightAction),
+                },
                 onError: {
                     target: 'IDLE',
                     actions: [

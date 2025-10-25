@@ -4,7 +4,7 @@ import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
-import type { BookAttributes } from 'src/types';
+import type { Book } from 'src/models';
 import {
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_PLACEHOLDER,
@@ -20,28 +20,28 @@ import type { BookReadProgress } from 'src/features/book-frame/types';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {
-        bookAttributes: BookAttributes,
+        book: Book,
     },
 }): Promise<{
-    bookAttributes: BookAttributes,
+    book: Book,
     readProgress?: BookReadProgress,
 }> => {
-    const { bookAttributes } = props.input;
-    const spine = [ ...bookAttributes.spine ];
+    const { book } = props.input;
+    const spine = [...book.spine ];
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const settingsCSS = settingsSnapshot.settingsCSS;
     const fontCSS = settingsSnapshot.fontCSS;
     const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
     const injectedCSS = getInjectedCSS(settingsCSS);
-    const readProgress = await Preferences.get({ key: getReadProgressStorageKey(bookAttributes) });
+    const readProgress = await Preferences.get({ key: getReadProgressStorageKey(book) });
 
     if (Capacitor.isNativePlatform()) {
         const jobs: Promise<void>[] = [];
         for (const key in spine) {
             jobs.push((async () => {
                 const chapter = spine[key];
-                const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapter.filePath]);
-                const highlightCSS = generateChapterHighlightsCss(bookAttributes.highlights[key], highlightsCSSValue);
+                const chapterFullPath = pathUtils.join([book.dirname, chapter.filePath]);
+                const highlightCSS = generateChapterHighlightsCss(book.highlights[key], highlightsCSSValue);
 
                 const fileReadResponse = await FileStorageController.readFile({
                     path: chapterFullPath,
@@ -71,8 +71,8 @@ export const bookLoaderActor = fromPromise(async (props: {
     else {
         for (const key in spine) {
             const chapter = spine[key];
-            const chapterFullPath = pathUtils.join([bookAttributes.dirname, chapter.filePath]);
-            const highlightCSS = generateChapterHighlightsCss(bookAttributes.highlights[key], highlightsCSSValue);
+            const chapterFullPath = pathUtils.join([book.dirname, chapter.filePath]);
+            const highlightCSS = generateChapterHighlightsCss(book.highlights[key], highlightsCSSValue);
 
             const fileContent = await FileStorageController.readFile({
                 path: chapterFullPath,
@@ -100,11 +100,10 @@ export const bookLoaderActor = fromPromise(async (props: {
         }
     }
 
+    book.spine = spine;
+
     return {
-        bookAttributes: {
-            ...bookAttributes,
-            spine,
-        },
+        book,
         readProgress: readProgress.value ? JSON.parse(readProgress.value) : undefined
     };
 });

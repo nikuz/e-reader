@@ -1,14 +1,14 @@
 import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
+import type { Book } from 'src/models';
 import type { BookAttributes } from 'src/types';
 
 export interface LibraryStateContext {
     dbController: DatabaseController<BookAttributes>,
     navigator?: NavigateFunction,
 
-    storedBooks: BookAttributes[],
-    rawStoredBooks: BookAttributes[],
-    lastSelectedBook?: BookAttributes,
+    storedBooks: Book[],
+    lastSelectedBook?: Book,
 
     errorMessage?: string,
 }
@@ -27,17 +27,17 @@ interface CloseErrorToastEvent { type: 'CLOSE_ERROR_TOAST' }
 
 export interface SelectBookEvent {
     type: 'SELECT_BOOK',
-    bookAttributes: BookAttributes,
+    book: Book,
 }
 
 export interface RemoveBookEvent {
     type: 'REMOVE_BOOK',
-    bookAttributes: BookAttributes,
+    book: Book,
 }
 
 export interface UpdateBookHighlightsEvent {
     type: 'UPDATE_BOOK_HIGHLIGHTS',
-    bookAttributes: BookAttributes,
+    book: Book,
 }
 
 export type LibraryStateEvents =

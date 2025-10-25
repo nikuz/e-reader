@@ -9,9 +9,9 @@ export function pageTurnNextAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const iframeWindow = iframeEl?.contentWindow;
-    const bookAttributes = props.context.bookAttributes;
+    const book = props.context.book;
     
-    if (!iframeWindow || !bookAttributes) {
+    if (!iframeWindow || !book) {
         return;
     }
     
@@ -35,13 +35,13 @@ export function pageTurnNextAction(props: {
     }
     // change the chapter
     else {
-        const nextChapter = Math.min(readProgress.chapter + 1, bookAttributes.spine.length - 1);
+        const nextChapter = Math.min(readProgress.chapter + 1, book.spine.length - 1);
 
         contextUpdate.readProgress = {
             page: 0,
             chapter: nextChapter,
         };
-        contextUpdate.chapterUrl = bookAttributes.spine[nextChapter].url;
+        contextUpdate.chapterUrl = book.spine[nextChapter].url;
         contextUpdate.prevChapter = readProgress.chapter;
         contextUpdate.scrollPosition = 0;
 

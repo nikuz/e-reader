@@ -4,7 +4,7 @@ export function revokePrevBookUrlsAction(props: {
     context: BookLoaderStateContext,
     enqueue: { assign: (context: Partial<BookLoaderStateContext>) => void },
 }) {
-    const prevBook = props.context.bookAttributes;
+    const prevBook = props.context.book;
     if (!prevBook) {
         return;
     }
@@ -16,6 +16,6 @@ export function revokePrevBookUrlsAction(props: {
     }
 
     props.enqueue.assign({
-        bookAttributes: undefined,
+        book: undefined,
     });
 }

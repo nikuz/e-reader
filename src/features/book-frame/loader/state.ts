@@ -39,10 +39,10 @@ export const bookLoaderStateMachine = setup({
                 onDone: {
                     target: 'IDLE',
                     actions: [
-                        assign(({ event }) => ({ bookAttributes: event.output.bookAttributes })),
+                        assign(({ event }) => ({ book: event.output.book })),
                         sendParent(({ event }): BookLoadSuccessEvent => ({
                             type: 'BOOK_LOAD_SUCCESS',
-                            bookAttributes: event.output.bookAttributes,
+                            book: event.output.book,
                             readProgress: event.output.readProgress,
                         })),
                     ],
@@ -64,7 +64,7 @@ export const bookLoaderStateMachine = setup({
             invoke: {
                 src: 'readProgressSaverActor',
                 input: ({ event, context }) => ({
-                    bookAttributes: context.bookAttributes,
+                    book: context.book,
                     readProgress: (event as SaveReadProgressEvent).progress,
                 }),
                 onDone: 'IDLE',

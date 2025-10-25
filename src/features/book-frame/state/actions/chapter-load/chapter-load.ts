@@ -55,4 +55,5 @@ export function chapterLoadAction(props: {
     }
 
     props.enqueue.assign(contextUpdate);
+    props.enqueue.raise({ type: 'RESTORE_HIGHLIGHTS' });
 }

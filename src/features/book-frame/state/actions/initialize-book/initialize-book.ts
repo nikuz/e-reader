@@ -6,13 +6,13 @@ export function initializeBookAction(props: {
     context: BookFrameStateContext,
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
-    const bookAttributes = props.event.bookAttributes;
+    const book = props.event.book;
     const readProgress = props.event.readProgress ?? props.context.readProgress;
 
     props.enqueue.assign({
-        bookAttributes,
+        book,
         readProgress,
-        chapterUrl: bookAttributes.spine[readProgress.chapter].url,
+        chapterUrl: book.spine[readProgress.chapter].url,
         menuPanelsVisible: false,
     });
 

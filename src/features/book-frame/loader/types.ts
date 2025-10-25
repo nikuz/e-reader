@@ -1,13 +1,13 @@
-import type { BookAttributes } from 'src/types';
+import type { Book } from 'src/models';
 import type { BookReadProgress } from '../types';
 
 export interface BookLoaderStateContext {
-    bookAttributes?: BookAttributes,
+    book?: Book,
 }
 
 export interface LoadBookEvent {
     type: 'LOAD_BOOK',
-    bookAttributes: BookAttributes,
+    book: Book,
 }
 
 export interface SaveReadProgressEvent {

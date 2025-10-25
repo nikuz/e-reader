@@ -1,12 +1,14 @@
-import type { SerializedRange } from '../../types';
+import type { BookHighlight } from 'src/types';
 import { getNodeFromXPath } from '../get-node-from-xpath';
 
-export function deserializeTextSelection(data: SerializedRange, root: Document): Range | null {
+export function deserializeTextSelection(data: BookHighlight, root: Document): Range | undefined {
     const range = document.createRange();
     const startNode = getNodeFromXPath(data.startXPath, root);
     const endNode = getNodeFromXPath(data.endXPath, root);
 
-    if (!startNode || !endNode) return null;
+    if (!startNode || !endNode) {
+        return;
+    }
 
     // Guard: make sure offsets are within bounds
     const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
@@ -28,7 +30,7 @@ export function deserializeTextSelection(data: SerializedRange, root: Document):
         range.setStart(startNode, startOffset);
         range.setEnd(endNode, endOffset);
     } catch {
-        return null;
+        return;
     }
     
     return range;

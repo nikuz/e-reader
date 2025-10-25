@@ -7,18 +7,18 @@ export function updateHighlightsCSSAction(props: {
     context: BookFrameStateContext,
     enqueue: { assign: (context: Partial<BookFrameStateContext>) => void },
 }) {
-    const bookAttributes = props.context.bookAttributes;
+    const book = props.context.book;
     const readProgress = props.context.readProgress;
     const iframeEl = props.context.iframeEl;
     const iframeDocument = iframeEl?.contentDocument;
     const highlightsCSSNode = iframeDocument?.getElementById(HIGHLIGHTS_CSS_ID);
 
-    if (!bookAttributes || !highlightsCSSNode) {
+    if (!book || !highlightsCSSNode) {
         return;
     }
     
     highlightsCSSNode.textContent = generateChapterHighlightsCss(
-        bookAttributes.highlights[readProgress.chapter],
+        book.highlights[readProgress.chapter],
         props.event.highlightsCSSValue
     );
 }

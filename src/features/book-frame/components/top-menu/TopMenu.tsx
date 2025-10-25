@@ -19,7 +19,7 @@ interface Props {
 }
 
 export function BookFrameTopMenu(props: Props) {
-    const bookAttributes = useBookFrameStateSelect('bookAttributes');
+    const book = useBookFrameStateSelect('book');
     const menuPanelsVisible = useBookFrameStateSelect('menuPanelsVisible');
     const navigate = useNavigate();
 
@@ -53,7 +53,7 @@ export function BookFrameTopMenu(props: Props) {
                                 <ArrowBackIosNewIcon />
                             </IconButton>
                             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                                {bookAttributes?.title}
+                                {book?.title}
                             </Typography>
                             {props.children}
                         </Toolbar>

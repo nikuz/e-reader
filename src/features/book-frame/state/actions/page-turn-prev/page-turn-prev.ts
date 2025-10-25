@@ -9,9 +9,9 @@ export function pageTurnPrevAction(props: {
 }) {
     const iframeEl = props.context.iframeEl;
     const iframeWindow = iframeEl?.contentWindow;
-    const bookAttributes = props.context.bookAttributes;
+    const book = props.context.book;
 
-    if (!iframeWindow || !bookAttributes) {
+    if (!iframeWindow || !book) {
         return;
     }
 
@@ -41,7 +41,7 @@ export function pageTurnPrevAction(props: {
             ...props.context.readProgress,
             chapter: prevChapter,
         };
-        contextUpdate.chapterUrl = bookAttributes.spine[prevChapter].url;
+        contextUpdate.chapterUrl = book.spine[prevChapter].url;
         contextUpdate.prevChapter = readProgress.chapter;
         
         if (props.context.deferredRevokeChapterUrl) {
