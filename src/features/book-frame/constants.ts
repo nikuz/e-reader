@@ -7,4 +7,4 @@ export const FONT_CSS_ID = 'font_css';
 export const FONT_CSS_PLACEHOLDER = '{font_css}';
 export const HIGHLIGHTS_CSS_ID = 'highlights_css';
 export const HIGHLIGHTS_CSS_PLACEHOLDER = '{highlights_css}';
-export const HIGHLIGHTS_SELECTOR_PREFIX = 'h_';
+export const HIGHLIGHTS_SELECTOR_PREFIX = 'h';

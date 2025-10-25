@@ -54,12 +54,14 @@ export class Book implements BookAttributes {
     toOriginal() {
         return {
             ...this.attributes,
-            highlights: this.highlights.map(chapter => chapter?.map(item => ({
+            highlights: this.highlights.map(chapter => chapter?.map((item): BookHighlight => ({
                 id: item.id,
                 startXPath: item.startXPath,
                 startOffset: item.startOffset,
                 endXPath: item.endXPath,
-                endOffset: item.endOffset
+                endOffset: item.endOffset,
+                text: item.text,
+                context: item.context,
             }))),
         };
     }

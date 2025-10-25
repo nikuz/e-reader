@@ -44,5 +44,7 @@ export interface BookHighlight {
     startOffset: number,
     endXPath: string,
     endOffset: number,
+    text: string,
+    context: string,
     range?: Range,
 };

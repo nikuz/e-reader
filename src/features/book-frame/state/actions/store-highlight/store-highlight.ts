@@ -5,6 +5,7 @@ import {
     getXpathForNode,
     generateChapterHighlightsCss,
     getInjectedCSS,
+    extractContextFromTextSelection,
 } from '../../../utils';
 import {
     HIGHLIGHTS_CSS_ID,
@@ -29,7 +30,7 @@ export function storeHighlightAction(props: {
     const textSelection = props.context.textSelection;
     const selectionRange = textSelection?.getRangeAt(0);
 
-    if (!book || !iframeDocument || !iframeWindow || !selectionRange) {
+    if (!book || !iframeDocument || !iframeWindow || !textSelection || !selectionRange) {
         return;
     }
 
@@ -37,14 +38,16 @@ export function storeHighlightAction(props: {
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
     const bookHighlights = [...book.highlights];
+    const chapterHighlights = [...(bookHighlights[readProgress.chapter] ?? [])];
     const newHighlight: BookHighlight = {
-        id: `${HIGHLIGHTS_SELECTOR_PREFIX}${Date.now()}`,
+        id: `${HIGHLIGHTS_SELECTOR_PREFIX}_${readProgress.chapter}_${chapterHighlights.length}`,
         startXPath: getXpathForNode(selectionRange.startContainer, iframeDocument),
         startOffset: selectionRange.startOffset,
         endXPath: getXpathForNode(selectionRange.endContainer, iframeDocument),
         endOffset: selectionRange.endOffset,
+        text: textSelection.toString(),
+        context: extractContextFromTextSelection(iframeDocument, selectionRange),
     };
-    const chapterHighlights = [...(bookHighlights[readProgress.chapter] ?? [])];
     chapterHighlights.push(newHighlight);
     bookHighlights[readProgress.chapter] = chapterHighlights;
 
