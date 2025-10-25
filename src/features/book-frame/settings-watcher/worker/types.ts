@@ -1,4 +1,4 @@
-import type { BookAttributes } from 'src/features/library/types';
+import type { BookAttributes } from 'src/types';
 
 export interface SettingsCSSChangeMessage {
     type: 'SETTINGS_CSS_CHANGE',

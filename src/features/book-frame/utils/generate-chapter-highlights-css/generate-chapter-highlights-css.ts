@@ -1,4 +1,4 @@
-import type { BookHighlight } from 'src/features/library/types';
+import type { BookHighlight } from 'src/types';
 
 export function generateChapterHighlightsCss(highlights: BookHighlight[] | undefined, cssValue: string): string {
     if (!highlights) {

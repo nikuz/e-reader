@@ -1,6 +1,5 @@
 import type { ActorRefFrom } from 'xstate';
-import type { BookAttributes } from 'src/features/library/types';
-import type { Size, Position } from 'src/types';
+import type { BookAttributes, Size, Position } from 'src/types';
 import type { BookReadProgress } from '../types';
 import { bookLoaderStateMachine } from '../loader/state';
 import type { SaveReadProgressEvent } from '../loader/types';

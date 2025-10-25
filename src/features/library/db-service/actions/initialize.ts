@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { DatabaseController } from 'src/controllers';
-import type { BookAttributes } from '../../types';
+import type { BookAttributes } from 'src/types';
 import migrations from '../migrations';
 
 export async function initializeDBService(db: DatabaseController<BookAttributes>) {

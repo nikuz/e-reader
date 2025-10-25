@@ -9,6 +9,7 @@ body {
     overflow: hidden;
     margin: 0;
     font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    background: #000;
 }
 
 #root {

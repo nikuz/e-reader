@@ -1,10 +1,10 @@
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
-import type { BookAttributes } from 'src/features/library/types';
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
+import type { BookAttributes } from 'src/types';
 import {
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_PLACEHOLDER,

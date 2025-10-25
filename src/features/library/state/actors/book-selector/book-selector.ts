@@ -1,7 +1,7 @@
 import { fromPromise } from 'xstate';
 import { Preferences } from '@capacitor/preferences';
+import type { BookAttributes } from 'src/types';
 import { LIBRARY_LAST_SELECTED_BOOK_STORAGE_KEY } from '../../../constants';
-import type { BookAttributes } from '../../../types';
 
 export const bookSelectorActor = fromPromise(async (props: {
     input: {

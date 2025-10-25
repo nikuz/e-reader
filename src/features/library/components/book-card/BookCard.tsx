@@ -14,8 +14,8 @@ import {
     Button,
 } from 'src/design-system/components';
 import { MoreVertIcon } from 'src/design-system/icons';
+import type { BookAttributes } from 'src/types';
 import { libraryStateMachineActor } from '../../state';
-import type { BookAttributes } from '../../types';
 
 interface Props {
     bookAttributes: BookAttributes,

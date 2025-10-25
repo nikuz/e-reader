@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { DatabaseController } from 'src/controllers';
+import type { BookAttributes } from 'src/types';
 import { LIBRARY_DB_CONFIG } from '../../constants';
-import type { BookAttributes } from '../../types';
 
 export async function updateHighlightsInDB(db: DatabaseController<BookAttributes>, book: BookAttributes) {
     if (Capacitor.isNativePlatform()) {

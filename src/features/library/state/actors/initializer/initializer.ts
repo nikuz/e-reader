@@ -2,13 +2,13 @@ import { fromPromise } from 'xstate';
 import { Preferences } from '@capacitor/preferences';
 import { FileStorageController } from 'src/controllers';
 import type { DatabaseController } from 'src/controllers';
-import { getBookCoverObjectUrl } from 'src/features/library/utils';
+import type { BookAttributes } from 'src/types';
 import { initializeDBService, getAllBooksFromDB } from '../../../db-service';
+import { getBookCoverObjectUrl } from '../../../utils';
 import {
     LIBRARY_DIRECTORY,
     LIBRARY_LAST_SELECTED_BOOK_STORAGE_KEY,
 } from '../../../constants';
-import type { BookAttributes } from '../../../types';
 
 export const initializerActor = fromPromise(async (props: {
     input: {

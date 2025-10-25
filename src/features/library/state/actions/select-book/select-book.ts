@@ -1,8 +1,8 @@
 import type { DoneActorEvent } from 'xstate';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { RouterPath } from 'src/router/constants';
+import type { BookAttributes } from 'src/types';
 import type { LibraryStateContext } from '../../types';
-import type { BookAttributes } from 'src/features/library/types';
 
 export function selectBookAction(props: {
     event: DoneActorEvent<BookAttributes>,

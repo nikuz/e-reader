@@ -1,6 +1,6 @@
 import { settingsStateMachineActor } from 'src/features/settings/state';
-import { libraryStateMachineActor } from 'src/features/library/state';
-import type { BookHighlight } from 'src/features/library/types';
+// import { libraryStateMachineActor } from 'src/features/library/state';
+import type { BookHighlight } from 'src/types';
 import { getXpathForNode, generateChapterHighlightsCss } from '../../../utils';
 import { HIGHLIGHTS_CSS_ID, HIGHLIGHTS_SELECTOR_PREFIX } from '../../../constants';
 import type {
@@ -55,8 +55,8 @@ export function storeHighlightAction(props: {
         bookAttributes: updatedBookAttributes,
     });
 
-    libraryStateMachineActor.send({
-        type: 'UPDATE_BOOK_HIGHLIGHTS',
-        bookAttributes: updatedBookAttributes,
-    });
+    // libraryStateMachineActor.send({
+    //     type: 'UPDATE_BOOK_HIGHLIGHTS',
+    //     bookAttributes: updatedBookAttributes,
+    // });
 }

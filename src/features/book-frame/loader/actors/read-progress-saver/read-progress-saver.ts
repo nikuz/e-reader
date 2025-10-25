@@ -1,6 +1,6 @@
 import { Preferences } from '@capacitor/preferences';
-import type { BookAttributes } from 'src/features/library/types';
 import { fromPromise } from 'xstate';
+import type { BookAttributes } from 'src/types';
 import { getReadProgressStorageKey } from '../../../utils';
 import type { BookReadProgress } from '../../../types';
 

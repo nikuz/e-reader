@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { DatabaseController } from 'src/controllers';
-import type { BookAttributes, BookHighlight } from '../../types';
+import type { BookAttributes, BookHighlight } from 'src/types';
 
 interface SqliteResponse {
     attributes: string,

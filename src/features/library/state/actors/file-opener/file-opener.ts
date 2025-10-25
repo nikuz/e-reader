@@ -3,6 +3,7 @@ import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import JSZip from 'jszip';
 import type { DatabaseController } from 'src/controllers';
 import { pathUtils, fileReaderUtils, imageUtils } from 'src/utils';
+import type { BookAttributes } from 'src/types';
 import { createBookInDB, deleteBookFromDB } from '../../../db-service';
 import {
     retrieveBookAttributes,
@@ -12,7 +13,6 @@ import {
     retrieveNavigationEpub2,
 } from '../../../utils';
 import { LIBRARY_DIRECTORY } from '../../../constants';
-import type { BookAttributes } from '../../../types';
 
 export const fileOpenerActor = fromPromise(async (props: {
     input: {

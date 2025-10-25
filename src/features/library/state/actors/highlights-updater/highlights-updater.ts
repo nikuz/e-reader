@@ -1,7 +1,7 @@
 import { fromPromise } from 'xstate';
 import type { DatabaseController } from 'src/controllers';
+import type { BookAttributes } from 'src/types';
 import { updateHighlightsInDB } from '../../../db-service/actions';
-import type { BookAttributes } from '../../../types';
 
 export const highlightUpdaterActor = fromPromise(async (props: {
     input: {

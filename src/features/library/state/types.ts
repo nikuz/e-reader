@@ -1,6 +1,6 @@
 import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
-import type { BookAttributes } from '../types';
+import type { BookAttributes } from 'src/types';
 
 export interface LibraryStateContext {
     dbController: DatabaseController<BookAttributes>,

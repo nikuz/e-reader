@@ -1,4 +1,4 @@
-import type { BookAttributes } from 'src/features/library/types';
+import type { BookAttributes } from 'src/types';
 import type { BookReadProgress } from '../types';
 
 export interface BookLoaderStateContext {
