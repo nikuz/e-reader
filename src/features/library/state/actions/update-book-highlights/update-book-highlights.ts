@@ -2,7 +2,7 @@ import type { DoneActorEvent } from 'xstate';
 import type { Book } from 'src/models';
 import type { LibraryStateContext } from '../../types';
 
-export function updateBookHighlightAction(props: {
+export function updateBookHighlightsAction(props: {
     event: DoneActorEvent<Book>,
     context: LibraryStateContext,
     enqueue: { assign: (context: Partial<LibraryStateContext>) => void },

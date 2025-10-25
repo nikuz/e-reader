@@ -13,7 +13,7 @@ import {
 import {
     addOpenedBookAction,
     selectBookAction,
-    updateBookHighlightAction,
+    updateBookHighlightsAction,
 } from './actions';
 import type {
     LibraryStateContext,
@@ -165,7 +165,7 @@ export const libraryStateMachine = setup({
                 }),
                 onDone: {
                     target: 'IDLE',
-                    actions: enqueueActions(updateBookHighlightAction),
+                    actions: enqueueActions(updateBookHighlightsAction),
                 },
                 onError: {
                     target: 'IDLE',

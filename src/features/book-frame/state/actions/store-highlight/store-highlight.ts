@@ -1,8 +1,18 @@
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { libraryStateMachineActor } from 'src/features/library/state';
 import type { BookHighlight } from 'src/types';
-import { getXpathForNode, generateChapterHighlightsCss } from '../../../utils';
-import { HIGHLIGHTS_CSS_ID, HIGHLIGHTS_SELECTOR_PREFIX } from '../../../constants';
+import {
+    getXpathForNode,
+    generateChapterHighlightsCss,
+    getInjectedCSS,
+} from '../../../utils';
+import {
+    HIGHLIGHTS_CSS_ID,
+    HIGHLIGHTS_SELECTOR_PREFIX,
+    INJECTED_CSS_PLACEHOLDER,
+    FONT_CSS_PLACEHOLDER,
+    HIGHLIGHTS_CSS_PLACEHOLDER,
+} from '../../../constants';
 import type { BookFrameStateContext } from '../../types';
 
 export function storeHighlightAction(props: {
@@ -23,6 +33,7 @@ export function storeHighlightAction(props: {
         return;
     }
 
+    const contextUpdate: Partial<BookFrameStateContext> = {};
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
     const bookHighlights = [...book.highlights];
@@ -37,19 +48,40 @@ export function storeHighlightAction(props: {
     chapterHighlights.push(newHighlight);
     bookHighlights[readProgress.chapter] = chapterHighlights;
 
+    const bookClone = book.clone();
+    const highlightCSS = generateChapterHighlightsCss(chapterHighlights, highlightsCSSValue);
+    const settingsCSS = settingsSnapshot.settingsCSS;
+    const fontCSS = settingsSnapshot.fontCSS;
+    
     const highlightsCSSNode = iframeDocument?.getElementById(HIGHLIGHTS_CSS_ID);
     if (highlightsCSSNode) {
-        highlightsCSSNode.textContent = generateChapterHighlightsCss(chapterHighlights, highlightsCSSValue);
+        highlightsCSSNode.textContent = highlightCSS;
+    }
+    
+    const spineClone = [...book.spine];
+    const chapter = spineClone[readProgress.chapter];
+    if (chapter.content) {
+        const modifiedContent = chapter.content
+            .replace(INJECTED_CSS_PLACEHOLDER, getInjectedCSS(settingsCSS))
+            .replace(FONT_CSS_PLACEHOLDER, fontCSS)
+            .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
+        
+        const blob = new Blob([modifiedContent], { type: 'text/html' });
+        spineClone[readProgress.chapter] = {
+            ...chapter,
+            url: URL.createObjectURL(blob),
+        };
+        contextUpdate.deferredRevokeChapterUrl = chapter.url;
+        bookClone.spine = spineClone;
     }
 
     iframeWindow.CSS?.highlights.set(newHighlight.id, new Highlight(selectionRange));
 
-    const bookClone = book.clone();
     bookClone.highlights = bookHighlights;
 
-    props.enqueue.assign({
-        book: bookClone,
-    });
+    contextUpdate.book = bookClone;
+
+    props.enqueue.assign(contextUpdate);
 
     libraryStateMachineActor.send({
         type: 'UPDATE_BOOK_HIGHLIGHTS',
