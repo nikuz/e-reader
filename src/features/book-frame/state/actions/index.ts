@@ -13,4 +13,5 @@ export * from './update-settings-css';
 export * from './update-font-css';
 export * from './store-highlight';
 export * from './restore-highlights';
+export * from './delete-highlight';
 export * from './update-highlights-css';

@@ -51,7 +51,7 @@ export function frameTouchMoveAction(props: {
     textSelection.addRange(nextSelectionRange);
 
     props.enqueue.assign({
-        textSelectionCreateEndtimeTime: Date.now(),
+        textSelectionCreateEndTime: Date.now(),
     });
 }
 

@@ -1,22 +1,16 @@
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { libraryStateMachineActor } from 'src/features/library/state';
-import type { BookHighlight } from 'src/types';
-import {
-    getXpathForNode,
-    generateChapterHighlightsCss,
-    getInjectedCSS,
-    extractContextFromTextSelection,
-} from '../../../utils';
+import { generateChapterHighlightsCss, getInjectedCSS } from '../../../utils';
 import {
     HIGHLIGHTS_CSS_ID,
-    HIGHLIGHTS_SELECTOR_PREFIX,
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_PLACEHOLDER,
     HIGHLIGHTS_CSS_PLACEHOLDER,
 } from '../../../constants';
-import type { BookFrameStateContext } from '../../types';
+import type { BookFrameStateContext, DeleteHighlightAction } from '../../types';
 
-export function storeHighlightAction(props: {
+export function deleteHighlightAction(props: {
+    event: DeleteHighlightAction,
     context: BookFrameStateContext,
     enqueue: {
         assign: (context: Partial<BookFrameStateContext>) => void,
@@ -24,6 +18,7 @@ export function storeHighlightAction(props: {
 }) {
     const book = props.context.book;
     const readProgress = props.context.readProgress;
+    const deletedHighlight = props.event.highlight;
     const iframeEl = props.context.iframeEl;
     const iframeWindow = iframeEl?.contentWindow;
     const iframeDocument = iframeEl?.contentDocument;
@@ -34,25 +29,23 @@ export function storeHighlightAction(props: {
         return;
     }
 
-    const contextUpdate: Partial<BookFrameStateContext> = {};
+    const contextUpdate: Partial<BookFrameStateContext> = {
+        textSelection: undefined,
+        textSelectionCreateEndTime: undefined,
+    };
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
     const bookHighlights = [...book.highlights];
     const chapterHighlights = [...(bookHighlights[readProgress.chapter] ?? [])];
-    const newHighlight: BookHighlight = {
-        id: `${HIGHLIGHTS_SELECTOR_PREFIX}_${Date.now()}`,
-        startXPath: getXpathForNode(selectionRange.startContainer, iframeDocument),
-        startOffset: selectionRange.startOffset,
-        endXPath: getXpathForNode(selectionRange.endContainer, iframeDocument),
-        endOffset: selectionRange.endOffset,
-        text: textSelection.toString(),
-        context: extractContextFromTextSelection(iframeDocument, selectionRange),
-        range: selectionRange,
-    };
-    chapterHighlights.push(newHighlight);
+    const highlightIndex = chapterHighlights.findIndex(item => item.id === deletedHighlight.id);
+    
+    if (highlightIndex !== -1) {
+        chapterHighlights.splice(highlightIndex, 1);
+    }
     bookHighlights[readProgress.chapter] = chapterHighlights;
 
-    iframeWindow.CSS?.highlights.set(newHighlight.id, new Highlight(selectionRange));
+    iframeWindow.CSS?.highlights.delete(deletedHighlight.id);
+    textSelection?.removeAllRanges();
 
     const bookClone = book.clone();
     const highlightCSS = generateChapterHighlightsCss(chapterHighlights, highlightsCSSValue);

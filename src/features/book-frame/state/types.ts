@@ -1,6 +1,6 @@
 import type { ActorRefFrom } from 'xstate';
 import type { Book } from 'src/models';
-import type { BookChapter, Size, Position } from 'src/types';
+import type { BookChapter, Size, Position, BookHighlight } from 'src/types';
 import type { BookReadProgress } from '../types';
 import { bookLoaderStateMachine } from '../loader/state';
 import type { SaveReadProgressEvent } from '../loader/types';
@@ -24,7 +24,8 @@ export interface BookFrameStateContext {
 
     textSelection?: Selection,
     textSelectionBaseRange?: Range,
-    textSelectionCreateEndtimeTime?: number,
+    textSelectionCreateEndTime?: number,
+    selectedHighlight?: BookHighlight,
 
     menuPanelsVisible: boolean,
 
@@ -121,6 +122,11 @@ export interface RestoreHighlightsAction {
     type: 'RESTORE_HIGHLIGHTS',
 }
 
+export interface DeleteHighlightAction {
+    type: 'DELETE_HIGHLIGHT',
+    highlight: BookHighlight,
+}
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -143,4 +149,5 @@ export type BookFrameStateEvents =
     | UpdateHighlightsCSSEvent
     | HideMenuPanelsEvent
     | StoreHighlightAction
-    | RestoreHighlightsAction;
+    | RestoreHighlightsAction
+    | DeleteHighlightAction;

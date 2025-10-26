@@ -4,15 +4,16 @@ import {
     Paper,
     IconButton,
 } from 'src/design-system/components';
-import { ContentCopyIcon } from 'src/design-system/icons';
+import { ContentCopyIcon, DeleteIcon } from 'src/design-system/icons';
 import type { VirtualElement } from 'src/design-system/types';
-import { useBookFrameStateSelect } from '../../state';
+import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../../state';
 
 const POPPER_OFFSET = 8;
 
 export function BookFrameTextSelectionControls() {
     const textSelection = useBookFrameStateSelect('textSelection');
-    const selectionUpdatedAt = useBookFrameStateSelect('textSelectionCreateEndtimeTime');
+    const selectionUpdatedAt = useBookFrameStateSelect('textSelectionCreateEndTime');
+    const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const iframeEl = useBookFrameStateSelect('iframeEl');
 
     const virtualElement = useMemo<VirtualElement | null>(() => {
@@ -47,7 +48,7 @@ export function BookFrameTextSelectionControls() {
         };
     }, [iframeEl, textSelection, selectionUpdatedAt]);
 
-    const handleCopy = useCallback(async () => {
+    const copyHandler = useCallback(async () => {
         if (!textSelection) {
             return;
         }
@@ -66,6 +67,16 @@ export function BookFrameTextSelectionControls() {
             console.error('Failed to copy selected text', error);
         }
     }, [textSelection]);
+
+    const removeHighlightHandler = useCallback(() => {
+        if (!selectedHighlight) {
+            return;
+        }
+        bookFrameStateMachineActor.send({
+            type: 'DELETE_HIGHLIGHT',
+            highlight: selectedHighlight,
+        });
+    }, [selectedHighlight]);
 
     if (!virtualElement) {
         return null;
@@ -105,18 +116,29 @@ export function BookFrameTextSelectionControls() {
                     alignItems: 'center',
                     gap: 0.25,
                     padding: '4px',
-                    borderRadius: '100%',
                     backgroundColor: 'rgba(33, 33, 33, 0.9)',
                     color: '#fff',
                 }}
             >
+                {selectedHighlight && (
+                    <IconButton
+                        size="small"
+                        sx={{
+                            color: 'inherit',
+                            padding: '6px',
+                        }}
+                        onClick={removeHighlightHandler}
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                )}
                 <IconButton
                     size="small"
                     sx={{
                         color: 'inherit',
                         padding: '6px',
                     }}
-                    onClick={handleCopy}
+                    onClick={copyHandler}
                 >
                     <ContentCopyIcon fontSize="small" />
                 </IconButton>

@@ -16,6 +16,7 @@ import {
     updateFontCSSAction,
     updateBookSpineAction,
     storeHighlightAction,
+    deleteHighlightAction,
     restoreHighlightsAction,
     updateHighlightsCSSAction,
 } from './actions';
@@ -105,6 +106,9 @@ export const bookFrameStateMachine = setup({
                 },
                 RESTORE_HIGHLIGHTS: {
                     actions: enqueueActions(restoreHighlightsAction),
+                },
+                DELETE_HIGHLIGHT: {
+                    actions: enqueueActions(deleteHighlightAction),
                 },
             },
         },

@@ -71,7 +71,7 @@ export function selectTextAction(props: {
         props.enqueue.assign({
             textSelection: selection,
             textSelectionBaseRange: selectionRange.cloneRange(),
-            textSelectionCreateEndtimeTime: Date.now(),
+            textSelectionCreateEndTime: Date.now(),
         });
     }
 }
