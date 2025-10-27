@@ -46,10 +46,10 @@ export class DefaultLayoutSettings extends SettingsGroup<LayoutProps> implements
             height: `calc(100% - ${this.marginTop} - ${this.marginBottom})`,
         });
         const bodyChildCss = this.getCssProps({
-            margin: `0 ${this.marginRight} 0 ${this.marginLeft}`,
+            padding: `0 ${this.marginRight} 0 ${this.marginLeft}`,
         });
         const paragraphCss = this.getCssProps({
-            marginBottom: this.paragraphMargin,
+            paddingBottom: this.paragraphMargin,
         });
         
         return `

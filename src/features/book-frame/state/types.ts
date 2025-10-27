@@ -67,9 +67,7 @@ export interface FrameTouchMoveEvent {
     position: Position,
 }
 
-interface FrameResizeEvent { type: 'FRAME_RESIZE' }
-
-interface FrameBodyResizeEvent {
+export interface FrameBodyResizeEvent {
     type: 'FRAME_BODY_RESIZE',
     rect: DOMRect,
 }
@@ -135,7 +133,6 @@ export type BookFrameStateEvents =
     | ChapterLoadEvent
     | FrameTouchStartEvent
     | FrameTouchMoveEvent
-    | FrameResizeEvent
     | FrameBodyResizeEvent
     | FrameTouchEndEvent
     | FrameTouchCancelEvent

@@ -7,5 +7,9 @@ export function generateChapterHighlightsCss(highlights: BookHighlight[] | undef
 
     const selector = highlights.map(item => `::highlight(${item.id})`).join(',');
 
+    if (!selector) {
+        return '';
+    }
+
     return `${selector} { ${cssValue} }`;
 }

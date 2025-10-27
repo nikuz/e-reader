@@ -4,7 +4,10 @@ export class FrameEventObserver {
     constructor(iframe: HTMLIFrameElement) {
         this.window = iframe.contentWindow;
         this.document = iframe.contentDocument;
-        this.bodyResizeObserver = new ResizeObserver(this.bodyResizeHandler);
+        this.bodyResizeObserver = new ResizeObserver(this.resizeHandler);
+        this.createResizeProbe();
+        this.createFontPropsProbe();
+        this.resizeProbeResizeObserver = new ResizeObserver(this.resizeHandler);
     }
 
     window: Window | null;
@@ -12,8 +15,12 @@ export class FrameEventObserver {
 
     bodyResizeObserver: ResizeObserver | null;
 
+    resizeProbeEl: HTMLParagraphElement | undefined;
+    fontPropsChangeProbeEl: HTMLParagraphElement | undefined;
+    resizeProbeResizeObserver: ResizeObserver | null;
+
     subscribe = () => {
-        if (!this.window) {
+        if (!this.window || !this.document) {
             return;
         }
 
@@ -33,18 +40,25 @@ export class FrameEventObserver {
         // disable default text drag behavior
         this.window.addEventListener('dragstart', this.dragStartEventHandler);
 
-        this.window.addEventListener('resize', this.windowResizeHandler);
+        this.window.addEventListener('resize', this.resizeHandler);
 
-        if (this.document?.body) {
-            this.bodyResizeObserver?.observe(this.document.body);
-        }
+        this.bodyResizeObserver?.observe(this.document.body);
         
+        if (this.resizeProbeEl) {
+            this.resizeProbeResizeObserver?.observe(this.resizeProbeEl);
+        }
+        if (this.fontPropsChangeProbeEl) {
+            this.resizeProbeResizeObserver?.observe(this.fontPropsChangeProbeEl);
+        }
+        this.document.fonts.addEventListener('loadingdone', this.resizeHandler);
+
         // unsubscribe from all events on iframe content change
         this.window.addEventListener('beforeunload', this.unsubscribe);
+
     };
 
     unsubscribe = () => {
-        if (!this.window) {
+        if (!this.window || !this.document) {
             return;
         }
 
@@ -60,11 +74,17 @@ export class FrameEventObserver {
 
         this.window.removeEventListener('contextmenu', this.contextMenuHandler);
         this.window.removeEventListener('dragstart', this.dragStartEventHandler);
-        this.window.removeEventListener('resize', this.windowResizeHandler);
+        this.window.removeEventListener('resize', this.resizeHandler);
 
-        if (this.document?.body) {
-            this.bodyResizeObserver?.unobserve(this.document.body);
+        this.bodyResizeObserver?.unobserve(this.document.body);
+
+        if (this.resizeProbeEl) {
+            this.resizeProbeResizeObserver?.unobserve(this.resizeProbeEl);
         }
+        if (this.fontPropsChangeProbeEl) {
+            this.resizeProbeResizeObserver?.unobserve(this.fontPropsChangeProbeEl);
+        }
+        this.document.fonts.removeEventListener('loadingdone', this.resizeHandler);
 
         this.window.removeEventListener('beforeunload', this.unsubscribe);
     };
@@ -152,20 +172,38 @@ export class FrameEventObserver {
         event.preventDefault();
     };
     
-    windowResizeHandler = () => {
-        bookFrameStateMachineActor.send(({ type: 'FRAME_RESIZE' }));
-    };
-    
-    bodyResizeHandler = (entries: ResizeObserverEntry[]) => {
-        const target = entries[0]?.target;
-
-        if (!target) {
+    createResizeProbe = () => {
+        if (!this.document) {
             return;
         }
+        const el = this.document.createElement('p');
+        el.id = 'book-resize-probe';
+        this.document.body.appendChild(el);
+        this.resizeProbeEl = el;
+    };
+    
+    createFontPropsProbe = () => {
+        if (!this.document) {
+            return;
+        }
+        const el = this.document.createElement('p');
+        el.id = 'book-font-props-probe';
+        el.textContent = 'H p x g y M W — 1 2 3 '; // tall + deep + wide glyphs
+        this.document.body.appendChild(el);
+        this.fontPropsChangeProbeEl = el;
+    };
 
+    resizeHandler = () => {
+        const bodyEl = this.document?.body;
+        if (import.meta.env.DEV) {
+            console.log('Iframe contents size change');
+        }
+        if (!bodyEl) {
+            return;
+        }
         bookFrameStateMachineActor.send(({
             type: 'FRAME_BODY_RESIZE',
-            rect: new DOMRect(0, 0, target.scrollWidth, target.clientHeight),
+            rect: new DOMRect(0, 0, bodyEl.scrollWidth, bodyEl.clientHeight),
         }));
     };
 }

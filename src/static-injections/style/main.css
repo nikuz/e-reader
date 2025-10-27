@@ -45,3 +45,31 @@ div,
 span {
     user-select: auto;
 }
+
+#book-resize-probe {
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
+    height: 4em;
+    width: 10em;
+    box-sizing: border-box;
+    pointer-events: none;
+    border: 1px solid #FFF;
+    z-index: 9999999;
+}
+
+#book-font-props-probe {
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
+    margin: 0;
+    box-sizing: border-box;
+    font: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: inherit !important;
+    word-spacing: inherit !important;
+    pointer-events: none;
+    color: #FFF !important;
+    border: 1px solid #FFF;
+    z-index: 9999999;
+}

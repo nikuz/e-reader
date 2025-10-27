@@ -33,20 +33,20 @@ export function SettingsWatcher() {
             return;
         }
         
-        if (lastSettingsCSS && settingsCSS !== lastSettingsCSS) {
+        if (settingsCSS !== lastSettingsCSS) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_SETTINGS_CSS',
                 settingsCSS,
             });
         }
-        if (lastFontCSS && fontCSS !== lastFontCSS) {
+        if (fontCSS !== lastFontCSS) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_FONT_CSS',
                 fontCSS,
             });
         }
 
-        if (lastHighlightsCSSValue && highlightsCSSValue !== lastHighlightsCSSValue) {
+        if (highlightsCSSValue !== lastHighlightsCSSValue) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_HIGHLIGHTS_CSS',
                 highlightsCSSValue,

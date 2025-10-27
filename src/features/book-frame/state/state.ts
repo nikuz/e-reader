@@ -139,13 +139,8 @@ export const bookFrameStateMachine = setup({
     },
 
     on: {
-        FRAME_RESIZE: {
-            actions: enqueueActions(frameResizeAction),
-        },
         FRAME_BODY_RESIZE: {
-            actions: assign(({ event }) => ({
-                chapterRect: event.rect,
-            })),
+            actions: enqueueActions(frameResizeAction),
         },
         SAVE_READ_PROGRESS: {
             actions: sendTo('loader', ({ event }) => event),
