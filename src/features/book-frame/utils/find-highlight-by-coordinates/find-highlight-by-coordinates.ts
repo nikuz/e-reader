@@ -10,6 +10,13 @@ export function findHighlightByCoordinates(props: {
 
     const x = coordinates.x - iframeWindow.scrollX;
     const y = coordinates.y;
+
+    const hit = iframeDocument.elementFromPoint(x, y);
+    if (!hit || hit === iframeDocument.documentElement || hit === iframeDocument.body) {
+        // Click landed in empty space – ignore
+        return;
+    }
+
     let textNode;
     let offset;
 

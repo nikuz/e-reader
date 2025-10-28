@@ -15,6 +15,13 @@ export function selectTextAction(props: {
 
     const x = frameInteractionStartPosition.x - iframeWindow.scrollX;
     const y = frameInteractionStartPosition.y;
+
+    const hit = iframeDocument.elementFromPoint(x, y);
+    if (!hit || hit === iframeDocument.documentElement || hit === iframeDocument.body) {
+        // Click landed in empty space – ignore
+        return;
+    }
+
     let textNode;
     let offset;
 
