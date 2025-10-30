@@ -12,11 +12,14 @@ import { AddIcon, RemoveIcon } from '../../icons';
 
 const HOLD_DELAY_MS = 400;
 const HOLD_INTERVAL_MS = 100;
+const TOUCH_ACTIVATION_DELAY_MS = 150;
+const TOUCH_MOVE_CANCEL_THRESHOLD_PX = 6;
 
 interface RepeatHandlers {
     onClick: (event: ReactMouseEvent<HTMLButtonElement>) => void;
     onPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) => void;
     onPointerUp: () => void;
+    onPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
     onPointerLeave: (event: ReactPointerEvent<HTMLButtonElement>) => void;
     onPointerCancel: () => void;
     onBlur: (event: ReactFocusEvent<HTMLButtonElement>) => void;
@@ -26,8 +29,26 @@ interface RepeatHandlers {
 function useRepeatPress(changeFn: () => void): RepeatHandlers {
     const repeatTimeoutRef = useRef<number | null>(null);
     const repeatIntervalRef = useRef<number | null>(null);
+    const activationTimeoutRef = useRef<number | null>(null);
+    const clickResetTimeoutRef = useRef<number | null>(null);
     const isPressingRef = useRef(false);
     const ignoreClickRef = useRef(false);
+    const pendingActivationRef = useRef(false);
+    const pointerOriginRef = useRef<{ x: number; y: number } | null>(null);
+    const pointerMovedRef = useRef(false);
+
+    const cancelPendingActivation = useCallback(() => {
+        if (activationTimeoutRef.current !== null) {
+            window.clearTimeout(activationTimeoutRef.current);
+            activationTimeoutRef.current = null;
+        }
+        pendingActivationRef.current = false;
+    }, []);
+
+    const clearPointerTracking = useCallback(() => {
+        pointerOriginRef.current = null;
+        pointerMovedRef.current = false;
+    }, []);
 
     const clearPressTimers = useCallback(() => {
         if (repeatTimeoutRef.current !== null) {
@@ -38,34 +59,26 @@ function useRepeatPress(changeFn: () => void): RepeatHandlers {
             window.clearInterval(repeatIntervalRef.current);
             repeatIntervalRef.current = null;
         }
+        if (clickResetTimeoutRef.current !== null) {
+            window.clearTimeout(clickResetTimeoutRef.current);
+            clickResetTimeoutRef.current = null;
+        }
+        cancelPendingActivation();
+    }, [cancelPendingActivation]);
+
+    const scheduleClickReset = useCallback(() => {
+        if (clickResetTimeoutRef.current !== null) {
+            window.clearTimeout(clickResetTimeoutRef.current);
+        }
+        clickResetTimeoutRef.current = window.setTimeout(() => {
+            ignoreClickRef.current = false;
+            clickResetTimeoutRef.current = null;
+        }, 0);
     }, []);
 
-    useEffect(() => () => {
-        clearPressTimers();
-    }, [clearPressTimers]);
-
-    const stopPress = useCallback((resetClickImmediately: boolean) => {
-        if (!isPressingRef.current) {
-            if (resetClickImmediately) {
-                ignoreClickRef.current = false;
-            }
-            return;
-        }
-
-        isPressingRef.current = false;
-        clearPressTimers();
-
-        if (resetClickImmediately) {
-            ignoreClickRef.current = false;
-        }
-    }, [clearPressTimers]);
-
-    const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
-        if (event.pointerType === 'mouse' && event.button !== 0) {
-            return;
-        }
-
-        if (event.currentTarget.disabled || isPressingRef.current) {
+    const beginPress = useCallback(() => {
+        cancelPendingActivation();
+        if (isPressingRef.current) {
             return;
         }
 
@@ -79,11 +92,98 @@ function useRepeatPress(changeFn: () => void): RepeatHandlers {
             changeFn();
             repeatIntervalRef.current = window.setInterval(changeFn, HOLD_INTERVAL_MS);
         }, HOLD_DELAY_MS);
-    }, [changeFn, clearPressTimers]);
+    }, [cancelPendingActivation, changeFn, clearPressTimers]);
+
+    useEffect(() => () => {
+        clearPressTimers();
+    }, [clearPressTimers]);
+
+    const stopPress = useCallback((resetClickImmediately: boolean) => {
+        const hadPendingActivation = pendingActivationRef.current;
+
+        if (hadPendingActivation) {
+            cancelPendingActivation();
+            ignoreClickRef.current = true;
+            scheduleClickReset();
+        }
+
+        if (!isPressingRef.current) {
+            if (resetClickImmediately) {
+                ignoreClickRef.current = false;
+            }
+            clearPointerTracking();
+            return;
+        }
+
+        isPressingRef.current = false;
+        clearPressTimers();
+
+        if (resetClickImmediately) {
+            ignoreClickRef.current = false;
+        }
+        clearPointerTracking();
+    }, [cancelPendingActivation, clearPointerTracking, clearPressTimers, scheduleClickReset]);
+
+    const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) {
+            return;
+        }
+
+        if (event.currentTarget.disabled || isPressingRef.current || pendingActivationRef.current) {
+            return;
+        }
+
+        pointerMovedRef.current = false;
+
+        if (event.pointerType === 'touch') {
+            pointerOriginRef.current = {
+                x: event.clientX,
+                y: event.clientY,
+            };
+            pendingActivationRef.current = true;
+            activationTimeoutRef.current = window.setTimeout(() => {
+                beginPress();
+            }, TOUCH_ACTIVATION_DELAY_MS);
+            return;
+        }
+
+        beginPress();
+    }, [beginPress]);
 
     const handlePointerUp = useCallback(() => {
+        if (pendingActivationRef.current) {
+            const shouldTriggerTap = !pointerMovedRef.current;
+            cancelPendingActivation();
+
+            if (shouldTriggerTap) {
+                ignoreClickRef.current = true;
+                changeFn();
+            } else {
+                ignoreClickRef.current = true;
+                scheduleClickReset();
+            }
+            clearPointerTracking();
+            return;
+        }
+
         stopPress(false);
-    }, [stopPress]);
+    }, [cancelPendingActivation, changeFn, clearPointerTracking, scheduleClickReset, stopPress]);
+
+    const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+        if (!pendingActivationRef.current || pointerOriginRef.current === null) {
+            return;
+        }
+
+        const deltaX = Math.abs(event.clientX - pointerOriginRef.current.x);
+        const deltaY = Math.abs(event.clientY - pointerOriginRef.current.y);
+
+        if (deltaX >= TOUCH_MOVE_CANCEL_THRESHOLD_PX || deltaY >= TOUCH_MOVE_CANCEL_THRESHOLD_PX) {
+            pointerMovedRef.current = true;
+            cancelPendingActivation();
+            ignoreClickRef.current = true;
+            scheduleClickReset();
+        }
+    }, [cancelPendingActivation, scheduleClickReset]);
 
     const handlePointerLeave = useCallback(() => {
         stopPress(false);
@@ -114,6 +214,7 @@ function useRepeatPress(changeFn: () => void): RepeatHandlers {
         onClick: handleClick,
         onPointerDown: handlePointerDown,
         onPointerUp: handlePointerUp,
+        onPointerMove: handlePointerMove,
         onPointerLeave: handlePointerLeave,
         onPointerCancel: handlePointerCancel,
         onBlur: handleBlur,
@@ -188,6 +289,7 @@ export function Stepper({
                     onClick={decreaseHandlers.onClick}
                     onPointerDown={decreaseHandlers.onPointerDown}
                     onPointerUp={decreaseHandlers.onPointerUp}
+                    onPointerMove={decreaseHandlers.onPointerMove}
                     onPointerLeave={decreaseHandlers.onPointerLeave}
                     onPointerCancel={decreaseHandlers.onPointerCancel}
                     onBlur={decreaseHandlers.onBlur}
@@ -200,6 +302,7 @@ export function Stepper({
                     onClick={increaseHandlers.onClick}
                     onPointerDown={increaseHandlers.onPointerDown}
                     onPointerUp={increaseHandlers.onPointerUp}
+                    onPointerMove={increaseHandlers.onPointerMove}
                     onPointerLeave={increaseHandlers.onPointerLeave}
                     onPointerCancel={increaseHandlers.onPointerCancel}
                     onBlur={increaseHandlers.onBlur}
