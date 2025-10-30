@@ -69,6 +69,7 @@ export function frameTouchEndAction(props: {
         const selection = iframeDocument.getSelection();
         if (highlight && highlight.range && selection) {
             selectedHighlight = true;
+            selection.removeAllRanges();
             selection.addRange(highlight.range);
             contextUpdate.textSelection = selection;
             contextUpdate.textSelectionCreateEndTime = Date.now();

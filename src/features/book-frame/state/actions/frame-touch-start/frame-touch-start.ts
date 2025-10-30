@@ -9,5 +9,6 @@ export function frameTouchStartAction(props: {
         frameTouchStartTime: Date.now(),
         frameInteractionStartPosition: props.event.position,
         textSelectionBaseRange: undefined,
+        chapterHadBeenInteracted: true,
     });
 }

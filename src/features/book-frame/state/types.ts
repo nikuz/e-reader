@@ -21,6 +21,8 @@ export interface BookFrameStateContext {
     deferredRevokeChapterUrl?: string,
     prevChapter?: number,
     chapterRect: Size,
+    chapterHadBeenInteracted: boolean,
+    chapterScrolledToEnd: boolean,
 
     textSelection?: Selection,
     textSelectionBaseRange?: Range,
@@ -83,11 +85,6 @@ interface PageTurnNextEvent { type: 'PAGE_TURN_NEXT' }
 
 interface PageTurnPrevEvent { type: 'PAGE_TURN_PREV' }
 
-export interface SetTextSelectionEvent {
-    type: 'SET_TEXT_SELECTION',
-    textSelection: Selection,
-}
-
 export interface UpdateBookAttributesEvent {
     type: 'UPDATE_BOOK_SPINE',
     spine: BookChapter[],
@@ -138,7 +135,6 @@ export type BookFrameStateEvents =
     | FrameTouchCancelEvent
     | PageTurnNextEvent
     | PageTurnPrevEvent
-    | SetTextSelectionEvent
     | SaveReadProgressEvent
     | UpdateBookAttributesEvent
     | UpdateSettingsCSSEvent

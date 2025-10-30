@@ -15,43 +15,49 @@ export function chapterLoadAction(props: {
     const iframeEl = props.event.iframeEl;
     const readProgress = props.context.readProgress;
     const prevChapter = props.context.prevChapter;
-    const window = iframeEl?.contentWindow;
-    const bodyEl = iframeEl?.contentDocument?.body;
+    const iframeWindow = iframeEl?.contentWindow;
+    const iframeBodyEl = iframeEl?.contentDocument?.body;
+
+    if (!iframeWindow || !iframeBodyEl) {
+        return;
+    }
 
     const contextUpdate: Partial<BookFrameStateContext> = {
         iframeEl,
         scrollPosition: 0,
+        chapterHadBeenInteracted: false,
+        chapterScrolledToEnd: false,
+        screenRect: {
+            width: iframeWindow.innerWidth,
+            height: iframeWindow.innerHeight,
+        },
+        chapterRect: {
+            width: iframeBodyEl.scrollWidth,
+            height: iframeWindow.innerHeight,
+        },
     };
 
-    if (window && bodyEl) {
-        contextUpdate.screenRect = {
-            width: window.innerWidth,
-            height: window.innerHeight,
-        };
-        contextUpdate.chapterRect = {
-            width: bodyEl.scrollWidth,
-            height: window.innerHeight,
-        };
-    }
+    const lastChapterPageScrollPosition = iframeBodyEl.scrollWidth - iframeWindow.innerWidth;
+    if (prevChapter !== undefined && readProgress.chapter < prevChapter) {
+        const newScrollPosition = lastChapterPageScrollPosition;
 
-    if (prevChapter !== undefined && readProgress.chapter < prevChapter && window && bodyEl) {
-        const newScrollPosition = bodyEl.scrollWidth - window.innerWidth;
-
-        window.scrollTo({ left: newScrollPosition });
+        iframeWindow.scrollTo({ left: newScrollPosition });
 
         contextUpdate.readProgress = {
             ...readProgress,
-            page: Math.round(newScrollPosition / window.innerWidth),
+            page: Math.round(newScrollPosition / iframeWindow.innerWidth),
         };
         contextUpdate.scrollPosition = newScrollPosition;
+        contextUpdate.chapterScrolledToEnd = true;
         props.enqueue.raise({
             type: 'SAVE_READ_PROGRESS',
             progress: contextUpdate.readProgress,
         });
-    } else if (readProgress.page > 0 && window && bodyEl) {
-        window.scrollTo({
-            left: window.innerWidth * readProgress.page,
-        });
+    } else if (readProgress.page > 0 && iframeWindow && iframeBodyEl) {
+        const newScrollPosition = iframeWindow.innerWidth * readProgress.page;
+        contextUpdate.scrollPosition = newScrollPosition;
+        contextUpdate.chapterScrolledToEnd = newScrollPosition >= lastChapterPageScrollPosition;
+        iframeWindow.scrollTo({ left: newScrollPosition });
     }
 
     props.enqueue.assign(contextUpdate);

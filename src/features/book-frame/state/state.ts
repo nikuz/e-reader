@@ -50,6 +50,8 @@ export const bookFrameStateMachine = setup({
             width: 0,
             height: 0,
         },
+        chapterHadBeenInteracted: false,
+        chapterScrolledToEnd: false,
         menuPanelsVisible: false,
     },
 
@@ -130,9 +132,6 @@ export const bookFrameStateMachine = setup({
                 FRAME_TOUCH_CANCEL: {
                     target: 'IDLE',
                     actions: enqueueActions(frameTouchCancelAction),
-                },
-                SET_TEXT_SELECTION: {
-                    actions: assign(({ event }) => ({ textSelection: event.textSelection })),
                 },
             },
         },
