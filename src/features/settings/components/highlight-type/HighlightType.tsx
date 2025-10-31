@@ -30,19 +30,23 @@ export function HighlightType() {
             </Typography>
             <FormControl sx={{ m: 1, minWidth: 160 }} size="small">
                 <Select
-                    labelId="highlight-type-label"
                     value={highlightSettings.selectedHighlightType}
                     input={<OutlinedInput />}
                     onChange={handleChange}
                 >
-                    {HIGHLIGHT_TYPES.map((type) => (
-                        <MenuItem
-                            key={type}
-                            value={type}
-                        >
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </MenuItem>
-                    ))}
+                    {HIGHLIGHT_TYPES.map((type) => {
+                        const name = type.replaceAll('-', ' ');
+                        const label = name.charAt(0).toUpperCase() + name.slice(1);
+
+                        return (
+                            <MenuItem
+                                key={type}
+                                value={type}
+                            >
+                                {label}
+                            </MenuItem>
+                        );
+                    })}
                 </Select>
             </FormControl>
         </Box>

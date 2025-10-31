@@ -1,6 +1,6 @@
 import { SettingsGroup } from '../types';
 
-export const HIGHLIGHT_TYPES = ['color', 'underline', 'strikethrough', 'squiggly'] as const;
+export const HIGHLIGHT_TYPES = ['color', 'underline', 'strikethrough', 'squiggly', 'text-shadow'] as const;
 
 export type HighlightType = typeof HIGHLIGHT_TYPES[number];
 
@@ -67,6 +67,15 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
                     backgroundColor: 'transparent',
                     textDecoration: `underline wavy 2px ${this.highlightColor}`,
                     textDecorationSkipInk: 'none',
+                });
+                break;
+            
+            case 'text-shadow':
+                cssValue = this.getCssProps({
+                    backgroundColor: 'transparent',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    textShadow: `0.05em 0 ${this.highlightColor}, -0.05em 0 ${this.highlightColor}, 0 0.05em ${this.highlightColor}, 0 -0.05em ${this.highlightColor}`,
                 });
                 break;
 
