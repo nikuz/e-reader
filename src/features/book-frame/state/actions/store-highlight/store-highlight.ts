@@ -83,6 +83,7 @@ export function storeHighlightAction(props: {
 
     bookClone.highlights = bookHighlights;
     contextUpdate.book = bookClone;
+    contextUpdate.selectedHighlight = newHighlight;
 
     props.enqueue.assign(contextUpdate);
 

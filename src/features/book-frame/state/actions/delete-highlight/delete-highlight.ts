@@ -32,6 +32,7 @@ export function deleteHighlightAction(props: {
     const contextUpdate: Partial<BookFrameStateContext> = {
         textSelection: undefined,
         textSelectionCreateEndTime: undefined,
+        selectedHighlight: undefined,
     };
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
