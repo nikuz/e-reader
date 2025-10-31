@@ -79,6 +79,7 @@ export function selectTextAction(props: {
             textSelection: selection,
             textSelectionBaseRange: selectionRange.cloneRange(),
             textSelectionCreateEndTime: Date.now(),
+            selectedHighlight: undefined,
         });
     }
 }

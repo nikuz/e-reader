@@ -39,27 +39,8 @@ export function frameTouchEndAction(props: {
     const chapterHighlights = book?.highlights[readProgress.chapter];
     let selectedHighlight = false;
 
-    // user previously selected some text and now just clicks outside of the text selection
-    if (
-        hasSelectedText
-        && textSelectionCreateEndTime
-        && (
-            (frameTouchStartTime && frameTouchStartTime > textSelectionCreateEndTime)
-            || (frameTouchMoveTime && frameTouchMoveTime > textSelectionCreateEndTime)
-        )
-    ) {
-        // remove old highlight
-        textSelection?.removeAllRanges();
-        contextUpdate.textSelection = undefined;
-        contextUpdate.textSelectionCreateEndTime = undefined;
-    }
-    // new text selection just finished
-    else if (hasSelectedText) {
-        // store new highlight
-        props.enqueue.raise({ type: 'STORE_HIGHLIGHT' });
-    }
     // find existing highlight by mouse click position
-    else if (frameInteractionStartPosition && chapterHighlights) {
+    if (frameInteractionStartPosition && chapterHighlights) {
         const highlight = findHighlightByCoordinates({
             coordinates: frameInteractionStartPosition,
             iframeWindow,
@@ -75,6 +56,28 @@ export function frameTouchEndAction(props: {
             contextUpdate.textSelectionCreateEndTime = Date.now();
             contextUpdate.selectedHighlight = highlight;
         }
+    }
+    
+    // user previously selected some text and now just clicks outside of the text selection
+    if (
+        !selectedHighlight
+        && hasSelectedText
+        && textSelectionCreateEndTime
+        && (
+            (frameTouchStartTime && frameTouchStartTime > textSelectionCreateEndTime)
+            || (frameTouchMoveTime && frameTouchMoveTime > textSelectionCreateEndTime)
+        )
+    ) {
+        // remove old highlight
+        textSelection?.removeAllRanges();
+        contextUpdate.textSelection = undefined;
+        contextUpdate.textSelectionCreateEndTime = undefined;
+    }
+    // new text selection just finished
+    else if (hasSelectedText) {
+        // store new highlight
+        // among other, it will create new highlight and set the state selectedHighlight property
+        props.enqueue.raise({ type: 'STORE_HIGHLIGHT' });
     }
     
     const menuPanelsVisible = props.context.menuPanelsVisible;
