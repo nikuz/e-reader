@@ -1,5 +1,6 @@
 import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
+import type { BookHighlight } from 'src/types';
 import type { DictionaryWord } from '../types';
 
 export interface DictionaryStateContext {
@@ -13,5 +14,11 @@ export interface DictionaryStateContext {
 
 interface InitializeEvent { type: 'INITIALIZE' }
 
+export interface RequestTranslationAction {
+    type: 'REQUEST_TRANSLATION',
+    highlight: BookHighlight,
+}
+
 export type DictionaryStateEvents = 
-    | InitializeEvent;
+    | InitializeEvent
+    | RequestTranslationAction;

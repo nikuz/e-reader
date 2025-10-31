@@ -122,6 +122,8 @@ export interface DeleteHighlightAction {
     highlight: BookHighlight,
 }
 
+export interface RequestTranslationAction { type: 'REQUEST_TRANSLATION' }
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -143,4 +145,5 @@ export type BookFrameStateEvents =
     | HideMenuPanelsEvent
     | StoreHighlightAction
     | RestoreHighlightsAction
-    | DeleteHighlightAction;
+    | DeleteHighlightAction
+    | RequestTranslationAction;

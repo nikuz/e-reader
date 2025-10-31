@@ -4,8 +4,9 @@ import {
     Paper,
     IconButton,
 } from 'src/design-system/components';
-import { ContentCopyIcon, DeleteIcon } from 'src/design-system/icons';
+import { ContentCopyIcon, DeleteIcon, TranslateIcon } from 'src/design-system/icons';
 import type { VirtualElement } from 'src/design-system/types';
+import { dictionaryStateMachineActor } from 'src/features/dictionary/state';
 import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../../state';
 
 const POPPER_OFFSET = 8;
@@ -77,6 +78,17 @@ export function BookFrameTextSelectionControls() {
             highlight: selectedHighlight,
         });
     }, [selectedHighlight]);
+    
+    const translateHandler = useCallback(() => {
+        if (!selectedHighlight) {
+            return;
+        }
+        dictionaryStateMachineActor.send({
+            type: 'REQUEST_TRANSLATION',
+            highlight: selectedHighlight,
+        });
+        bookFrameStateMachineActor.send({ type: 'REQUEST_TRANSLATION' });
+    }, [selectedHighlight]);
 
     if (!virtualElement) {
         return null;
@@ -141,6 +153,16 @@ export function BookFrameTextSelectionControls() {
                     onClick={copyHandler}
                 >
                     <ContentCopyIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                    size="small"
+                    sx={{
+                        color: 'inherit',
+                        padding: '6px',
+                    }}
+                    onClick={translateHandler}
+                >
+                    <TranslateIcon fontSize="small" />
                 </IconButton>
             </Paper>
         </Popper>

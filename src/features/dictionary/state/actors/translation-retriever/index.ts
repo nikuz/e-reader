@@ -1,2 +1,1 @@
-export * from './initializer';
 export * from './translation-retriever';

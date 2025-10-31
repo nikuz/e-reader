@@ -19,6 +19,7 @@ import {
     deleteHighlightAction,
     restoreHighlightsAction,
     updateHighlightsCSSAction,
+    clearTextSelectionAction,
 } from './actions';
 import type {
     BookFrameStateContext,
@@ -112,6 +113,10 @@ export const bookFrameStateMachine = setup({
                 DELETE_HIGHLIGHT: {
                     actions: enqueueActions(deleteHighlightAction),
                 },
+                REQUEST_TRANSLATION: {
+                    target: 'TRANSLATING',
+                    actions: enqueueActions(clearTextSelectionAction),
+                },
             },
         },
 
@@ -132,6 +137,14 @@ export const bookFrameStateMachine = setup({
                 FRAME_TOUCH_CANCEL: {
                     target: 'IDLE',
                     actions: enqueueActions(frameTouchCancelAction),
+                },
+            },
+        },
+
+        TRANSLATING: {
+            on: {
+                FRAME_TOUCH_START: {
+                    target: 'IDLE',
                 },
             },
         },

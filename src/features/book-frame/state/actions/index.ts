@@ -15,3 +15,4 @@ export * from './store-highlight';
 export * from './restore-highlights';
 export * from './delete-highlight';
 export * from './update-highlights-css';
+export * from './clear-text-selection';
