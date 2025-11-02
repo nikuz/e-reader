@@ -8,3 +8,8 @@ export const DICTIONARY_DB_CONFIG: DatabaseConfig<DictionaryWord> = {
     indexName: 'dictionary',
     indexKeyPath: 'id',
 };
+
+export const Languages = {
+    ENGLISH: { code: 'en', name: 'English' },
+    RUSSIAN: { code: 'ru', name: 'Russian' },
+} as const;
