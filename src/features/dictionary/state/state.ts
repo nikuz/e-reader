@@ -6,6 +6,9 @@ import type { DictionaryWord } from '../types';
 import {
     initializerActor,
     translationRetrieverActor,
+    explanationRetrieverActor,
+    imageRetrieverActor,
+    pronunciationRetrieverActor,
 } from './actors';
 import type {
     DictionaryStateContext,
@@ -17,6 +20,9 @@ export const dictionaryStateMachine = setup({
     actors: {
         initializerActor,
         translationRetrieverActor,
+        explanationRetrieverActor,
+        imageRetrieverActor,
+        pronunciationRetrieverActor,
     },
     types: {
         context: {} as DictionaryStateContext,

@@ -11,7 +11,7 @@ interface Props {
     context?: string,
 }
 
-export async function firebaseExplainText(props: Props): Promise<string> {
+export async function firebaseGetExplanation(props: Props): Promise<string> {
     const {
         word,
         context,

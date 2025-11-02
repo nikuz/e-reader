@@ -1,2 +1,3 @@
-export * from './explain-text';
-export * from './generate-image';
+export * from './get-explanation';
+export * from './get-image';
+export * from './get-pronunciation';

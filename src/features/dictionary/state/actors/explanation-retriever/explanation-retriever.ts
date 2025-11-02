@@ -1,11 +1,11 @@
 import { fromPromise } from 'xstate';
 import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
-import { getTranslation } from '../../../translation-service';
+import { firebaseGetExplanation } from '../../../firebase-service';
 import { Languages } from '../../../constants';
 import type { DictionaryWord } from '../../../types';
 
-export const translationRetrieverActor = fromPromise(async (props: {
+export const explanationRetrieverActor = fromPromise(async (props: {
     input: {
         dbController: DatabaseController<DictionaryWord>,
         highlight: BookHighlight,
@@ -13,9 +13,10 @@ export const translationRetrieverActor = fromPromise(async (props: {
 }): Promise<string> => {
     const { highlight } = props.input;
 
-    return getTranslation({
+    return await firebaseGetExplanation({
         word: highlight.text,
         sourceLanguage: Languages.ENGLISH,
         targetLanguage: Languages.RUSSIAN,
+        // context: highlight.context,
     });
 });

@@ -1,21 +1,24 @@
 import { fromPromise } from 'xstate';
 import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
-import { getTranslation } from '../../../translation-service';
-import { Languages } from '../../../constants';
+import { firebaseGetPronunciation } from '../../../firebase-service';
 import type { DictionaryWord } from '../../../types';
 
-export const translationRetrieverActor = fromPromise(async (props: {
+export const pronunciationRetrieverActor = fromPromise(async (props: {
     input: {
         dbController: DatabaseController<DictionaryWord>,
         highlight: BookHighlight,
     },
-}): Promise<string> => {
+}): Promise<string | undefined> => {
     const { highlight } = props.input;
 
-    return getTranslation({
+    const pronunciation = await firebaseGetPronunciation({
         word: highlight.text,
-        sourceLanguage: Languages.ENGLISH,
-        targetLanguage: Languages.RUSSIAN,
     });
+
+    if (pronunciation) {
+        return `data:${pronunciation.mimeType};base64,${pronunciation.data}`;
+    }
+
+    return undefined;
 });

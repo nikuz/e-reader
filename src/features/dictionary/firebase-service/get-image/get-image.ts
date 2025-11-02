@@ -15,7 +15,7 @@ interface Props {
     context?: string,
 }
 
-export async function firebaseGenerateImage(props: Props): Promise<{
+export async function firebaseGetImage(props: Props): Promise<{
     mimeType: string;
     data: string; // base64 string.
 } | undefined> {
