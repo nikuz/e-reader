@@ -1,5 +1,5 @@
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
-import { pathUtils } from 'src/utils';
+import { pathUtils, converterUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
 
 const HTML_CONTAINER_EXTENSIONS = new Set(['xhtml', 'html', 'htm']);
@@ -65,14 +65,6 @@ function getFileExtension(path: string, fallback = 'png'): string {
 }
 
 async function createObjectUrlFromBase64(base64: string, extension: string): Promise<string | undefined> {
-    const cleaned = base64.trim();
-
-    if (!cleaned) {
-        return undefined;
-    }
-
-    const dataUrl = `data:image/${extension.toLowerCase()};base64,${cleaned}`;
-    const blob = await (await fetch(dataUrl)).blob();
-
+    const blob = converterUtils.base64ToBlob(base64, `image/${extension.toLowerCase()}`);
     return URL.createObjectURL(blob);
 }

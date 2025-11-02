@@ -1,4 +1,5 @@
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
+import { converterUtils } from 'src/utils';
 
 export async function retrieveImages(props: {
     xmlDoc: Document,
@@ -28,10 +29,8 @@ export async function retrieveImages(props: {
 
         const extension = src.replace(/.+\.([^.]+)$/, '$1');
 
-        const url = `data:image/${extension};base64,${staticFileContent.data}`;
-        const data = await (await fetch(url)).blob();
-
-        const blobUrl = URL.createObjectURL(data);
+        const blobData = converterUtils.base64ToBlob(staticFileContent.data, `image/${extension}`);
+        const blobUrl = URL.createObjectURL(blobData);
 
         image.setAttribute('src', blobUrl);
 
