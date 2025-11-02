@@ -144,4 +144,10 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
 
         return Boolean(result.values?.length);
     }
+
+    async deleteDB(): Promise<void> {
+        await CapacitorSQLite.deleteDatabase({
+            database: this.config.name,
+        });
+    }
 }

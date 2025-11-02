@@ -23,6 +23,8 @@ export interface DatabaseAdapter<T> {
     delete(key: string): Promise<void>;
 
     clear(): Promise<void>;
+    
+    deleteDB(): Promise<void>;
 }
 
 // Configuration interface

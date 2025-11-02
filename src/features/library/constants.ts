@@ -8,5 +8,5 @@ export const LIBRARY_DB_CONFIG: DatabaseConfig<BookAttributes> = {
     name: 'books-db',
     indexName: 'books',
     indexKeyPath: 'eisbn',
-    version: 2,
+    version: 1,
 };

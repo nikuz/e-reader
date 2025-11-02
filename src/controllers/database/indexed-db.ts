@@ -1,4 +1,4 @@
-import { openDB, type IDBPDatabase } from 'idb';
+import { openDB, deleteDB, type IDBPDatabase } from 'idb';
 import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
 
 // IndexedDB implementation
@@ -110,5 +110,9 @@ export class IndexedDBAdapter<T> implements DatabaseAdapter<T> {
     async has(key: string): Promise<boolean> {
         const item = await this.get(key);
         return item !== undefined;
+    }
+
+    async deleteDB(): Promise<void> {
+        await deleteDB(this.config.name);
     }
 }

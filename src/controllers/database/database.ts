@@ -53,4 +53,16 @@ export class DatabaseController<T> {
     async delete(key: string): Promise<void> {
         await this.adapter.delete(key);
     }
+
+    async clear(): Promise<void> {
+        await this.adapter.clear();
+    }
+    
+    async deleteDB(): Promise<void> {
+        if (!import.meta.env.DEV) {
+            throw new Error('DatabaseController.deleteDB() is only available in development mode.');
+        }
+
+        await this.adapter.deleteDB();
+    }
 }
