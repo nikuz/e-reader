@@ -1,11 +1,9 @@
 import { fromPromise } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
 import { firebaseGetImage } from '../../../firebase-service';
 import type { DictionaryWord } from '../../../types';
 
-export const imageRetrieverActor = fromPromise(async (props: {
+export const imageActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController<DictionaryWord>,
         word: DictionaryWord,
     },
 }): Promise<string | undefined> => {

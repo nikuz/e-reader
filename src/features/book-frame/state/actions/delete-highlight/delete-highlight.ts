@@ -7,10 +7,10 @@ import {
     FONT_CSS_PLACEHOLDER,
     HIGHLIGHTS_CSS_PLACEHOLDER,
 } from '../../../constants';
-import type { BookFrameStateContext, DeleteHighlightAction } from '../../types';
+import type { BookFrameStateContext, DeleteHighlightEvent } from '../../types';
 
 export function deleteHighlightAction(props: {
-    event: DeleteHighlightAction,
+    event: DeleteHighlightEvent,
     context: BookFrameStateContext,
     enqueue: {
         assign: (context: Partial<BookFrameStateContext>) => void,

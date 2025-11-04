@@ -109,20 +109,20 @@ export interface HideMenuPanelsEvent {
     type: 'HIDE_MENU_PANELS',
 }
 
-export interface StoreHighlightAction {
+export interface StoreHighlightEvent {
     type: 'STORE_HIGHLIGHT',
 }
 
-export interface RestoreHighlightsAction {
+export interface RestoreHighlightsEvent {
     type: 'RESTORE_HIGHLIGHTS',
 }
 
-export interface DeleteHighlightAction {
+export interface DeleteHighlightEvent {
     type: 'DELETE_HIGHLIGHT',
     highlight: BookHighlight,
 }
 
-export interface RequestTranslationAction { type: 'REQUEST_TRANSLATION' }
+export interface RequestTranslationEvent { type: 'REQUEST_TRANSLATION' }
 
 export type BookFrameStateEvents =
     | LoadBookEvent
@@ -143,7 +143,7 @@ export type BookFrameStateEvents =
     | UpdateFontCSSEvent
     | UpdateHighlightsCSSEvent
     | HideMenuPanelsEvent
-    | StoreHighlightAction
-    | RestoreHighlightsAction
-    | DeleteHighlightAction
-    | RequestTranslationAction;
+    | StoreHighlightEvent
+    | RestoreHighlightsEvent
+    | DeleteHighlightEvent
+    | RequestTranslationEvent;
