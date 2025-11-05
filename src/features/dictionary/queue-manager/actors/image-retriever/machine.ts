@@ -1,8 +1,12 @@
-import { setup } from 'xstate';
+import { setup, sendParent } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
 import type { DictionaryWord } from '../../../types';
+import type {
+    QueueManagerImageRequestSuccessEvent,
+    QueueManagerImageRequestErrorEvent,
+} from '../../types';
 import { imageActor } from './image-actor';
 
 interface InputParameters {
@@ -34,14 +38,21 @@ export const imageRetrieverMachine = setup({
                     word: context.word,
                 }),
                 onDone: {
-                    target: 'SUCCESS',
+                    actions: sendParent(({ context, event }): QueueManagerImageRequestSuccessEvent => ({
+                        type: 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS',
+                        highlight: context.highlight,
+                        word: context.word,
+                        image: event.output,
+                    })),
                 },
                 onError: {
-                    target: 'ERROR',
                     actions: [
-                        // assign(({ event }) => ({
-                        //     errorMessage: event.error?.toString(),
-                        // })),
+                        sendParent(({ context, event }): QueueManagerImageRequestErrorEvent => ({
+                            type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
+                            highlight: context.highlight,
+                            word: context.word,
+                            error: event.error,
+                        })),
                         xStateUtils.stateErrorTraceAction,
                     ],
                 },

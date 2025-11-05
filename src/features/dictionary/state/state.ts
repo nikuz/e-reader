@@ -43,7 +43,10 @@ export const dictionaryStateMachine = setup({
     states: {
         IDLE: {
             on: {
-                REQUEST_TRANSLATION: {
+                REQUEST_WORD_ANALYSIS: {
+                    actions: sendTo('queue-manager', ({ event }) => event),
+                },
+                REQUEST_IMAGE: {
                     actions: sendTo('queue-manager', ({ event }) => event),
                 },
             },

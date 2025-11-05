@@ -18,11 +18,18 @@ export interface DictionaryStateContext {
 
 interface InitializeEvent { type: 'INITIALIZE' }
 
-export interface RequestTranslationEvent {
-    type: 'REQUEST_TRANSLATION',
+export interface RequestWordAnalysisEvent {
+    type: 'REQUEST_WORD_ANALYSIS',
     highlight: BookHighlight,
+}
+
+export interface RequestImageEvent {
+    type: 'REQUEST_IMAGE',
+    highlight: BookHighlight,
+    word: DictionaryWord,
 }
 
 export type DictionaryStateEvents = 
     | InitializeEvent
-    | RequestTranslationEvent;
+    | RequestWordAnalysisEvent
+    | RequestImageEvent;

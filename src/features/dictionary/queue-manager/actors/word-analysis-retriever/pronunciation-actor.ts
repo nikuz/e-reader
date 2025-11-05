@@ -6,16 +6,16 @@ export const pronunciationActor = fromPromise(async (props: {
     input: {
         highlight: BookHighlight,
     },
-}): Promise<string | undefined> => {
+}): Promise<string> => {
     const { highlight } = props.input;
 
     const pronunciation = await firebaseGetPronunciation({
         word: highlight.text,
     });
 
-    if (pronunciation) {
-        return `data:${pronunciation.mimeType};base64,${pronunciation.data}`;
+    if (!pronunciation) {
+        throw new Error('Can\'t retrieve pronunciation');
     }
 
-    return undefined;
+    return `data:${pronunciation.mimeType};base64,${pronunciation.data}`;
 });

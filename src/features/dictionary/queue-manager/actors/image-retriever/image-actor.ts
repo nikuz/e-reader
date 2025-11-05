@@ -6,7 +6,7 @@ export const imageActor = fromPromise(async (props: {
     input: {
         word: DictionaryWord,
     },
-}): Promise<string | undefined> => {
+}): Promise<string> => {
     const { word } = props.input;
 
     if (!word.aiExplanation) {
@@ -19,9 +19,9 @@ export const imageActor = fromPromise(async (props: {
         // context: highlight.context,
     });
     
-    if (image) {
-        return `data:${image.mimeType};base64,${image.data}`;
+    if (!image) {
+        throw new Error('Can\'t retrieve image');
     }
 
-    return undefined;
+    return `data:${image.mimeType};base64,${image.data}`;
 });

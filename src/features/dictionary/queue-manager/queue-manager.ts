@@ -1,7 +1,8 @@
-import { setup, enqueueActions } from 'xstate';
+import { setup, assign, enqueueActions } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import type { DictionaryWord } from '../types';
-import { translationRetrieverMachine, imageRetrieverMachine } from './actors';
+import { wordAnalysisRetrieverMachine, imageRetrieverMachine } from './actors';
+import { deleteRequestAction } from './actions';
 import type {
     QueueManagerStateContext,
     QueueManagerStateEvents,
@@ -13,7 +14,7 @@ interface InputParameters {
 
 export const queueManagerStateMachine = setup({
     actors: {
-        translationRetrieverMachine,
+        wordAnalysisRetrieverMachine,
         imageRetrieverMachine,
     },
     types: {
@@ -34,35 +35,57 @@ export const queueManagerStateMachine = setup({
     states: {
         IDLE: {
             on: {
-                REQUEST_TRANSLATION: {
-                    actions: enqueueActions(({ event, context, enqueue }) => {
-                        enqueue.spawnChild('translationRetrieverMachine', {
-                            input: {
-                                dbController: context.dbController,
-                                highlight: event.highlight,
-                            },
-                        });
-                    }),
+                REQUEST_WORD_ANALYSIS: {
+                    actions: assign(({ event, context, spawn }) => ({
+                        requests: {
+                            ...context.requests,
+                            [event.highlight.id]: spawn('wordAnalysisRetrieverMachine', {
+                                input: {
+                                    dbController: context.dbController,
+                                    highlight: event.highlight,
+                                },
+                            }),
+                        },
+                    })),
                 },
 
-                QUEUE_MANAGER_TRANSLATION_REQUEST_SUCCESS: {
-                    actions: [],
+                QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                    ],
                 },
                 
-                QUEUE_MANAGER_TRANSLATION_REQUEST_ERROR: {
-                    actions: [],
+                QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                    ],
                 },
 
                 REQUEST_IMAGE: {
-                    actions: enqueueActions(({ event, context, enqueue }) => {
-                        enqueue.spawnChild('imageRetrieverMachine', {
-                            input: {
-                                dbController: context.dbController,
-                                word: event.word,
-                                highlight: event.highlight,
-                            },
-                        });
-                    }),
+                    actions: assign(({ event, context, spawn }) => ({
+                        requests: {
+                            ...context.requests,
+                            [event.highlight.id]: spawn('imageRetrieverMachine', {
+                                input: {
+                                    dbController: context.dbController,
+                                    word: event.word,
+                                    highlight: event.highlight,
+                                },
+                            }),
+                        },
+                    })),
+                },
+
+                QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                    ],
+                },
+
+                QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                    ],
                 },
             }
         },

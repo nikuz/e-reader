@@ -122,7 +122,7 @@ export interface DeleteHighlightEvent {
     highlight: BookHighlight,
 }
 
-export interface RequestTranslationEvent { type: 'REQUEST_TRANSLATION' }
+export interface RequestWordAnalysisEvent { type: 'REQUEST_WORD_ANALYSIS' }
 
 export type BookFrameStateEvents =
     | LoadBookEvent
@@ -146,4 +146,4 @@ export type BookFrameStateEvents =
     | StoreHighlightEvent
     | RestoreHighlightsEvent
     | DeleteHighlightEvent
-    | RequestTranslationEvent;
+    | RequestWordAnalysisEvent;

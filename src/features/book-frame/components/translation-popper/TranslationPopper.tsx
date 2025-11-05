@@ -18,7 +18,7 @@ export function TranslationPopper() {
     const [arrowEl, setArrowEl] = useState<HTMLSpanElement | null>(null);
     const iframeEl = useBookFrameStateSelect('iframeEl');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
-    const isTranslating = useBookFrameStateMatch(['TRANSLATING']);
+    const isAnalyzingWord = useBookFrameStateMatch(['ANALYZING_WORD']);
 
     const virtualElement = useMemo<VirtualElement | null>(() => {
         if (!selectedHighlight?.range || !iframeEl) {
@@ -48,7 +48,7 @@ export function TranslationPopper() {
         };
     }, [iframeEl, selectedHighlight]);
 
-    if (!isTranslating || !selectedHighlight || !virtualElement) {
+    if (!isAnalyzingWord || !selectedHighlight || !virtualElement) {
         return null;
     }
 

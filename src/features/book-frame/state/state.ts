@@ -113,8 +113,8 @@ export const bookFrameStateMachine = setup({
                 DELETE_HIGHLIGHT: {
                     actions: enqueueActions(deleteHighlightAction),
                 },
-                REQUEST_TRANSLATION: {
-                    target: 'TRANSLATING',
+                REQUEST_WORD_ANALYSIS: {
+                    target: 'ANALYZING_WORD',
                     actions: enqueueActions(clearTextSelectionAction),
                 },
             },
@@ -141,7 +141,7 @@ export const bookFrameStateMachine = setup({
             },
         },
 
-        TRANSLATING: {
+        ANALYZING_WORD: {
             on: {
                 FRAME_TOUCH_START: {
                     target: 'IDLE',

@@ -10,7 +10,7 @@ export interface DictionaryWord {
     aiPronunciation?: string,
     aiImage?: string,
     createdAt: string,
-    updatedAt: string,
+    updatedAt?: string,
 }
 
 export type LanguageKey = keyof typeof Languages;

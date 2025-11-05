@@ -1,2 +1,2 @@
-export * from './translation-retriever';
+export * from './word-analysis-retriever';
 export * from './image-retriever';

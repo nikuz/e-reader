@@ -84,10 +84,10 @@ export function BookFrameTextSelectionControls() {
             return;
         }
         dictionaryStateMachineActor.send({
-            type: 'REQUEST_TRANSLATION',
+            type: 'REQUEST_WORD_ANALYSIS',
             highlight: selectedHighlight,
         });
-        bookFrameStateMachineActor.send({ type: 'REQUEST_TRANSLATION' });
+        bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
     }, [selectedHighlight]);
 
     if (!virtualElement) {
