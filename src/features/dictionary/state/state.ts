@@ -2,6 +2,7 @@ import { setup, createActor, assign, sendTo } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import { queueManagerStateMachine } from '../queue-manager';
+import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
 import type { DictionaryWord } from '../types';
 import {
@@ -44,7 +45,45 @@ export const dictionaryStateMachine = setup({
         IDLE: {
             on: {
                 REQUEST_WORD_ANALYSIS: {
-                    actions: sendTo('queue-manager', ({ event }) => event),
+                    actions: [
+                        assign(({ event }) => ({
+                            translatingWord: getNewDictionaryWord({ highlight: event.highlight }),
+                        })),
+                        sendTo('queue-manager', ({ event }) => event),
+                    ],
+                },
+                QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED: {
+                    actions: assign(({ context, event }) => ({
+                        translatingWord: context.translatingWord && {
+                            ...context.translatingWord,
+                            translation: event.translation,
+                        }
+                    })),
+                },
+                QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED: {
+                    actions: assign(({ context, event }) => ({
+                        translatingWord: context.translatingWord && {
+                            ...context.translatingWord,
+                            aiExplanation: event.explanation,
+                        }
+                    })),
+                },
+                QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED: {
+                    actions: assign(({ context, event }) => ({
+                        translatingWord: context.translatingWord && {
+                            ...context.translatingWord,
+                            aiPronunciation: event.pronunciation,
+                        }
+                    })),
+                },
+                QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
+                    actions: assign(({ event }) => ({
+                        translatingWord: undefined,
+                        selectedWord: event.word,
+                    })),
+                },
+                QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
+                    actions: assign(() => ({ translatingWord: undefined })),
                 },
                 REQUEST_IMAGE: {
                     actions: sendTo('queue-manager', ({ event }) => event),

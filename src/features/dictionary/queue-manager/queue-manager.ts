@@ -1,4 +1,4 @@
-import { setup, assign, enqueueActions } from 'xstate';
+import { setup, assign, enqueueActions, sendParent } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import type { DictionaryWord } from '../types';
 import { wordAnalysisRetrieverMachine, imageRetrieverMachine } from './actors';
@@ -49,15 +49,29 @@ export const queueManagerStateMachine = setup({
                     })),
                 },
 
+                QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED: {
+                    actions: sendParent(({ event }) => event),
+                },
+
+                QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED: {
+                    actions: sendParent(({ event }) => event),
+                },
+
+                QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED: {
+                    actions: sendParent(({ event }) => event),
+                },
+
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
                     actions: [
                         enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
                     ],
                 },
                 
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
                     actions: [
                         enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
                     ],
                 },
 
@@ -79,12 +93,14 @@ export const queueManagerStateMachine = setup({
                 QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
                     actions: [
                         enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
                     ],
                 },
 
                 QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
                     actions: [
                         enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
                     ],
                 },
             }

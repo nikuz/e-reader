@@ -1,5 +1,8 @@
 import { fromPromise } from 'xstate';
+import { FileStorageController } from 'src/controllers';
+import { audioUtils, converterUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
+import { DICTIONARY_PRONUNCIATIONS_DIRECTORY } from '../../../constants';
 import { firebaseGetPronunciation } from '../../../firebase-service';
 
 export const pronunciationActor = fromPromise(async (props: {
@@ -17,5 +20,19 @@ export const pronunciationActor = fromPromise(async (props: {
         throw new Error('Can\'t retrieve pronunciation');
     }
 
-    return `data:${pronunciation.mimeType};base64,${pronunciation.data}`;
+    // save pronunciation file
+    const wavBase64 = audioUtils.pcm16ToWavBase64(pronunciation.data);
+    const fileName = converterUtils.stringToHash(highlight.text);
+    const filePath = `${DICTIONARY_PRONUNCIATIONS_DIRECTORY}/${fileName}.wav`;
+
+    await FileStorageController.writeFile({
+        path: filePath,
+        data: wavBase64,
+        recursive: true,
+    });
+
+    // get file path URI
+    const fileUri = await FileStorageController.getUri({ path: filePath });
+
+    return fileUri.uri;
 });

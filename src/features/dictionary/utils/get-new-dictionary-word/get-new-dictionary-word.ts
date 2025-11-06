@@ -1,10 +1,10 @@
 import type { BookHighlight } from 'src/types';
 import type { DictionaryWord } from '../../types';
 
-export function getNewWord(props: {
+export function getNewDictionaryWord(props: {
     highlight: BookHighlight,
-    translation: string,
-    explanation: string,
+    translation?: string,
+    explanation?: string,
     pronunciation?: string,
 }): DictionaryWord {
     return {

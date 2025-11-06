@@ -2,7 +2,14 @@ import type { ActorRefFrom } from 'xstate';
 import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
-import { queueManagerStateMachine } from '../queue-manager';
+import {
+    queueManagerStateMachine,
+    type QueueManagerWordAnalysisRequestSuccessEvent,
+    type QueueManagerWordAnalysisRequestErrorEvent,
+    type QueueManagerWordAnalysisTranslationRetrievedEvent,
+    type QueueManagerWordAnalysisExplanationRetrievedEvent,
+    type QueueManagerWordAnalysisPronunciationRetrievedEvent,
+} from '../queue-manager';
 import type { DictionaryWord } from '../types';
 
 export interface DictionaryStateContext {
@@ -10,6 +17,9 @@ export interface DictionaryStateContext {
     navigator?: NavigateFunction,
 
     storedWords: DictionaryWord[],
+
+    translatingWord?: DictionaryWord,
+    selectedWord?: DictionaryWord,
 
     errorMessage?: string,
 
@@ -32,4 +42,9 @@ export interface RequestImageEvent {
 export type DictionaryStateEvents = 
     | InitializeEvent
     | RequestWordAnalysisEvent
-    | RequestImageEvent;
+    | RequestImageEvent
+    | QueueManagerWordAnalysisRequestSuccessEvent
+    | QueueManagerWordAnalysisRequestErrorEvent
+    | QueueManagerWordAnalysisTranslationRetrievedEvent
+    | QueueManagerWordAnalysisExplanationRetrievedEvent
+    | QueueManagerWordAnalysisPronunciationRetrievedEvent;

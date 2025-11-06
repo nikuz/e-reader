@@ -3,13 +3,18 @@ import {
     Popper,
     Paper,
     Box,
+    CircularProgress,
 } from 'src/design-system/components';
 import { styled } from 'src/design-system/styles';
 import type { VirtualElement } from 'src/design-system/types';
+import { useDictionaryStateSelect } from 'src/features/dictionary/state';
 import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
 } from '../../state';
+import TranslationPopperTranslation from './TranslationPopperTranslation';
+import TranslationPopperExplanation from './TranslationPopperExplanation';
+import TranslationPopperPronunciation from './TranslationPopperPronunciation';
 
 const POPPER_OFFSET = 8;
 const POPPER_BG_COLOR = '#262626';
@@ -19,6 +24,7 @@ export function TranslationPopper() {
     const iframeEl = useBookFrameStateSelect('iframeEl');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const isAnalyzingWord = useBookFrameStateMatch(['ANALYZING_WORD']);
+    const translatingWord = useDictionaryStateSelect('translatingWord');
 
     const virtualElement = useMemo<VirtualElement | null>(() => {
         if (!selectedHighlight?.range || !iframeEl) {
@@ -113,15 +119,10 @@ export function TranslationPopper() {
                         },
                     }}
                 />
-                <Box>
-                    Translating...
-                </Box>
-                <Box>
-                    Translating...
-                </Box>
-                <Box>
-                    Translating...
-                </Box>
+                <TranslationPopperTranslation />
+                <TranslationPopperExplanation />
+                <TranslationPopperPronunciation />
+                {translatingWord && <CircularProgress />}
             </Paper>
         </StyledPopper>
     );

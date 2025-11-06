@@ -2,7 +2,7 @@ import { setup, sendParent, assign } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
-import { getNewWord } from '../../../utils';
+import { getNewDictionaryWord } from '../../../utils';
 import type { DictionaryWord } from '../../../types';
 import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
@@ -158,7 +158,7 @@ export const wordAnalysisRetrieverMachine = setup({
                     actions: sendParent(({ context }): QueueManagerWordAnalysisRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
                         highlight: context.highlight,
-                        word: getNewWord({
+                        word: getNewDictionaryWord({
                             highlight: context.highlight,
                             translation: context.translation!,
                             explanation: context.explanation!,
