@@ -1,3 +1,5 @@
+import type { capSQLiteChanges } from '@capacitor-community/sqlite';
+
 // Storage adapter interface
 export interface DatabaseAdapter<T> {
     init(upgrades?: DatabaseMigration[]): Promise<void>;
@@ -12,11 +14,11 @@ export interface DatabaseAdapter<T> {
     
     getAll(): Promise<T[]>;
 
-    create(query: string, values?: any[]): Promise<void>;
-
-    update(query: string, values?: any[]): Promise<void>;
-
     delete(key: string): Promise<void>;
+
+    query(query: string, values?: any[]): Promise<T[]>;
+
+    execute(query: string, values?: any[]): Promise<capSQLiteChanges>;
 
     clear(): Promise<void>;
     

@@ -10,7 +10,7 @@ import {
     type QueueManagerWordAnalysisExplanationRetrievedEvent,
     type QueueManagerWordAnalysisPronunciationRetrievedEvent,
 } from '../queue-manager';
-import type { DictionaryWord } from '../types';
+import type { DictionaryWord, Language } from '../types';
 
 export interface DictionaryStateContext {
     dbController: DatabaseController<DictionaryWord>,
@@ -31,6 +31,8 @@ interface InitializeEvent { type: 'INITIALIZE' }
 export interface RequestWordAnalysisEvent {
     type: 'REQUEST_WORD_ANALYSIS',
     highlight: BookHighlight,
+    sourceLanguage: Language,
+    targetLanguage: Language,
 }
 
 export interface RequestImageEvent {

@@ -3,7 +3,7 @@ import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
 import { getNewDictionaryWord } from '../../../utils';
-import type { DictionaryWord } from '../../../types';
+import type { DictionaryWord, Language } from '../../../types';
 import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
     QueueManagerWordAnalysisExplanationRetrievedEvent,
@@ -19,6 +19,8 @@ interface InputParameters {
     dbController: DatabaseController<DictionaryWord>,
     highlight: BookHighlight,
     word: DictionaryWord,
+    sourceLanguage: Language,
+    targetLanguage: Language,
 }
 
 export const wordAnalysisRetrieverMachine = setup({
@@ -40,7 +42,7 @@ export const wordAnalysisRetrieverMachine = setup({
 
     context: ({ input }) => input,
 
-    initial: 'RETRIEVING',
+    initial: 'RETRIEVING_LOCALLY',
 
     states: {
         RETRIEVING_LOCALLY: {
@@ -59,6 +61,8 @@ export const wordAnalysisRetrieverMachine = setup({
                                 src: 'translationActor',
                                 input: ({ context }) => ({
                                     highlight: context.highlight,
+                                    sourceLanguage: context.sourceLanguage,
+                                    targetLanguage: context.targetLanguage,
                                 }),
                                 onDone: {
                                     target: 'SUCCESS',
@@ -94,6 +98,8 @@ export const wordAnalysisRetrieverMachine = setup({
                                 src: 'explanationActor',
                                 input: ({ context }) => ({
                                     highlight: context.highlight,
+                                    sourceLanguage: context.sourceLanguage,
+                                    targetLanguage: context.targetLanguage,
                                 }),
                                 onDone: {
                                     target: 'SUCCESS',
@@ -129,6 +135,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                 src: 'pronunciationActor',
                                 input: ({ context }) => ({
                                     highlight: context.highlight,
+                                    sourceLanguage: context.sourceLanguage,
                                 }),
                                 onDone: {
                                     target: 'SUCCESS',
@@ -168,6 +175,8 @@ export const wordAnalysisRetrieverMachine = setup({
                             translation: context.translation!,
                             explanation: context.explanation!,
                             pronunciation: context.pronunciation,
+                            sourceLanguage: context.sourceLanguage,
+                            targetLanguage: context.targetLanguage,
                         }),
                     })),
                 },

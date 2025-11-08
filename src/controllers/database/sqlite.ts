@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection, type capSQLiteChanges } from '@capacitor-community/sqlite';
 import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
 
 if (import.meta.env.DEV && !Capacitor.isNativePlatform()) {
@@ -101,18 +101,6 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
         return result.values as T[];
     }
 
-    async create(query: string, values?: any[]): Promise<void> {
-        if (typeof query === 'string') {
-            return this.rawQuery(query, values);
-        }
-    }
-
-    async update(query: string, values?: any[]): Promise<void> {
-        if (typeof query === 'string') {
-            return this.rawQuery(query, values);
-        }
-    }
-
     async delete(key: string): Promise<void> {
         const db = this.ensureDB();
         await db.run(
@@ -121,9 +109,14 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
         );
     }
 
-    async rawQuery(query: string, values?: any[]): Promise<void> {
+    async query(query: string, values?: any[]): Promise<T[]> {
         const db = this.ensureDB();
-        await db.run(query, values);
+        return (await db.query(query, values)).values as T[];
+    }
+
+    async execute(query: string, values?: any[]): Promise<capSQLiteChanges> {
+        const db = this.ensureDB();
+        return await db.run(query, values);
     }
 
     async clear(): Promise<void> {

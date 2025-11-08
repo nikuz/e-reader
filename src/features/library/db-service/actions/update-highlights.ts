@@ -13,7 +13,7 @@ export async function updateHighlightsInDB(db: DatabaseController<BookAttributes
         book.eisbn,
     ];
 
-    await db.update(query, params);
+    await db.execute(query, params);
 
     // web only
     await db.saveToStore();

@@ -2,18 +2,21 @@ import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
 import { audioUtils, converterUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
-import { DICTIONARY_PRONUNCIATIONS_DIRECTORY } from '../../../constants';
 import { firebaseGetPronunciation } from '../../../firebase-service';
+import { DICTIONARY_PRONUNCIATIONS_DIRECTORY } from '../../../constants';
+import type { Language } from '../../../types';
 
 export const pronunciationActor = fromPromise(async (props: {
     input: {
         highlight: BookHighlight,
+        sourceLanguage: Language,
     },
 }): Promise<string> => {
-    const { highlight } = props.input;
+    const { highlight, sourceLanguage } = props.input;
 
     const pronunciation = await firebaseGetPronunciation({
         word: highlight.text,
+        sourceLanguage,
     });
 
     if (!pronunciation) {

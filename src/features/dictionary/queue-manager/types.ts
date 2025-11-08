@@ -1,7 +1,7 @@
 import type { ActorRefFrom } from 'xstate';
 import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
-import type { DictionaryWord } from '../types';
+import type { DictionaryWord, Language } from '../types';
 import { wordAnalysisRetrieverMachine } from './actors/word-analysis-retriever';
 import { imageRetrieverMachine } from './actors/image-retriever';
 
@@ -14,6 +14,8 @@ export interface RequestWordAnalysisEvent {
     type: 'REQUEST_WORD_ANALYSIS',
     highlight: BookHighlight,
     word: DictionaryWord,
+    sourceLanguage: Language,
+    targetLanguage: Language,
 }
 
 export interface QueueManagerWordAnalysisRequestSuccessEvent {

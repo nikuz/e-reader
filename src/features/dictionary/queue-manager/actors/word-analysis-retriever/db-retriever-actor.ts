@@ -1,18 +1,23 @@
 import { fromPromise } from 'xstate';
+import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
-import { getTranslation } from '../../../translation-service';
-import { Languages } from '../../../constants';
+import { getWordFromDB } from '../../../db-service';
+import type { DictionaryWord, Language } from '../../../types';
 
 export const dbRetrieverActor = fromPromise(async (props: {
     input: {
+        dbController: DatabaseController<DictionaryWord>,
         highlight: BookHighlight,
+        sourceLanguage: Language,
+        targetLanguage: Language,
     },
-}): Promise<string> => {
-    const { highlight } = props.input;
+}): Promise<DictionaryWord | undefined> => {
+    const { dbController, highlight, sourceLanguage, targetLanguage } = props.input;
 
-    return getTranslation({
+    return await getWordFromDB({
+        db: dbController,
         word: highlight.text,
-        sourceLanguage: Languages.ENGLISH,
-        targetLanguage: Languages.RUSSIAN,
+        sourceLanguage,
+        targetLanguage,
     });
 });

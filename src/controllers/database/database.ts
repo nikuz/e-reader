@@ -1,3 +1,4 @@
+import type { capSQLiteChanges } from '@capacitor-community/sqlite';
 import { SQLiteAdapter } from './sqlite';
 import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
 
@@ -32,12 +33,12 @@ export class DatabaseController<T> {
         return this.adapter.getAll();
     }
 
-    async create(query: string, values?: any[]): Promise<void> {
-        await this.adapter.create(query, values);
+    async query(query: string, values?: any[]): Promise<T[]> {
+        return await this.adapter.query(query, values);
     }
-
-    async update(query: string, values?: any[]): Promise<void> {
-        await this.adapter.update(query, values);
+    
+    async execute(query: string, values?: any[]): Promise<capSQLiteChanges> {
+        return await this.adapter.execute(query, values);
     }
 
     async delete(key: string): Promise<void> {

@@ -17,9 +17,9 @@ export const initializerActor = fromPromise(async (props: {
     }
 
     const dbController = props.input.dbController;
+    await initializeDBService(dbController);
     // TODO: remove this after first version release
     // await dbController.deleteDB();
-    await initializeDBService(dbController);
 
     const storedWords = await getAllWordsFromDB(dbController);
     storedWords.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

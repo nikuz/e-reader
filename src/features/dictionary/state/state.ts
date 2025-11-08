@@ -47,12 +47,18 @@ export const dictionaryStateMachine = setup({
                 REQUEST_WORD_ANALYSIS: {
                     actions: [
                         assign(({ event }) => ({
-                            translatingWord: getNewDictionaryWord({ highlight: event.highlight }),
+                            translatingWord: getNewDictionaryWord({
+                                highlight: event.highlight,
+                                sourceLanguage: event.sourceLanguage,
+                                targetLanguage: event.targetLanguage,
+                            }),
                         })),
                         sendTo('queue-manager', ({ context, event }) => ({
                             type: event.type,
                             highlight: event.highlight,
                             word: context.translatingWord,
+                            sourceLanguage: event.sourceLanguage,
+                            targetLanguage: event.targetLanguage,
                         })),
                     ],
                 },

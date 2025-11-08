@@ -9,6 +9,8 @@ export interface DictionaryWord {
     explanations: DictionaryWordExplanation[],
     pronunciation?: string,
     images: DictionaryWordImage[],
+    sourceLanguage: LanguageCode,
+    targetLanguage: LanguageCode,
     createdAt: string,
     updatedAt?: string,
 }
@@ -30,3 +32,4 @@ export interface DictionaryWordImage {
 
 export type LanguageKey = keyof typeof Languages;
 export type Language = typeof Languages[LanguageKey];
+export type LanguageCode = (typeof Languages)[keyof typeof Languages]['code'];

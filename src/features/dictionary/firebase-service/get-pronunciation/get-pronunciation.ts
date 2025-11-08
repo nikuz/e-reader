@@ -1,4 +1,5 @@
 import { getGenerativeModel, ResponseModality } from 'firebase/ai';
+import type { Language } from '../../types';
 import { firebaseAi } from '../app';
 
 export const geminiTTSModel = getGenerativeModel(firebaseAi, {
@@ -11,15 +12,16 @@ export const geminiTTSModel = getGenerativeModel(firebaseAi, {
 
 interface Props {
     word: string,
+    sourceLanguage: Language,
 }
 
 export async function firebaseGetPronunciation(props: Props): Promise<{
     mimeType: string;
     data: string; // base64 string.
 } | undefined> {
-    const { word } = props;
+    const { word, sourceLanguage } = props;
     
-    const prompt = `Say the following: "${word}"`;
+    const prompt = `Say the following in ${sourceLanguage}: "${word}"`;
 
     const result = await geminiTTSModel.generateContent(prompt);
 

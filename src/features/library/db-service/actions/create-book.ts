@@ -19,7 +19,7 @@ export async function createBookInDB(db: DatabaseController<BookAttributes>, boo
         JSON.stringify(book),
     ];
 
-    await db.create(query, params);
+    await db.execute(query, params);
     
     // web only
     await db.saveToStore();
