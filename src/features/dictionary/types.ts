@@ -1,8 +1,8 @@
 import { Languages } from './constants';
 
 export interface DictionaryWord {
-    id: number,
-    cloudId?: number,
+    id: string,
+    cloudId?: string,
     word: string,
     contexts: DictionaryWordContext[],
     translation?: string,
@@ -14,6 +14,8 @@ export interface DictionaryWord {
     createdAt: string,
     updatedAt?: string,
 }
+
+export type DictionaryWordDBInstance = Record<keyof DictionaryWord, string>;
 
 export interface DictionaryWordContext {
     id: string,

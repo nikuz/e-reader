@@ -3,7 +3,6 @@ import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import JSZip from 'jszip';
 import type { DatabaseController } from 'src/controllers';
 import { pathUtils, fileReaderUtils, imageUtils } from 'src/utils';
-import type { BookAttributes } from 'src/types';
 import { createBookInDB, deleteBookFromDB } from '../../../db-service';
 import {
     retrieveBookAttributes,
@@ -18,7 +17,7 @@ import { BookModel } from 'src/models';
 export const fileOpenerActor = fromPromise(async (props: {
     input: {
         file: File,
-        dbController: DatabaseController<BookAttributes>,
+        dbController: DatabaseController,
     },
 }): Promise<BookModel | undefined> => {
     const { file } = props.input;

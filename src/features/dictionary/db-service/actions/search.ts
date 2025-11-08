@@ -1,9 +1,13 @@
 import { DatabaseController } from 'src/controllers';
-import { DICTIONARY_DB_CONFIG } from '../../constants';
-import type { DictionaryWord } from '../../types';
+import { DICTIONARY_DB_CONFIG, Languages } from '../../constants';
+import type {
+    DictionaryWord,
+    DictionaryWordDBInstance,
+    LanguageKey,
+} from '../../types';
 
 export async function searchInDB(props: {
-    db: DatabaseController<DictionaryWord>,
+    db: DatabaseController,
     searchText: string,
     from: number,
     to: number,
@@ -13,9 +17,10 @@ export async function searchInDB(props: {
     const searchPatternStart = `%${searchText}`;
     const searchPatternEnd = `${searchText}%`;
     
-    return await db.query(
+    const response = await db.query(
         `
-            SELECT * FROM "${DICTIONARY_DB_CONFIG.name}"
+            SELECT id, word, translation, pronunciation, images, sourceLanguage, targetLanguage, createdAt, updatedAt
+            FROM "${DICTIONARY_DB_CONFIG.name}"
             WHERE
                 word LIKE :searchPattern
                 OR translation LIKE :searchPattern
@@ -46,4 +51,17 @@ export async function searchInDB(props: {
             from,
         ]
     );
+
+    if (!response) {
+        return [];
+    }
+
+    return response.map((item: DictionaryWordDBInstance): DictionaryWord => ({
+        ...item,
+        contexts: JSON.parse(item.contexts),
+        explanations: JSON.parse(item.explanations),
+        images: JSON.parse(item.images),
+        sourceLanguage: Languages[item.sourceLanguage as LanguageKey],
+        targetLanguage: Languages[item.targetLanguage as LanguageKey],
+    }));
 }

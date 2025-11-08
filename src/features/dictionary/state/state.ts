@@ -4,7 +4,6 @@ import { xStateUtils } from 'src/utils';
 import { queueManagerStateMachine } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
-import type { DictionaryWord } from '../types';
 import {
     initializerActor,
 } from './actors';
@@ -26,7 +25,7 @@ export const dictionaryStateMachine = setup({
     id: 'DICTIONARY',
 
     context: {
-        dbController: new DatabaseController<DictionaryWord>(DICTIONARY_DB_CONFIG),
+        dbController: new DatabaseController(DICTIONARY_DB_CONFIG),
         storedWords: [],
     },
 

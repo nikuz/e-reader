@@ -6,7 +6,7 @@ import type { DictionaryWord, Language } from '../../../types';
 
 export const dbRetrieverActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController<DictionaryWord>,
+        dbController: DatabaseController,
         highlight: BookHighlight,
         sourceLanguage: Language,
         targetLanguage: Language,

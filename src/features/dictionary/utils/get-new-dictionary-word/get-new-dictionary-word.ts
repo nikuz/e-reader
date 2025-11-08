@@ -18,7 +18,7 @@ export function getNewDictionaryWord(props: {
     }
 
     return {
-        id: Date.now(),
+        id: Date.now().toString(),
         word: props.highlight.text,
         translation: props.translation,
         contexts: [{

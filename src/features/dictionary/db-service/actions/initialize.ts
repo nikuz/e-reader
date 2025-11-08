@@ -1,8 +1,7 @@
 import { DatabaseController } from 'src/controllers';
-import type { DictionaryWord } from '../../types';
 import migrations from '../migrations';
 
-export async function initializeDBService(db: DatabaseController<DictionaryWord>) {
+export async function initializeDBService(db: DatabaseController) {
     if (!db.isInitiated()) {
         await db.init(migrations);
     }

@@ -3,7 +3,6 @@ import { Preferences } from '@capacitor/preferences';
 import { FileStorageController } from 'src/controllers';
 import type { DatabaseController } from 'src/controllers';
 import { BookModel } from 'src/models';
-import type { BookAttributes } from 'src/types';
 import { initializeDBService, getAllBooksFromDB } from '../../../db-service';
 import { getBookCoverObjectUrl } from '../../../utils';
 import {
@@ -13,7 +12,7 @@ import {
 
 export const initializerActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController<BookAttributes>,
+        dbController: DatabaseController,
     },
 }): Promise<{
     books: BookModel[],

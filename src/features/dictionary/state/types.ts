@@ -13,7 +13,7 @@ import {
 import type { DictionaryWord, Language } from '../types';
 
 export interface DictionaryStateContext {
-    dbController: DatabaseController<DictionaryWord>,
+    dbController: DatabaseController,
     navigator?: NavigateFunction,
 
     storedWords: DictionaryWord[],

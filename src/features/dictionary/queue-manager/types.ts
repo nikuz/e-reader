@@ -6,7 +6,7 @@ import { wordAnalysisRetrieverMachine } from './actors/word-analysis-retriever';
 import { imageRetrieverMachine } from './actors/image-retriever';
 
 export interface QueueManagerStateContext {
-    dbController: DatabaseController<DictionaryWord>,
+    dbController: DatabaseController,
     requests: Record<string, ActorRefFrom<typeof wordAnalysisRetrieverMachine | typeof imageRetrieverMachine>>,
 }
 

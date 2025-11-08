@@ -1,6 +1,5 @@
 import { setup, assign, enqueueActions, sendParent } from 'xstate';
 import { DatabaseController } from 'src/controllers';
-import type { DictionaryWord } from '../types';
 import { wordAnalysisRetrieverMachine, imageRetrieverMachine } from './actors';
 import { deleteRequestAction } from './actions';
 import type {
@@ -9,7 +8,7 @@ import type {
 } from './types';
 
 interface InputParameters {
-    dbController: DatabaseController<DictionaryWord>,
+    dbController: DatabaseController,
 }
 
 export const queueManagerStateMachine = setup({

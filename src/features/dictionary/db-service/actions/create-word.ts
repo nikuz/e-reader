@@ -3,7 +3,7 @@ import { DICTIONARY_DB_CONFIG } from '../../constants';
 import type { DictionaryWord } from '../../types';
 
 export async function createWordInDB(props: {
-    db: DatabaseController<DictionaryWord>,
+    db: DatabaseController,
     word: DictionaryWord,
 }): Promise<void> {
     const { db, word } = props;

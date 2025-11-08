@@ -7,7 +7,7 @@ import type { DictionaryWord, Language } from '../../../types';
 
 export const dbSaverActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController<DictionaryWord>,
+        dbController: DatabaseController,
         highlight: BookHighlight,
         translation?: string,
         explanation?: string,

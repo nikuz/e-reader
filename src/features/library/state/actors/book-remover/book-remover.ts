@@ -9,7 +9,7 @@ import { LIBRARY_DIRECTORY } from '../../../constants';
 export const bookRemoverActor = fromPromise(async (props: {
     input: {
         bookAttributes: BookAttributes,
-        dbController: DatabaseController<BookAttributes>,
+        dbController: DatabaseController,
     },
 }): Promise<BookAttributes> => {
     const { bookAttributes, dbController } = props.input;

@@ -1,63 +1,171 @@
-import type { capSQLiteChanges } from '@capacitor-community/sqlite';
-import { SQLiteAdapter } from './sqlite';
-import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
+import { Capacitor } from '@capacitor/core';
+import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection, type capSQLiteChanges } from '@capacitor-community/sqlite';
+import type { DatabaseConfig, DatabaseMigration } from './types';
 
-export class DatabaseController<T> {
-    private adapter: DatabaseAdapter<T>;
-    
+if (import.meta.env.DEV && !Capacitor.isNativePlatform()) {
+    import('jeep-sqlite/loader').then(module => {
+        module.defineCustomElements(window);
+        const jeepEl = document.createElement('jeep-sqlite');
+        document.body.appendChild(jeepEl);
+    });
+}
+
+type SQLiteQueryResult = {
+    values?: Array<Record<string, unknown>>;
+};
+
+// SQLite implementation for native platforms using Capacitor plugin
+export class DatabaseController {
     constructor(config: DatabaseConfig) {
-        this.adapter = new SQLiteAdapter<T>(config);
+        this.config = config;
+    }
+
+    private sqliteConnection = new SQLiteConnection(CapacitorSQLite);
+    private db: SQLiteDBConnection | null = null;
+    private config: DatabaseConfig;
+    private initialized = false;
+
+    private ensureDB(): SQLiteDBConnection {
+        if (!this.db) {
+            throw new Error('Database not initialized. Call init() first.');
+        }
+
+        return this.db;
     }
 
     async init(upgrades?: DatabaseMigration[]): Promise<void> {
-        await this.adapter.init(upgrades);
+        if (this.initialized) {
+            return;
+        }
+        if (!Capacitor.isNativePlatform()) {
+            await customElements.whenDefined('jeep-sqlite');
+            await this.sqliteConnection.initWebStore();
+        }
+        if (upgrades) {
+            CapacitorSQLite.addUpgradeStatement({
+                database: this.config.name,
+                upgrade: upgrades,
+            });
+        }
+        this.initialized = true;
     }
 
     isInitiated(): boolean {
-        return this.adapter.isInitiated(); 
+        return this.initialized;
     }
 
     async openDB(): Promise<void> {
-        await this.adapter.openDB();
+        if (!this.db) {
+            const isAlreadyConnected = (await this.sqliteConnection.isConnection(this.config.name, false)).result;
+            const connectionIsConsistent = (await this.sqliteConnection.checkConnectionsConsistency()).result;
+
+            if (isAlreadyConnected && connectionIsConsistent) {
+                this.db = await this.sqliteConnection.retrieveConnection(this.config.name, false);
+            } else {
+                this.db = await this.sqliteConnection.createConnection(
+                    this.config.name,
+                    false,
+                    'no-encryption',
+                    this.config.version ?? 1,
+                    false,
+                );
+            }
+            await this.db.open();
+        }
     }
 
     async closeDB(): Promise<void> {
-        await this.adapter.closeDB();
+        if (this.db) {
+            await this.db.close();
+            await this.sqliteConnection.closeConnection(this.config.name, false);
+            this.db = null;
+        }
     }
 
-    async read(key: string): Promise<T | undefined> {
-        return this.adapter.get(key);
+    async get(key: string): Promise<any | undefined> {
+        const db = this.ensureDB();
+        const result: SQLiteQueryResult = await db.query(
+            `SELECT * FROM "${this.config.name}" WHERE id = ?`,
+            [key],
+        );
+
+        return result.values?.[0]?.value;
     }
 
-    async readAll(): Promise<T[]> {
-        return this.adapter.getAll();
-    }
+    async getAll(): Promise<any[] | undefined> {
+        const db = this.ensureDB();
+        const result: SQLiteQueryResult = await db.query(
+            `SELECT * FROM "${this.config.name}"`,
+        );
 
-    async query(query: string, values?: any[]): Promise<T[]> {
-        return await this.adapter.query(query, values);
-    }
-    
-    async execute(query: string, values?: any[]): Promise<capSQLiteChanges> {
-        return await this.adapter.execute(query, values);
+        return result.values;
     }
 
     async delete(key: string): Promise<void> {
-        await this.adapter.delete(key);
+        const db = this.ensureDB();
+        await db.run(
+            `DELETE FROM "${this.config.name}" WHERE id = ?`,
+            [key],
+        );
+        if (!Capacitor.isNativePlatform()) {
+            await this.saveToStore();
+        }
+    }
+
+    async query(query: string, values?: any[]): Promise<any[] | undefined> {
+        const db = this.ensureDB();
+        return (await db.query(query, values)).values;
+    }
+
+    async execute(query: string, values?: any[]): Promise<capSQLiteChanges> {
+        const db = this.ensureDB();
+        const result = await db.run(query, values);
+
+        if (!Capacitor.isNativePlatform()) {
+            await this.saveToStore();
+        }
+
+        return result;
     }
 
     async clear(): Promise<void> {
-        await this.adapter.clear();
-    }
-    
-    async deleteDB(): Promise<void> {
-        if (!import.meta.env.DEV) {
-            throw new Error('DatabaseController.deleteDB() is only available in development mode.');
+        const db = this.ensureDB();
+        await db.run(`DELETE FROM "${this.config.name}"`, []);
+        if (!Capacitor.isNativePlatform()) {
+            await this.saveToStore();
         }
+    }
 
-        await this.adapter.deleteDB();
+    async count(): Promise<number> {
+        const db = this.ensureDB();
+        const result: SQLiteQueryResult = await db.query(
+            `SELECT COUNT(*) as count FROM "${this.config.name}"`,
+        );
+
+        const rawCount = result.values?.[0]?.count;
+
+        return typeof rawCount === 'number'
+            ? rawCount
+            : Number(rawCount ?? 0);
+    }
+
+    async has(key: string): Promise<boolean> {
+        const db = this.ensureDB();
+        const result: SQLiteQueryResult = await db.query(
+            `SELECT 1 FROM "${this.config.name}" WHERE id = ? LIMIT 1`,
+            [key],
+        );
+
+        return Boolean(result.values?.length);
+    }
+
+    async deleteDB(): Promise<void> {
+        await CapacitorSQLite.deleteDatabase({
+            database: this.config.name,
+        });
     }
 
     async saveToStore(): Promise<void> {
-        await this.adapter.saveToStore();
+        await this.sqliteConnection.saveToStore(this.config.name);
     }
 }

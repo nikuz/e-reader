@@ -17,7 +17,7 @@ import { explanationActor } from './explanation-actor';
 import { pronunciationActor } from './pronunciation-actor';
 
 interface InputParameters {
-    dbController: DatabaseController<DictionaryWord>,
+    dbController: DatabaseController,
     highlight: BookHighlight,
     word: DictionaryWord,
     sourceLanguage: Language,

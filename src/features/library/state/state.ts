@@ -1,7 +1,6 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
-import type { BookAttributes } from 'src/types';
 import { LIBRARY_DB_CONFIG } from '../constants';
 import {
     initializerActor,
@@ -40,7 +39,7 @@ export const libraryStateMachine = setup({
     id: 'LIBRARY',
 
     context: {
-        dbController: new DatabaseController<BookAttributes>(LIBRARY_DB_CONFIG),
+        dbController: new DatabaseController(LIBRARY_DB_CONFIG),
         storedBooks: [],
     },
 

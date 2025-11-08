@@ -10,7 +10,7 @@ import type {
 import { imageActor } from './image-actor';
 
 interface InputParameters {
-    dbController: DatabaseController<DictionaryWord>,
+    dbController: DatabaseController,
     word: DictionaryWord,
     highlight: BookHighlight,
 }

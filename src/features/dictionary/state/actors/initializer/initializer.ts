@@ -1,13 +1,13 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
 import type { DatabaseController } from 'src/controllers';
-import { initializeDBService, getAllWordsFromDB } from '../../../db-service';
-import { DICTIONARY_DIRECTORY } from '../../../constants';
+import { initializeDBService, getWordsListFromDB } from '../../../db-service';
+import { DICTIONARY_DIRECTORY, DICTIONARY_LIST_ITEMS_PER_PAGE } from '../../../constants';
 import type { DictionaryWord } from '../../../types';
 
 export const initializerActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController<DictionaryWord>,
+        dbController: DatabaseController,
     },
 }): Promise<DictionaryWord[]> => {
     try {
@@ -21,7 +21,11 @@ export const initializerActor = fromPromise(async (props: {
     // TODO: remove this after first version release
     // await dbController.deleteDB();
 
-    const storedWords = await getAllWordsFromDB(dbController);
+    const storedWords = await getWordsListFromDB({
+        db: dbController,
+        from: 0,
+        to: DICTIONARY_LIST_ITEMS_PER_PAGE,
+    });
     storedWords.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     console.log('Dictionary initialized');

@@ -6,10 +6,14 @@ interface SqliteResponse {
     highlights: string | null,
 }
 
-export async function getAllBooksFromDB(db: DatabaseController<BookAttributes>): Promise<BookAttributes[]> {
-    const storedBooks = await db.readAll() as unknown as SqliteResponse[];
+export async function getAllBooksFromDB(db: DatabaseController): Promise<BookAttributes[]> {
+    const storedBooks = await db.getAll();
+
+    if (!storedBooks) {
+        return [];
+    }
     
-    return storedBooks.map(item => {
+    return storedBooks.map((item: SqliteResponse) => {
         const attributes = JSON.parse(item.attributes);
         let highlights: BookHighlight[][] = [];
 

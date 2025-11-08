@@ -1,10 +1,9 @@
 import type { NavigateFunction } from 'react-router-dom';
 import type { DatabaseController } from 'src/controllers';
 import type { BookModel } from 'src/models';
-import type { BookAttributes } from 'src/types';
 
 export interface LibraryStateContext {
-    dbController: DatabaseController<BookAttributes>,
+    dbController: DatabaseController,
     navigator?: NavigateFunction,
 
     storedBooks: BookModel[],
