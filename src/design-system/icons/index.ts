@@ -14,3 +14,5 @@ export { default as ExpandMoreIcon } from '@mui/icons-material/ExpandMore';
 export { default as ArrowForwardIosSharpIcon } from '@mui/icons-material/ArrowForwardIosSharp';
 export { default as ContentCopyIcon } from '@mui/icons-material/ContentCopy';
 export { default as DeleteIcon } from '@mui/icons-material/Delete';
+export { default as PlayCircleIcon } from '@mui/icons-material/PlayCircle';
+export { default as StopCircleIcon } from '@mui/icons-material/StopCircle';
