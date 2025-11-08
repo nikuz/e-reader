@@ -1,6 +1,6 @@
 import type { BookAttributes, BookChapter, BookHighlight } from 'src/types';
 
-export class Book implements BookAttributes {
+export class BookModel implements BookAttributes {
     private attributes: BookAttributes;
     declare eisbn: string;
     declare title: string;
@@ -41,7 +41,7 @@ export class Book implements BookAttributes {
     }
 
     clone() {
-        const newInstance = new Book(this.attributes);
+        const newInstance = new BookModel(this.attributes);
         if (this.cover) {
             newInstance.cover = this.cover;
         }

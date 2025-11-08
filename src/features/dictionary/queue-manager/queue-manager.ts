@@ -43,6 +43,7 @@ export const queueManagerStateMachine = setup({
                                 input: {
                                     dbController: context.dbController,
                                     highlight: event.highlight,
+                                    word: event.word,
                                 },
                             }),
                         },

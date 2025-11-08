@@ -49,7 +49,11 @@ export const dictionaryStateMachine = setup({
                         assign(({ event }) => ({
                             translatingWord: getNewDictionaryWord({ highlight: event.highlight }),
                         })),
-                        sendTo('queue-manager', ({ event }) => event),
+                        sendTo('queue-manager', ({ context, event }) => ({
+                            type: event.type,
+                            highlight: event.highlight,
+                            word: context.translatingWord,
+                        })),
                     ],
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED: {

@@ -5,11 +5,11 @@ export default function TranslationPopperTranslation() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedWord = useDictionaryStateSelect('selectedWord');
     const translation = translatingWord?.translation ?? selectedWord?.translation;
-    const aiExplanation = translatingWord?.aiExplanation ?? selectedWord?.aiExplanation;
+    const explanations = translatingWord?.explanations ?? selectedWord?.explanations;
 
     // If AI explanation is already available, hide the simple translation.
     // Since the explanation contains its own translation.
-    if (aiExplanation) {
+    if (explanations) {
         return null;
     }
 

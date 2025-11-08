@@ -1,12 +1,12 @@
 import type { ActorRefFrom } from 'xstate';
-import type { Book } from 'src/models';
+import type { BookModel } from 'src/models';
 import type { BookChapter, Size, Position, BookHighlight } from 'src/types';
 import type { BookReadProgress } from '../types';
 import { bookLoaderStateMachine } from '../loader/state';
 import type { SaveReadProgressEvent } from '../loader/types';
 
 export interface BookFrameStateContext {
-    book?: Book,
+    book?: BookModel,
     readProgress: BookReadProgress,
 
     iframeEl?: HTMLIFrameElement,
@@ -38,12 +38,12 @@ export interface BookFrameStateContext {
 
 export interface LoadBookEvent {
     type: 'LOAD_BOOK',
-    book: Book,
+    book: BookModel,
 }
 
 export interface BookLoadSuccessEvent {
     type: 'BOOK_LOAD_SUCCESS',
-    book: Book,
+    book: BookModel,
     readProgress?: BookReadProgress,
 }
 

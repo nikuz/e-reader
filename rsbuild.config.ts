@@ -1,9 +1,11 @@
 import { defineConfig, RsbuildConfig } from '@rsbuild/core';
+import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import { pluginBabel } from '@rsbuild/plugin-babel';
 import { pluginReact } from '@rsbuild/plugin-react';
 
 const config: RsbuildConfig = {
     plugins: [
+        pluginNodePolyfill(),
         pluginReact(),
         pluginBabel({
             include: /\.(?:jsx|tsx)$/,

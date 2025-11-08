@@ -18,6 +18,7 @@ import { pronunciationActor } from './pronunciation-actor';
 interface InputParameters {
     dbController: DatabaseController<DictionaryWord>,
     highlight: BookHighlight,
+    word: DictionaryWord,
 }
 
 export const wordAnalysisRetrieverMachine = setup({
@@ -42,7 +43,11 @@ export const wordAnalysisRetrieverMachine = setup({
     initial: 'RETRIEVING',
 
     states: {
-        RETRIEVING: {
+        RETRIEVING_LOCALLY: {
+            
+        },
+
+        RETRIEVING_FROM_CLOUD: {
             type: 'parallel',
 
             states: {

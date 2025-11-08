@@ -115,4 +115,8 @@ export class IndexedDBAdapter<T> implements DatabaseAdapter<T> {
     async deleteDB(): Promise<void> {
         await deleteDB(this.config.name);
     }
+
+    async saveToStore(): Promise<void> {
+        //
+    }
 }

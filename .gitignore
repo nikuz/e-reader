@@ -16,5 +16,6 @@ dist/
 .idea
 
 public/books
+public/assets/sql-wasm.wasm
 tsconfig.app.tsbuildinfo
 firebase-config.json

@@ -3,6 +3,7 @@ import { FileStorageController } from 'src/controllers';
 import type { DatabaseController } from 'src/controllers';
 import { pathUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
+import { deleteBookFromDB } from '../../../db-service';
 import { LIBRARY_DIRECTORY } from '../../../constants';
 
 export const bookRemoverActor = fromPromise(async (props: {
@@ -13,7 +14,7 @@ export const bookRemoverActor = fromPromise(async (props: {
 }): Promise<BookAttributes> => {
     const { bookAttributes, dbController } = props.input;
 
-    await dbController.delete(bookAttributes.eisbn);
+    await deleteBookFromDB(dbController, bookAttributes);
 
     const bookDirectory = pathUtils.join([LIBRARY_DIRECTORY, bookAttributes.eisbn]);
 

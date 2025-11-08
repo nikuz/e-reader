@@ -4,7 +4,7 @@ import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { settingsStateMachineActor } from 'src/features/settings/state';
 import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
-import type { Book } from 'src/models';
+import type { BookModel } from 'src/models';
 import {
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_PLACEHOLDER,
@@ -20,10 +20,10 @@ import type { BookReadProgress } from 'src/features/book-frame/types';
 
 export const bookLoaderActor = fromPromise(async (props: {
     input: {
-        book: Book,
+        book: BookModel,
     },
 }): Promise<{
-    book: Book,
+    book: BookModel,
     readProgress?: BookReadProgress,
 }> => {
     const { book } = props.input;

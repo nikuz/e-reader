@@ -4,11 +4,11 @@ import { useDictionaryStateSelect } from 'src/features/dictionary/state';
 export default function TranslationPopperExplanation() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedWord = useDictionaryStateSelect('selectedWord');
-    const aiExplanation = translatingWord?.aiExplanation ?? selectedWord?.aiExplanation;
+    const explanations = translatingWord?.explanations ?? selectedWord?.explanations;
 
     return (
         <Typography>
-            {aiExplanation}
+            {explanations?.[0].text}
         </Typography>
     );
 }

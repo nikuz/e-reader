@@ -5,13 +5,13 @@ import { useDictionaryStateSelect } from 'src/features/dictionary/state';
 export default function TranslationPopperPronunciation() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedWord = useDictionaryStateSelect('selectedWord');
-    const aiPronunciation = translatingWord?.aiPronunciation ?? selectedWord?.aiPronunciation;
+    const pronunciation = translatingWord?.pronunciation ?? selectedWord?.pronunciation;
 
-    if (!aiPronunciation) {
+    if (!pronunciation) {
         return;
     }
 
-    const webviewPath = Capacitor.convertFileSrc(aiPronunciation);
+    const webviewPath = Capacitor.convertFileSrc(pronunciation);
 
     return (
         <Box>

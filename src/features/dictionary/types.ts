@@ -4,13 +4,28 @@ export interface DictionaryWord {
     id: number,
     cloudId?: number,
     word: string,
+    contexts: DictionaryWordContext[],
     translation?: string,
-    contexts?: string[],
-    aiExplanation?: string,
-    aiPronunciation?: string,
-    aiImage?: string,
+    explanations: DictionaryWordExplanation[],
+    pronunciation?: string,
+    images: DictionaryWordImage[],
     createdAt: string,
     updatedAt?: string,
+}
+
+export interface DictionaryWordContext {
+    id: string,
+    text: string,
+}
+
+export interface DictionaryWordExplanation {
+    contextId?: string,
+    text: string,
+}
+
+export interface DictionaryWordImage {
+    contextId?: string,
+    src: string,
 }
 
 export type LanguageKey = keyof typeof Languages;

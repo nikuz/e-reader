@@ -1,12 +1,12 @@
 import { Preferences } from '@capacitor/preferences';
 import { fromPromise } from 'xstate';
-import type { Book } from 'src/models';
+import type { BookModel } from 'src/models';
 import { getReadProgressStorageKey } from '../../../utils';
 import type { BookReadProgress } from '../../../types';
 
 export const readProgressSaverActor = fromPromise(async (props: {
     input: {
-        book?: Book,
+        book?: BookModel,
         readProgress: BookReadProgress,
     },
 }): Promise<void> => {

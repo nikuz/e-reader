@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core';
 import { DatabaseController } from 'src/controllers';
 import type { BookAttributes, BookHighlight } from 'src/types';
 
@@ -8,22 +7,20 @@ interface SqliteResponse {
 }
 
 export async function getAllBooksFromDB(db: DatabaseController<BookAttributes>): Promise<BookAttributes[]> {
-    if (Capacitor.isNativePlatform()) {
-        const storedBooks = await db.readAll() as unknown as SqliteResponse[];
-        return storedBooks.map(item => {
-            const attributes = JSON.parse(item.attributes);
-            let highlights: BookHighlight[][] = [];
+    const storedBooks = await db.readAll() as unknown as SqliteResponse[];
+    console.log(storedBooks);
 
-            if (item.highlights) {
-                highlights = JSON.parse(item.highlights);
-            }
+    return storedBooks.map(item => {
+        const attributes = JSON.parse(item.attributes);
+        let highlights: BookHighlight[][] = [];
 
-            return {
-                ...attributes,
-                highlights,
-            };
-        });
-    } else {
-        return await db.readAll();
-    }
+        if (item.highlights) {
+            highlights = JSON.parse(item.highlights);
+        }
+
+        return {
+            ...attributes,
+            highlights,
+        };
+    });
 }

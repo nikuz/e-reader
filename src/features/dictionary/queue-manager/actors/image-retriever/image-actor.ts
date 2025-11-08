@@ -12,12 +12,12 @@ export const imageActor = fromPromise(async (props: {
 }): Promise<string> => {
     const { word } = props.input;
 
-    if (!word.aiExplanation) {
+    if (!word.explanations) {
         throw new Error('Word should have "aiExplanation" to generate an image');
     }
 
     const image = await firebaseGetImage({
-        textExplanation: word.aiExplanation,
+        textExplanation: word.explanations[0].text,
         // style: 'ancient rome',
         // context: highlight.context,
     });

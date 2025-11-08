@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/e-reader.js",
   "scripts": {
-    "build": "tsc -b && rsbuild build",
+    "build": "tsc -b && rsbuild build && rm dist/assets/sql-wasm.wasm",
     "dev": "rsbuild dev --open",
     "preview": "rsbuild preview",
     "copy": "npx cap copy",
@@ -38,6 +38,7 @@
     "@capacitor/cli": "^7.4.4",
     "@rsbuild/core": "^1.6.0",
     "@rsbuild/plugin-babel": "^1.0.6",
+    "@rsbuild/plugin-node-polyfill": "^1.4.2",
     "@rsbuild/plugin-react": "^1.4.1",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/node": "^24.9.2",
@@ -49,6 +50,10 @@
     "eslint": "^9.39.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "jeep-sqlite": "^2.8.0",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "sql.js": "1.12.0"
   }
 }

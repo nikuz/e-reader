@@ -10,13 +10,15 @@ export const initiation: DatabaseMigration = {
             word TEXT NOT NULL COLLATE NOCASE,
             translation VARCHAR COLLATE NOCASE,
             contexts TEXT,
-            aiExplanation TEXT,
-            aiPronunciation TEXT,
-            aiImage TEXT,
+            explanations TEXT,
+            pronunciation TEXT,
+            images TEXT,
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-            updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+            updatedAt TEXT
         );`,
-        `CREATE INDEX IF NOT EXISTS "${DICTIONARY_DB_CONFIG.indexName}"
-        ON "${DICTIONARY_DB_CONFIG.name}"(word)`
+        `
+        CREATE INDEX IF NOT EXISTS "${DICTIONARY_DB_CONFIG.indexName}"
+        ON "${DICTIONARY_DB_CONFIG.name}"(word, translation)
+        `
     ],
 };

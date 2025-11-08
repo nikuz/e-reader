@@ -1,11 +1,11 @@
 import type { DoneActorEvent } from 'xstate';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { RouterPath } from 'src/router/constants';
-import type { Book } from 'src/models';
+import type { BookModel } from 'src/models';
 import type { LibraryStateContext } from '../../types';
 
 export function selectBookAction(props: {
-    event: DoneActorEvent<Book>,
+    event: DoneActorEvent<BookModel>,
     context: LibraryStateContext,
     enqueue: { assign: (context: Partial<LibraryStateContext>) => void },
 }) {

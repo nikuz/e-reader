@@ -13,6 +13,7 @@ export interface QueueManagerStateContext {
 export interface RequestWordAnalysisEvent {
     type: 'REQUEST_WORD_ANALYSIS',
     highlight: BookHighlight,
+    word: DictionaryWord,
 }
 
 export interface QueueManagerWordAnalysisRequestSuccessEvent {

@@ -15,10 +15,10 @@ import {
 } from 'src/design-system/components';
 import { MoreVertIcon } from 'src/design-system/icons';
 import { libraryStateMachineActor } from '../../state';
-import type { Book } from 'src/models';
+import type { BookModel } from 'src/models';
 
 interface Props {
-    book: Book,
+    book: BookModel,
 }
 
 export function BookCard({ book }: Props) {
@@ -57,9 +57,9 @@ export function BookCard({ book }: Props) {
                     onClick={cardClickHandler}
                 />
             )}
-            <CardContent className="mt-1 flex items-start gap-2 !p-0">
+            <CardContent className="mt-1 flex items-start gap-2 p-0!">
                 <Typography
-                    className="flex-1 text-sm !py-2 !pl-2"
+                    className="flex-1 text-sm py-2! pl-2!"
                     onClick={cardClickHandler}
                 >
                     {book.title}

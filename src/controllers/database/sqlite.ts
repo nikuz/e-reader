@@ -1,5 +1,14 @@
+import { Capacitor } from '@capacitor/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
+
+if (import.meta.env.DEV && !Capacitor.isNativePlatform()) {
+    import('jeep-sqlite/loader').then(module => {
+        module.defineCustomElements(window);
+        const jeepEl = document.createElement('jeep-sqlite');
+        document.body.appendChild(jeepEl);
+    });
+}
 
 type SQLiteQueryResult = {
     values?: Array<Record<string, unknown>>;
@@ -27,6 +36,10 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
     async init(upgrades?: DatabaseMigration[]): Promise<void> {
         if (this.initialized) {
             return;
+        }
+        if (!Capacitor.isNativePlatform()) {
+            await customElements.whenDefined('jeep-sqlite');
+            await this.sqliteConnection.initWebStore();
         }
         if (upgrades) {
             CapacitorSQLite.addUpgradeStatement({
@@ -149,5 +162,9 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
         await CapacitorSQLite.deleteDatabase({
             database: this.config.name,
         });
+    }
+
+    async saveToStore(): Promise<void> {
+        await this.sqliteConnection.saveToStore(this.config.name);
     }
 }

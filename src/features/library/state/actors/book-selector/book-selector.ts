@@ -1,13 +1,13 @@
 import { fromPromise } from 'xstate';
 import { Preferences } from '@capacitor/preferences';
-import type { Book } from 'src/models';
+import type { BookModel } from 'src/models';
 import { LIBRARY_LAST_SELECTED_BOOK_STORAGE_KEY } from '../../../constants';
 
 export const bookSelectorActor = fromPromise(async (props: {
     input: {
-        book: Book,
+        book: BookModel,
     },
-}): Promise<Book> => {
+}): Promise<BookModel> => {
     const { book } = props.input;
 
     await Preferences.set({

@@ -10,6 +10,10 @@ export const initiation: DatabaseMigration = {
             author TEXT NOT NULL COLLATE NOCASE,
             attributes TEXT NOT NULL,
             highlights TEXT
-        );`
+        );`,
+        `
+        CREATE INDEX IF NOT EXISTS "${LIBRARY_DB_CONFIG.indexName}"
+        ON "${LIBRARY_DB_CONFIG.name}"(title, author)
+        `
     ],
 };

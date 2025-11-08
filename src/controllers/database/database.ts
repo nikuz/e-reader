@@ -1,5 +1,3 @@
-import { Capacitor } from '@capacitor/core';
-import { IndexedDBAdapter } from './indexed-db';
 import { SQLiteAdapter } from './sqlite';
 import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types';
 
@@ -7,11 +5,7 @@ export class DatabaseController<T> {
     private adapter: DatabaseAdapter<T>;
     
     constructor(config: DatabaseConfig<T>) {
-        if (Capacitor.isNativePlatform()) {
-            this.adapter = new SQLiteAdapter<T>(config);
-        } else {
-            this.adapter = new IndexedDBAdapter<T>(config);
-        }
+        this.adapter = new SQLiteAdapter<T>(config);
     }
 
     async init(upgrades?: DatabaseMigration[]): Promise<void> {
@@ -64,5 +58,9 @@ export class DatabaseController<T> {
         }
 
         await this.adapter.deleteDB();
+    }
+
+    async saveToStore(): Promise<void> {
+        await this.adapter.saveToStore();
     }
 }

@@ -25,6 +25,8 @@ export interface DatabaseAdapter<T> {
     clear(): Promise<void>;
     
     deleteDB(): Promise<void>;
+
+    saveToStore(): Promise<void>;
 }
 
 // Configuration interface
