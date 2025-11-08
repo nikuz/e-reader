@@ -1,22 +1,18 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
 import { audioUtils, converterUtils } from 'src/utils';
-import type { BookHighlight } from 'src/types';
 import { firebaseGetPronunciation } from '../../../firebase-service';
 import { DICTIONARY_PRONUNCIATIONS_DIRECTORY } from '../../../constants';
-import type { Language } from '../../../types';
+import type { DictionaryWord } from '../../../types';
 
 export const pronunciationActor = fromPromise(async (props: {
-    input: {
-        highlight: BookHighlight,
-        sourceLanguage: Language,
-    },
+    input: { word: DictionaryWord },
 }): Promise<string> => {
-    const { highlight, sourceLanguage } = props.input;
+    const { word } = props.input;
 
     const pronunciation = await firebaseGetPronunciation({
-        word: highlight.text,
-        sourceLanguage,
+        word: word.word,
+        sourceLanguage: word.sourceLanguage,
     });
 
     if (!pronunciation) {
@@ -25,7 +21,7 @@ export const pronunciationActor = fromPromise(async (props: {
 
     // save pronunciation file
     const wavBase64 = audioUtils.pcm16ToWavBase64(pronunciation.data);
-    const fileName = converterUtils.stringToHash(highlight.text);
+    const fileName = converterUtils.stringToHash(word.word);
     const filePath = `${DICTIONARY_PRONUNCIATIONS_DIRECTORY}/${fileName}.wav`;
 
     await FileStorageController.writeFile({

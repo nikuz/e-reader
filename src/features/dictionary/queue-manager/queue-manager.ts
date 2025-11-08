@@ -38,7 +38,7 @@ export const queueManagerStateMachine = setup({
                     actions: assign(({ event, context, spawn }) => ({
                         requests: {
                             ...context.requests,
-                            [event.highlight.id]: spawn('wordAnalysisRetrieverMachine', {
+                            [event.word.id]: spawn('wordAnalysisRetrieverMachine', {
                                 input: {
                                     dbController: context.dbController,
                                     highlight: event.highlight,
@@ -81,7 +81,7 @@ export const queueManagerStateMachine = setup({
                     actions: assign(({ event, context, spawn }) => ({
                         requests: {
                             ...context.requests,
-                            [event.highlight.id]: spawn('imageRetrieverMachine', {
+                            [event.word.id]: spawn('imageRetrieverMachine', {
                                 input: {
                                     dbController: context.dbController,
                                     word: event.word,

@@ -18,8 +18,8 @@ import { pronunciationActor } from './pronunciation-actor';
 
 interface InputParameters {
     dbController: DatabaseController,
-    highlight: BookHighlight,
     word: DictionaryWord,
+    highlight: BookHighlight,
     sourceLanguage: Language,
     targetLanguage: Language,
 }
@@ -53,17 +53,14 @@ export const wordAnalysisRetrieverMachine = setup({
                 src: 'dbRetrieverActor',
                 input: ({ context }) => ({
                     dbController: context.dbController,
-                    highlight: context.highlight,
-                    sourceLanguage: context.sourceLanguage,
-                    targetLanguage: context.targetLanguage,
+                    word: context.word,
                 }),
                 onDone: [
                     {
                         guard: ({ event }) => !!event.output,
                         actions: [
-                            sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                            sendParent(({ event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
                                 type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
-                                highlight: context.highlight,
                                 word: event.output!,
                             })),
                         ],
@@ -77,7 +74,7 @@ export const wordAnalysisRetrieverMachine = setup({
                         xStateUtils.stateErrorTraceAction,
                         sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
-                            highlight: context.highlight,
+                            word: context.word,
                             error: new Error('Can\'t retrieve word from local DB'),
                         }))
                     ],
@@ -95,11 +92,7 @@ export const wordAnalysisRetrieverMachine = setup({
                         LOADING: {
                             invoke: {
                                 src: 'translationActor',
-                                input: ({ context }) => ({
-                                    highlight: context.highlight,
-                                    sourceLanguage: context.sourceLanguage,
-                                    targetLanguage: context.targetLanguage,
-                                }),
+                                input: ({ context }) => ({ word: context.word }),
                                 onDone: {
                                     target: 'SUCCESS',
                                     actions: [
@@ -108,7 +101,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                         })),
                                         sendParent(({ context, event }): QueueManagerWordAnalysisTranslationRetrievedEvent => ({
                                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED',
-                                            highlight: context.highlight,
+                                            word: context.word,
                                             translation: event.output,
                                         })),
                                     ],
@@ -132,11 +125,7 @@ export const wordAnalysisRetrieverMachine = setup({
                         LOADING: {
                             invoke: {
                                 src: 'explanationActor',
-                                input: ({ context }) => ({
-                                    highlight: context.highlight,
-                                    sourceLanguage: context.sourceLanguage,
-                                    targetLanguage: context.targetLanguage,
-                                }),
+                                input: ({ context }) => ({ word: context.word }),
                                 onDone: {
                                     target: 'SUCCESS',
                                     actions: [
@@ -145,7 +134,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                         })),
                                         sendParent(({ context, event }): QueueManagerWordAnalysisExplanationRetrievedEvent => ({
                                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED',
-                                            highlight: context.highlight,
+                                            word: context.word,
                                             explanation: event.output,
                                         })),
                                     ],
@@ -169,10 +158,7 @@ export const wordAnalysisRetrieverMachine = setup({
                         LOADING: {
                             invoke: {
                                 src: 'pronunciationActor',
-                                input: ({ context }) => ({
-                                    highlight: context.highlight,
-                                    sourceLanguage: context.sourceLanguage,
-                                }),
+                                input: ({ context }) => ({ word: context.word }),
                                 onDone: {
                                     target: 'SUCCESS',
                                     actions: [
@@ -181,7 +167,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                         })),
                                         sendParent(({ context, event }): QueueManagerWordAnalysisPronunciationRetrievedEvent => ({
                                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED',
-                                            highlight: context.highlight,
+                                            word: context.word,
                                             pronunciation: event.output,
                                         })),
                                     ],
@@ -208,7 +194,7 @@ export const wordAnalysisRetrieverMachine = setup({
                 {
                     actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                         type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
-                        highlight: context.highlight,
+                        word: context.word,
                         error: new Error('Can\'t retrieve word analysis'),
                     })),
                 },
@@ -228,9 +214,8 @@ export const wordAnalysisRetrieverMachine = setup({
                     targetLanguage: context.targetLanguage,
                 }),
                 onDone: {
-                    actions: sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                    actions: sendParent(({ event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
-                        highlight: context.highlight,
                         word: event.output,
                     })),
                 },
@@ -239,7 +224,7 @@ export const wordAnalysisRetrieverMachine = setup({
                         xStateUtils.stateErrorTraceAction,
                         sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
-                            highlight: context.highlight,
+                            word: context.word,
                             error: new Error('Can\'t save word to local DB'),
                         }))
                     ],

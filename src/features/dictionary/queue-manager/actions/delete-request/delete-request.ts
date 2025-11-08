@@ -19,10 +19,10 @@ export function deleteRequestAction(props: {
     enqueue: { assign: (context: Partial<QueueManagerStateContext>) => void },
 }) {
     const requests = { ...props.context.requests };
-    const highlight = props.event.highlight;
+    const word = props.event.word;
 
-    stopChild(highlight.id);
-    delete requests[highlight.id];
+    stopChild(word.id);
+    delete requests[word.id];
 
     props.enqueue.assign({ requests });
 }

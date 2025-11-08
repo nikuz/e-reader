@@ -1,21 +1,15 @@
 import { fromPromise } from 'xstate';
-import type { BookHighlight } from 'src/types';
 import { firebaseGetExplanation } from '../../../firebase-service';
-import type { Language } from '../../../types';
+import type { DictionaryWord } from '../../../types';
 
 export const explanationActor = fromPromise(async (props: {
-    input: {
-        highlight: BookHighlight,
-        sourceLanguage: Language,
-        targetLanguage: Language,
-    },
+    input: { word: DictionaryWord },
 }): Promise<string> => {
-    const { highlight, sourceLanguage, targetLanguage } = props.input;
+    const { word } = props.input;
 
     return await firebaseGetExplanation({
-        word: highlight.text,
-        sourceLanguage,
-        targetLanguage,
-        // context: highlight.context,
+        word: word.word,
+        sourceLanguage: word.sourceLanguage,
+        targetLanguage: word.targetLanguage,
     });
 });

@@ -15,7 +15,7 @@ export default function TranslationPopperPronunciation() {
 
     return (
         <Box>
-            <audio src={webviewPath} controls />``
+            <audio src={webviewPath} controls />
         </Box>
     );
 }

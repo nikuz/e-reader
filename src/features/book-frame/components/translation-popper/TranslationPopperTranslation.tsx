@@ -9,7 +9,7 @@ export default function TranslationPopperTranslation() {
 
     // If AI explanation is already available, hide the simple translation.
     // Since the explanation contains its own translation.
-    if (explanations) {
+    if (explanations && explanations.length) {
         return null;
     }
 

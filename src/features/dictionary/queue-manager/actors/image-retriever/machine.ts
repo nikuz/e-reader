@@ -36,11 +36,11 @@ export const imageRetrieverMachine = setup({
                 src: 'imageActor',
                 input: ({ context }) => ({
                     word: context.word,
+                    highlight: context.highlight,
                 }),
                 onDone: {
                     actions: sendParent(({ context, event }): QueueManagerImageRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS',
-                        highlight: context.highlight,
                         word: context.word,
                         image: event.output,
                     })),
@@ -49,7 +49,6 @@ export const imageRetrieverMachine = setup({
                     actions: [
                         sendParent(({ context, event }): QueueManagerImageRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
-                            highlight: context.highlight,
                             word: context.word,
                             error: event.error,
                         })),

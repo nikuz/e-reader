@@ -34,10 +34,10 @@ export async function createWordInDB(props: {
         [
             word.word,
             word.translation,
-            word.contexts,
-            word.explanations,
+            JSON.stringify(word.contexts),
+            JSON.stringify(word.explanations),
             word.pronunciation,
-            word.images,
+            JSON.stringify(word.images),
             word.sourceLanguage.code,
             word.targetLanguage.code,
         ]

@@ -1,6 +1,7 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
 import { converterUtils } from 'src/utils';
+import type { BookHighlight } from 'src/types';
 import { firebaseGetImage } from '../../../firebase-service';
 import { DICTIONARY_IMAGES_DIRECTORY } from '../../../constants';
 import type { DictionaryWord } from '../../../types';
@@ -8,6 +9,7 @@ import type { DictionaryWord } from '../../../types';
 export const imageActor = fromPromise(async (props: {
     input: {
         word: DictionaryWord,
+        highlight: BookHighlight,
     },
 }): Promise<string> => {
     const { word } = props.input;

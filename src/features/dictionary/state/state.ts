@@ -1,12 +1,11 @@
-import { setup, createActor, assign, sendTo } from 'xstate';
+import { setup, createActor, assign, sendTo, enqueueActions } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import { queueManagerStateMachine } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
-import {
-    initializerActor,
-} from './actors';
+import { initializerActor } from './actors';
+import { updateTranslatingWordAction } from './actions';
 import type {
     DictionaryStateContext,
     DictionaryStateEvents,
@@ -62,28 +61,13 @@ export const dictionaryStateMachine = setup({
                     ],
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED: {
-                    actions: assign(({ context, event }) => ({
-                        translatingWord: context.translatingWord && {
-                            ...context.translatingWord,
-                            translation: event.translation,
-                        }
-                    })),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED: {
-                    actions: assign(({ context, event }) => ({
-                        translatingWord: context.translatingWord && {
-                            ...context.translatingWord,
-                            aiExplanation: event.explanation,
-                        }
-                    })),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED: {
-                    actions: assign(({ context, event }) => ({
-                        translatingWord: context.translatingWord && {
-                            ...context.translatingWord,
-                            aiPronunciation: event.pronunciation,
-                        }
-                    })),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
                     actions: assign(({ event }) => ({
@@ -108,9 +92,6 @@ export const dictionaryStateMachine = setup({
                 }),
                 onDone: {
                     target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        storedWords: event.output,
-                    })),
                 },
                 onError: {
                     target: 'IDLE',

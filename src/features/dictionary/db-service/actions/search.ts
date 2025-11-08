@@ -19,23 +19,23 @@ export async function searchInDB(props: {
     
     const response = await db.query(
         `
-            SELECT id, word, translation, pronunciation, images, sourceLanguage, targetLanguage, createdAt, updatedAt
+            SELECT id, word, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
             FROM "${DICTIONARY_DB_CONFIG.name}"
             WHERE
                 word LIKE :searchPattern
                 OR translation LIKE :searchPattern
             ORDER BY
                 CASE 
-                WHEN word LIKE :searchText THEN 1
-                WHEN translation LIKE :searchText THEN 1
-                WHEN word LIKE :searchPatternEnd THEN 2
-                WHEN translation LIKE :searchPatternEnd THEN 2
-                WHEN word LIKE :searchPatternStart THEN 3
-                WHEN translation LIKE :searchPatternStart THEN 3
-                ELSE 4
-            END,
-            word ASC,
-            created_at DESC
+                    WHEN word LIKE :searchText THEN 1
+                    WHEN translation LIKE :searchText THEN 1
+                    WHEN word LIKE :searchPatternEnd THEN 2
+                    WHEN translation LIKE :searchPatternEnd THEN 2
+                    WHEN word LIKE :searchPatternStart THEN 3
+                    WHEN translation LIKE :searchPatternStart THEN 3
+                    ELSE 4
+                END,
+                word ASC,
+                createdAt DESC
             LIMIT :limit OFFSET :offset;
         `,
         [
@@ -58,9 +58,9 @@ export async function searchInDB(props: {
 
     return response.map((item: DictionaryWordDBInstance): DictionaryWord => ({
         ...item,
-        contexts: JSON.parse(item.contexts),
-        explanations: JSON.parse(item.explanations),
-        images: JSON.parse(item.images),
+        contexts: [],
+        explanations: [],
+        images: [],
         sourceLanguage: Languages[item.sourceLanguage as LanguageKey],
         targetLanguage: Languages[item.targetLanguage as LanguageKey],
     }));

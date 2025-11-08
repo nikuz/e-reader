@@ -1,20 +1,15 @@
 import { fromPromise } from 'xstate';
-import type { BookHighlight } from 'src/types';
 import { getTranslation } from '../../../translation-service';
-import type { Language } from '../../../types';
+import type { DictionaryWord } from '../../../types';
 
 export const translationActor = fromPromise(async (props: {
-    input: {
-        highlight: BookHighlight,
-        sourceLanguage: Language,
-        targetLanguage: Language,
-    },
+    input: { word: DictionaryWord },
 }): Promise<string> => {
-    const { highlight, sourceLanguage, targetLanguage } = props.input;
+    const { word } = props.input;
 
     return getTranslation({
-        word: highlight.text,
-        sourceLanguage,
-        targetLanguage,
+        word: word.word,
+        sourceLanguage: word.sourceLanguage,
+        targetLanguage: word.targetLanguage,
     });
 });
