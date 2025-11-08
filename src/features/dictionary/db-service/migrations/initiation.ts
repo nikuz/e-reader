@@ -13,6 +13,8 @@ export const initiation: DatabaseMigration = {
             explanations TEXT,
             pronunciation TEXT,
             images TEXT,
+            sourceLanguage VARCHAR NOT NULL,
+            targetLanguage VARCHAR NOT NULL,
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
             updatedAt TEXT
         );`,

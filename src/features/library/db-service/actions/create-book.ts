@@ -20,7 +20,4 @@ export async function createBookInDB(db: DatabaseController<BookAttributes>, boo
     ];
 
     await db.execute(query, params);
-    
-    // web only
-    await db.saveToStore();
 }

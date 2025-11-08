@@ -107,6 +107,9 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
             `DELETE FROM "${this.config.name}" WHERE id = ?`,
             [key],
         );
+        if (!Capacitor.isNativePlatform()) {
+            await this.saveToStore();
+        }
     }
 
     async query(query: string, values?: any[]): Promise<T[]> {
@@ -116,12 +119,21 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
 
     async execute(query: string, values?: any[]): Promise<capSQLiteChanges> {
         const db = this.ensureDB();
-        return await db.run(query, values);
+        const result = await db.run(query, values);
+
+        if (!Capacitor.isNativePlatform()) {
+            await this.saveToStore();
+        }
+
+        return result;
     }
 
     async clear(): Promise<void> {
         const db = this.ensureDB();
         await db.run(`DELETE FROM "${this.config.name}"`, []);
+        if (!Capacitor.isNativePlatform()) {
+            await this.saveToStore();
+        }
     }
 
     async count(): Promise<number> {

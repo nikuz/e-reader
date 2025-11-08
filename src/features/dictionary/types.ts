@@ -9,8 +9,8 @@ export interface DictionaryWord {
     explanations: DictionaryWordExplanation[],
     pronunciation?: string,
     images: DictionaryWordImage[],
-    sourceLanguage: LanguageCode,
-    targetLanguage: LanguageCode,
+    sourceLanguage: Language,
+    targetLanguage: Language,
     createdAt: string,
     updatedAt?: string,
 }

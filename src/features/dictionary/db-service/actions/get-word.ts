@@ -11,7 +11,7 @@ export async function getWordFromDB(props: {
     const { db, word, sourceLanguage, targetLanguage } = props;
 
     const existingWord = await db.query(
-        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE word="?" AND sourceLanguage="?" AND targetLanguage="?";`,
+        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE word=? AND sourceLanguage=? AND targetLanguage=?;`,
         [word, sourceLanguage.code, targetLanguage.code]
     );
     

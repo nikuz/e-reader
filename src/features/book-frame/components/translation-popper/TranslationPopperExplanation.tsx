@@ -8,7 +8,7 @@ export default function TranslationPopperExplanation() {
 
     return (
         <Typography>
-            {explanations?.[0].text}
+            {explanations?.[0]?.text}
         </Typography>
     );
 }

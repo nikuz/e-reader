@@ -28,8 +28,8 @@ export function getNewDictionaryWord(props: {
         explanations,
         pronunciation: props.pronunciation,
         images: [],
-        sourceLanguage: props.sourceLanguage.code,
-        targetLanguage: props.targetLanguage.code,
+        sourceLanguage: props.sourceLanguage,
+        targetLanguage: props.targetLanguage,
         createdAt: new Date().toISOString(),
     };
 }

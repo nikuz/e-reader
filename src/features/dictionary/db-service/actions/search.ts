@@ -17,21 +17,21 @@ export async function searchInDB(props: {
         `
             SELECT * FROM "${DICTIONARY_DB_CONFIG.name}"
             WHERE
-                word LIKE "?"
-                OR translation LIKE "?"
+                word LIKE :searchPattern
+                OR translation LIKE :searchPattern
             ORDER BY
                 CASE 
-                WHEN word LIKE "?" THEN 1
-                WHEN translation LIKE "?" THEN 1
-                WHEN word LIKE "?" THEN 2
-                WHEN translation LIKE "?" THEN 2
-                WHEN word LIKE "?" THEN 3
-                WHEN translation LIKE "?" THEN 3
+                WHEN word LIKE :searchText THEN 1
+                WHEN translation LIKE :searchText THEN 1
+                WHEN word LIKE :searchPatternEnd THEN 2
+                WHEN translation LIKE :searchPatternEnd THEN 2
+                WHEN word LIKE :searchPatternStart THEN 3
+                WHEN translation LIKE :searchPatternStart THEN 3
                 ELSE 4
             END,
             word ASC,
             created_at DESC
-            LIMIT ? OFFSET ?;
+            LIMIT :limit OFFSET :offset;
         `,
         [
             searchPattern,

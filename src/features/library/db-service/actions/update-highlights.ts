@@ -14,7 +14,4 @@ export async function updateHighlightsInDB(db: DatabaseController<BookAttributes
     ];
 
     await db.execute(query, params);
-
-    // web only
-    await db.saveToStore();
 }

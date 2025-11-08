@@ -2,7 +2,6 @@ import { setup, sendParent, assign } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
-import { getNewDictionaryWord } from '../../../utils';
 import type { DictionaryWord, Language } from '../../../types';
 import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
@@ -11,6 +10,8 @@ import type {
     QueueManagerWordAnalysisRequestSuccessEvent,
     QueueManagerWordAnalysisRequestErrorEvent,
 } from '../../types';
+import { dbRetrieverActor } from './db-retriever-actor';
+import { dbSaverActor } from './db-saver-actor';
 import { translationActor } from './translation-actor';
 import { explanationActor } from './explanation-actor';
 import { pronunciationActor } from './pronunciation-actor';
@@ -25,6 +26,8 @@ interface InputParameters {
 
 export const wordAnalysisRetrieverMachine = setup({
     actors: {
+        dbRetrieverActor,
+        dbSaverActor,
         translationActor,
         explanationActor,
         pronunciationActor,
@@ -42,11 +45,44 @@ export const wordAnalysisRetrieverMachine = setup({
 
     context: ({ input }) => input,
 
-    initial: 'RETRIEVING_LOCALLY',
+    initial: 'RETRIEVING_FROM_DB',
 
     states: {
-        RETRIEVING_LOCALLY: {
-            
+        RETRIEVING_FROM_DB: {
+            invoke: {
+                src: 'dbRetrieverActor',
+                input: ({ context }) => ({
+                    dbController: context.dbController,
+                    highlight: context.highlight,
+                    sourceLanguage: context.sourceLanguage,
+                    targetLanguage: context.targetLanguage,
+                }),
+                onDone: [
+                    {
+                        guard: ({ event }) => !!event.output,
+                        actions: [
+                            sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                                type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
+                                highlight: context.highlight,
+                                word: event.output!,
+                            })),
+                        ],
+                    },
+                    {
+                        target: 'RETRIEVING_FROM_CLOUD',
+                    }
+                ],
+                onError: {
+                    actions: [
+                        xStateUtils.stateErrorTraceAction,
+                        sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
+                            type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
+                            highlight: context.highlight,
+                            error: new Error('Can\'t retrieve word from local DB'),
+                        }))
+                    ],
+                },
+            },
         },
 
         RETRIEVING_FROM_CLOUD: {
@@ -167,28 +203,48 @@ export const wordAnalysisRetrieverMachine = setup({
             onDone: [
                 {
                     guard: ({ context }) => context.translation !== undefined && context.explanation !== undefined,
-                    actions: sendParent(({ context }): QueueManagerWordAnalysisRequestSuccessEvent => ({
-                        type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
-                        highlight: context.highlight,
-                        word: getNewDictionaryWord({
-                            highlight: context.highlight,
-                            translation: context.translation!,
-                            explanation: context.explanation!,
-                            pronunciation: context.pronunciation,
-                            sourceLanguage: context.sourceLanguage,
-                            targetLanguage: context.targetLanguage,
-                        }),
-                    })),
+                    target: '#DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER.SAVING_TO_DB',
                 },
                 {
-                    guard: ({ context }) => context.translation !== undefined && context.explanation !== undefined,
                     actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                         type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
                         highlight: context.highlight,
-                        error: new Error('Can\'t get word analysis'),
+                        error: new Error('Can\'t retrieve word analysis'),
                     })),
                 },
             ],
         },
+
+        SAVING_TO_DB: {
+            invoke: {
+                src: 'dbSaverActor',
+                input: ({ context }) => ({
+                    dbController: context.dbController,
+                    highlight: context.highlight,
+                    translation: context.translation,
+                    explanation: context.explanation,
+                    pronunciation: context.pronunciation,
+                    sourceLanguage: context.sourceLanguage,
+                    targetLanguage: context.targetLanguage,
+                }),
+                onDone: {
+                    actions: sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                        type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
+                        highlight: context.highlight,
+                        word: event.output,
+                    })),
+                },
+                onError: {
+                    actions: [
+                        xStateUtils.stateErrorTraceAction,
+                        sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
+                            type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
+                            highlight: context.highlight,
+                            error: new Error('Can\'t save word to local DB'),
+                        }))
+                    ],
+                },
+            },
+        }
     },
 });
