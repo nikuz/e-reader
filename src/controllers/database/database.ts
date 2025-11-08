@@ -4,7 +4,7 @@ import type { DatabaseAdapter, DatabaseConfig, DatabaseMigration } from './types
 export class DatabaseController<T> {
     private adapter: DatabaseAdapter<T>;
     
-    constructor(config: DatabaseConfig<T>) {
+    constructor(config: DatabaseConfig) {
         this.adapter = new SQLiteAdapter<T>(config);
     }
 
@@ -32,15 +32,11 @@ export class DatabaseController<T> {
         return this.adapter.getAll();
     }
 
-    async create(data: T): Promise<void>;
-    async create(query: string, values?: any[]): Promise<void>;
-    async create(query: T | string, values?: any[]): Promise<void> {
+    async create(query: string, values?: any[]): Promise<void> {
         await this.adapter.create(query, values);
     }
 
-    async update(data: T): Promise<void>;
-    async update(query: string, values?: any[]): Promise<void>;
-    async update(query: T | string, values?: any[]): Promise<void> {
+    async update(query: string, values?: any[]): Promise<void> {
         await this.adapter.update(query, values);
     }
 

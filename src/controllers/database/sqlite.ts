@@ -16,13 +16,13 @@ type SQLiteQueryResult = {
 
 // SQLite implementation for native platforms using Capacitor plugin
 export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
-    constructor(config: DatabaseConfig<T>) {
+    constructor(config: DatabaseConfig) {
         this.config = config;
     }
     
     private sqliteConnection = new SQLiteConnection(CapacitorSQLite);
     private db: SQLiteDBConnection | null = null;
-    private config: DatabaseConfig<T>;
+    private config: DatabaseConfig;
     private initialized = false;
 
     private ensureDB(): SQLiteDBConnection {
@@ -101,17 +101,13 @@ export class SQLiteAdapter<T> implements DatabaseAdapter<T> {
         return result.values as T[];
     }
 
-    async create(data: T): Promise<void>;
-    async create(query: string, values?: any[]): Promise<void>;
-    async create(query: T | string, values?: any[]): Promise<void> {
+    async create(query: string, values?: any[]): Promise<void> {
         if (typeof query === 'string') {
             return this.rawQuery(query, values);
         }
     }
 
-    async update(data: T): Promise<void>;
-    async update(query: string, values?: any[]): Promise<void>;
-    async update(query: T | string, values?: any[]): Promise<void> {
+    async update(query: string, values?: any[]): Promise<void> {
         if (typeof query === 'string') {
             return this.rawQuery(query, values);
         }
