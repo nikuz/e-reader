@@ -3,3 +3,4 @@ export * from './get-words-list';
 export * from './get-word';
 export * from './search';
 export * from './create-word';
+export * from './update-word-image';

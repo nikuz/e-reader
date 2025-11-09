@@ -8,7 +8,7 @@ import { converterUtils } from 'src/utils';
 import type { DictionaryWord } from '../../types';
 
 interface Props {
-    word: DictionaryWord | undefined,
+    word: DictionaryWord,
     sx?: SxProps,
 }
 
@@ -19,7 +19,7 @@ export function DictionaryWordPronunciationButton(props: Props) {
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const nativeSrc = useMemo(() => {
-        if (!word?.pronunciation || !Capacitor.isNativePlatform()) {
+        if (!word.pronunciation || !Capacitor.isNativePlatform()) {
             return undefined;
         }
         return Capacitor.convertFileSrc(word.pronunciation);
@@ -49,7 +49,7 @@ export function DictionaryWordPronunciationButton(props: Props) {
     });
 
     useEffect(() => {
-        if (!word?.pronunciation || Capacitor.isNativePlatform()) {
+        if (!word.pronunciation || Capacitor.isNativePlatform()) {
             return;
         }
 
@@ -96,10 +96,6 @@ export function DictionaryWordPronunciationButton(props: Props) {
             audioElement.removeEventListener('ended', handleEnded);
         };
     }, []);
-
-    if (!word) {
-        return null;
-    }
 
     // Use nativeSrc for native platforms, blobSrc for web
     const src = Capacitor.isNativePlatform() ? nativeSrc : blobSrc;

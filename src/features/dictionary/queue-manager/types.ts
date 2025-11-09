@@ -48,10 +48,11 @@ export interface QueueManagerWordAnalysisPronunciationRetrievedEvent {
     pronunciation: string,
 }
 
-export interface RequestImageEvent {
+export interface QueueManagerRequestImageEvent {
     type: 'REQUEST_IMAGE',
     highlight: BookHighlight,
     word: DictionaryWord,
+    withContext?: boolean,
 }
 
 export interface QueueManagerImageRequestSuccessEvent {
@@ -70,6 +71,6 @@ export type QueueManagerStateEvents =
     | QueueManagerRequestWordAnalysisEvent
     | QueueManagerWordAnalysisRequestSuccessEvent
     | QueueManagerWordAnalysisRequestErrorEvent
-    | RequestImageEvent
+    | QueueManagerRequestImageEvent
     | QueueManagerImageRequestSuccessEvent
     | QueueManagerImageRequestErrorEvent;

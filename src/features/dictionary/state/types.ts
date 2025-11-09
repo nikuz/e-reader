@@ -9,6 +9,8 @@ import {
     type QueueManagerWordAnalysisTranslationRetrievedEvent,
     type QueueManagerWordAnalysisExplanationRetrievedEvent,
     type QueueManagerWordAnalysisPronunciationRetrievedEvent,
+    type QueueManagerImageRequestSuccessEvent,
+    type QueueManagerImageRequestErrorEvent,
 } from '../queue-manager';
 import type { DictionaryWord, Language } from '../types';
 
@@ -40,6 +42,7 @@ export interface RequestImageEvent {
     type: 'REQUEST_IMAGE',
     highlight: BookHighlight,
     word: DictionaryWord,
+    withContext?: boolean,
 }
 
 export interface ClearWordSelectionEvent { type: 'CLEAR_WORD_SELECTION' }
@@ -55,5 +58,7 @@ export type DictionaryStateEvents =
     | QueueManagerWordAnalysisTranslationRetrievedEvent
     | QueueManagerWordAnalysisExplanationRetrievedEvent
     | QueueManagerWordAnalysisPronunciationRetrievedEvent
+    | QueueManagerImageRequestSuccessEvent
+    | QueueManagerImageRequestErrorEvent
     | ClearWordSelectionEvent
     | ClearDatabaseEvent;

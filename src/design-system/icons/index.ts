@@ -16,3 +16,5 @@ export { default as ContentCopyIcon } from '@mui/icons-material/ContentCopy';
 export { default as DeleteIcon } from '@mui/icons-material/Delete';
 export { default as PlayCircleIcon } from '@mui/icons-material/PlayCircle';
 export { default as StopCircleIcon } from '@mui/icons-material/StopCircle';
+export { default as AddPhotoAlternateIcon } from '@mui/icons-material/AddPhotoAlternate';
+export { default as ImageIcon } from '@mui/icons-material/Image';

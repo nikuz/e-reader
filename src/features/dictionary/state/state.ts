@@ -4,6 +4,7 @@ import { xStateUtils } from 'src/utils';
 import {
     queueManagerStateMachine,
     type QueueManagerRequestWordAnalysisEvent,
+    type QueueManagerRequestImageEvent,
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
@@ -11,6 +12,7 @@ import { initializerActor, databaseCleanerActor } from './actors';
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
+    setSelectedWordImageAction,
 } from './actions';
 import type {
     DictionaryStateContext,
@@ -85,10 +87,19 @@ export const dictionaryStateMachine = setup({
                     })),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
-                    actions: assign(() => ({ translatingWord: undefined })),
+                    actions: assign(({ event }) => ({
+                        translatingWord: undefined,
+                        errorMessage: event.error?.toString(),
+                    })),
+                },
+                QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
+                    actions: enqueueActions(setSelectedWordImageAction),
+                },
+                QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
+                    actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
                 },
                 REQUEST_IMAGE: {
-                    actions: sendTo('queue-manager', ({ event }) => event),
+                    actions: sendTo('queue-manager', ({ event }): QueueManagerRequestImageEvent => event),
                 },
                 CLEAR_WORD_SELECTION: {
                     actions: enqueueActions(clearWordSelectionAction),

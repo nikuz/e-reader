@@ -10,9 +10,11 @@ export const imageActor = fromPromise(async (props: {
     input: {
         word: DictionaryWord,
         highlight: BookHighlight,
+        style?: string,
+        withContext?: boolean,
     },
 }): Promise<string> => {
-    const { word } = props.input;
+    const { word, highlight, style, withContext } = props.input;
 
     if (!word.explanation) {
         throw new Error('Word should have "aiExplanation" to generate an image');
@@ -20,8 +22,8 @@ export const imageActor = fromPromise(async (props: {
 
     const image = await firebaseGetImage({
         textExplanation: word.explanation,
-        // style: 'ancient rome',
-        // context: highlight.context,
+        style,
+        context: withContext ? highlight.context : undefined,
     });
     
     if (!image) {

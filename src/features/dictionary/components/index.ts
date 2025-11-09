@@ -1,1 +1,2 @@
 export * from './word-pronunciation-button';
+export * from './word-image-button';

@@ -11,6 +11,7 @@ import {
 import TranslationPopperTranslation from './TranslationPopperTranslation';
 import TranslationPopperExplanation from './TranslationPopperExplanation';
 import TranslationPopperPronunciation from './TranslationPopperPronunciation';
+import TranslationPopperImage from './TranslationPopperImage';
 
 const POPPER_OFFSET = 8;
 const POPPER_BG_COLOR = '#262626';
@@ -133,8 +134,9 @@ export function TranslationPopper() {
                     }}
                 />
                 <Box>
-                    <Box sx={{ float: 'right', ml: 1 }}>
+                    <Box sx={{ float: 'right', ml: 1, mt: -0.5 }}>
                         <TranslationPopperPronunciation />
+                        <TranslationPopperImage />
                     </Box>
                     <Box className="flex-1">
                         <TranslationPopperTranslation />
@@ -150,6 +152,8 @@ const StyledPopper = styled(Popper)(() => ({
     zIndex: 1,
     width: '50%',
     maxWidth: '375px',
+    maxHeight: '300px',
+    overflow: 'auto',
     '&[data-popper-placement*="bottom"] .arrow': {
         top: 0,
         left: 0,

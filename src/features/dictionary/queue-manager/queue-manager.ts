@@ -87,6 +87,7 @@ export const queueManagerStateMachine = setup({
                                     dbController: context.dbController,
                                     word: event.word,
                                     highlight: event.highlight,
+                                    withContext: event.withContext,
                                 },
                             }),
                         },

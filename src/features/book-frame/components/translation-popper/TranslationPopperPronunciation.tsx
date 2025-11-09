@@ -4,13 +4,13 @@ import { DictionaryWordPronunciationButton } from 'src/features/dictionary/compo
 export default function TranslationPopperPronunciation() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedWord = useDictionaryStateSelect('selectedWord');
+    const word = translatingWord ?? selectedWord;
+
+    if (!word) {
+        return null;
+    }
 
     return (
-        <DictionaryWordPronunciationButton
-            word={translatingWord ?? selectedWord}
-            sx={{
-                mt: -0.5,
-            }}
-        />
+        <DictionaryWordPronunciationButton word={word} sx={{ display: 'block' }} />
     );
 }
