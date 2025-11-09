@@ -4,12 +4,11 @@ import WordExplanation from 'src/features/dictionary/components/word-explanation
 export default function TranslationPopperExplanation() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedWord = useDictionaryStateSelect('selectedWord');
-    const explanations = translatingWord?.explanations ?? selectedWord?.explanations;
-    const explanationText = explanations?.[0]?.text;
+    const explanation = translatingWord?.explanation ?? selectedWord?.explanation;
 
-    if (!explanationText) {
+    if (!explanation) {
         return null;
     }
 
-    return <WordExplanation text={explanationText} />;
+    return <WordExplanation text={explanation} />;
 }

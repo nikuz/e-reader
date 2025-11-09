@@ -8,6 +8,7 @@ import type { DictionaryWord, Language } from '../../../types';
 export const dbSaverActor = fromPromise(async (props: {
     input: {
         dbController: DatabaseController,
+        bookId: string,
         highlight: BookHighlight,
         translation?: string,
         explanation?: string,
@@ -18,6 +19,7 @@ export const dbSaverActor = fromPromise(async (props: {
 }): Promise<DictionaryWord> => {
     const {
         dbController,
+        bookId,
         highlight,
         translation,
         explanation,
@@ -31,6 +33,7 @@ export const dbSaverActor = fromPromise(async (props: {
     }
 
     const newWord = getNewDictionaryWord({
+        bookId,
         highlight,
         translation,
         explanation,
@@ -41,6 +44,7 @@ export const dbSaverActor = fromPromise(async (props: {
 
     await createWordInDB({
         db: dbController,
+        bookId,
         word: newWord,
     });
 

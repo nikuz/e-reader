@@ -132,12 +132,14 @@ export function TranslationPopper() {
                         },
                     }}
                 />
-                <Box className="flex">
+                <Box>
+                    <Box sx={{ float: 'right', ml: 1 }}>
+                        <TranslationPopperPronunciation />
+                    </Box>
                     <Box className="flex-1">
                         <TranslationPopperTranslation />
                         <TranslationPopperExplanation />
                     </Box>
-                    <TranslationPopperPronunciation />
                 </Box>
             </Paper>
         </StyledPopper>

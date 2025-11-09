@@ -13,6 +13,7 @@ import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../../state
 const POPPER_OFFSET = 8;
 
 export function BookFrameTextSelectionControls() {
+    const book = useBookFrameStateSelect('book');
     const textSelection = useBookFrameStateSelect('textSelection');
     const selectionUpdatedAt = useBookFrameStateSelect('textSelectionCreateEndTime');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
@@ -81,17 +82,18 @@ export function BookFrameTextSelectionControls() {
     }, [selectedHighlight]);
     
     const translateHandler = useCallback(() => {
-        if (!selectedHighlight) {
+        if (!book || !selectedHighlight) {
             return;
         }
         dictionaryStateMachineActor.send({
             type: 'REQUEST_WORD_ANALYSIS',
+            bookId: book.eisbn,
             highlight: selectedHighlight,
             sourceLanguage: Languages.ENGLISH,
             targetLanguage: Languages.RUSSIAN,
         });
         bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
-    }, [selectedHighlight]);
+    }, [book, selectedHighlight]);
 
     if (!virtualElement) {
         return null;

@@ -9,15 +9,15 @@ import type {
 
 export async function getWordFromDB(props: {
     db: DatabaseController,
-    word: string,
+    text: string,
     sourceLanguage: Language,
     targetLanguage: Language,
 }): Promise<DictionaryWord | undefined> {
-    const { db, word, sourceLanguage, targetLanguage } = props;
+    const { db, text, sourceLanguage, targetLanguage } = props;
 
     const response = await db.query(
-        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE word=? AND sourceLanguage=? AND targetLanguage=?;`,
-        [word, sourceLanguage.code, targetLanguage.code]
+        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE text=? AND sourceLanguage=? AND targetLanguage=?;`,
+        [text, sourceLanguage.code, targetLanguage.code]
     );
 
     if (!response || !response[0]) {
@@ -25,12 +25,13 @@ export async function getWordFromDB(props: {
     }
 
     const existingWord = response[0] as DictionaryWordDBInstance;
+    console.log(existingWord);
     
     return {
         ...existingWord,
         contexts: JSON.parse(existingWord.contexts),
-        explanations: JSON.parse(existingWord.explanations),
-        images: JSON.parse(existingWord.images),
+        contextExplanations: JSON.parse(existingWord.contextExplanations),
+        contextImages: JSON.parse(existingWord.contextImages),
         sourceLanguage: Languages[existingWord.sourceLanguage as LanguageKey],
         targetLanguage: Languages[existingWord.targetLanguage as LanguageKey],
     };

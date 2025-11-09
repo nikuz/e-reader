@@ -42,7 +42,7 @@ export class DatabaseController {
             await this.sqliteConnection.initWebStore();
         }
         if (upgrades) {
-            CapacitorSQLite.addUpgradeStatement({
+            await CapacitorSQLite.addUpgradeStatement({
                 database: this.config.name,
                 upgrade: upgrades,
             });

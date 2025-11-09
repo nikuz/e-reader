@@ -14,7 +14,7 @@ export async function getWordsListFromDB(props: {
     const { db, from, to } = props;
     const response = await db.query(
         `
-            SELECT id, word, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
+            SELECT id, text, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
             FROM "${DICTIONARY_DB_CONFIG.name}"
             ORDER BY createdAt DESC
             LIMIT :limit OFFSET :offset;
@@ -29,8 +29,8 @@ export async function getWordsListFromDB(props: {
     return response.map((item: DictionaryWordDBInstance): DictionaryWord => ({
         ...item,
         contexts: [],
-        explanations: [],
-        images: [],
+        contextExplanations: [],
+        contextImages: [],
         sourceLanguage: Languages[item.sourceLanguage as LanguageKey],
         targetLanguage: Languages[item.targetLanguage as LanguageKey],
     }));

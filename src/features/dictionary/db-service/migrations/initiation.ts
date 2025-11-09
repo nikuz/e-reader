@@ -7,12 +7,15 @@ export const initiation: DatabaseMigration = {
         `CREATE TABLE IF NOT EXISTS "${DICTIONARY_DB_CONFIG.name}" (
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             cloudId INTEGER,
-            word TEXT NOT NULL COLLATE NOCASE,
+            bookId INTEGER NOT NULL,
+            text TEXT NOT NULL COLLATE NOCASE,
             translation VARCHAR COLLATE NOCASE,
             contexts TEXT,
-            explanations TEXT,
+            explanation TEXT,
+            contextExplanations TEXT,
             pronunciation TEXT,
-            images TEXT,
+            image TEXT,
+            contextImages TEXT,
             sourceLanguage VARCHAR NOT NULL,
             targetLanguage VARCHAR NOT NULL,
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -20,7 +23,7 @@ export const initiation: DatabaseMigration = {
         );`,
         `
         CREATE INDEX IF NOT EXISTS "${DICTIONARY_DB_CONFIG.indexName}"
-        ON "${DICTIONARY_DB_CONFIG.name}"(word, translation)
+        ON "${DICTIONARY_DB_CONFIG.name}"(text, translation)
         `
     ],
 };

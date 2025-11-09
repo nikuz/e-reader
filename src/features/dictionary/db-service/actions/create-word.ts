@@ -4,40 +4,50 @@ import type { DictionaryWord } from '../../types';
 
 export async function createWordInDB(props: {
     db: DatabaseController,
+    bookId: string,
     word: DictionaryWord,
 }): Promise<void> {
-    const { db, word } = props;
-    
+    const { db, bookId, word } = props;
+
     await db.execute(
         `
             INSERT INTO "${DICTIONARY_DB_CONFIG.name}" (
-                word,
+                bookId,
+                text,
                 translation,
-                contexts,
-                explanations,
                 pronunciation,
-                images,
+                contexts,
+                explanation,
+                contextExplanations,
+                image,
+                contextImages,
                 sourceLanguage,
                 targetLanguage
             )
             VALUES(
-                :word,
+                :bookId,
+                :text,
                 :translation,
-                :contexts,
-                :explanations,
                 :pronunciation,
-                :images,
+                :contexts,
+                :explanation,
+                :contextExplanations,
+                :image,
+                :contextImages,
                 :sourceLanguage,
                 :targetLanguage
             );
         `,
         [
-            word.word,
+            bookId,
+            word.text,
             word.translation,
-            JSON.stringify(word.contexts),
-            JSON.stringify(word.explanations),
             word.pronunciation,
-            JSON.stringify(word.images),
+            JSON.stringify(word.contexts),
+            word.explanation,
+            JSON.stringify(word.contextExplanations),
+            word.image,
+            JSON.stringify(word.contextImages),
             word.sourceLanguage.code,
             word.targetLanguage.code,
         ]

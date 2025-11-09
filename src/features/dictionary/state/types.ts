@@ -30,6 +30,7 @@ interface InitializeEvent { type: 'INITIALIZE' }
 
 export interface RequestWordAnalysisEvent {
     type: 'REQUEST_WORD_ANALYSIS',
+    bookId: string,
     highlight: BookHighlight,
     sourceLanguage: Language,
     targetLanguage: Language,

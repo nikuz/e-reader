@@ -10,8 +10,9 @@ export interface QueueManagerStateContext {
     requests: Record<string, ActorRefFrom<typeof wordAnalysisRetrieverMachine | typeof imageRetrieverMachine>>,
 }
 
-export interface RequestWordAnalysisEvent {
+export interface QueueManagerRequestWordAnalysisEvent {
     type: 'REQUEST_WORD_ANALYSIS',
+    bookId: string,
     highlight: BookHighlight,
     word: DictionaryWord,
     sourceLanguage: Language,
@@ -66,7 +67,7 @@ export interface QueueManagerImageRequestErrorEvent {
 }
 
 export type QueueManagerStateEvents = 
-    | RequestWordAnalysisEvent
+    | QueueManagerRequestWordAnalysisEvent
     | QueueManagerWordAnalysisRequestSuccessEvent
     | QueueManagerWordAnalysisRequestErrorEvent
     | RequestImageEvent

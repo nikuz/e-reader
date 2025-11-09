@@ -29,13 +29,7 @@ export function updateTranslatingWordAction(props: {
             break;
         
         case 'QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED': 
-            currentTranslatingWord.explanations = [
-                ...currentTranslatingWord.explanations,
-                {
-                    contextId: currentTranslatingWord.contexts[0].id,
-                    text: props.event.explanation,
-                }
-            ];
+            currentTranslatingWord.explanation = props.event.explanation;
             break;
         
         case 'QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED':

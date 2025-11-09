@@ -1,7 +1,10 @@
 import { setup, createActor, assign, sendTo, enqueueActions } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
-import { queueManagerStateMachine } from '../queue-manager';
+import {
+    queueManagerStateMachine,
+    type QueueManagerRequestWordAnalysisEvent,
+} from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
 import { initializerActor, databaseCleanerActor } from './actors';
@@ -50,15 +53,17 @@ export const dictionaryStateMachine = setup({
                     actions: [
                         assign(({ event }) => ({
                             translatingWord: getNewDictionaryWord({
+                                bookId: event.bookId,
                                 highlight: event.highlight,
                                 sourceLanguage: event.sourceLanguage,
                                 targetLanguage: event.targetLanguage,
                             }),
                         })),
-                        sendTo('queue-manager', ({ context, event }) => ({
+                        sendTo('queue-manager', ({ context, event }): QueueManagerRequestWordAnalysisEvent => ({
                             type: event.type,
+                            bookId: event.bookId,
                             highlight: event.highlight,
-                            word: context.translatingWord,
+                            word: context.translatingWord!,
                             sourceLanguage: event.sourceLanguage,
                             targetLanguage: event.targetLanguage,
                         })),

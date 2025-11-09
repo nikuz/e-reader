@@ -19,22 +19,22 @@ export async function searchInDB(props: {
     
     const response = await db.query(
         `
-            SELECT id, word, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
+            SELECT id, text, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
             FROM "${DICTIONARY_DB_CONFIG.name}"
             WHERE
-                word LIKE :searchPattern
+                text LIKE :searchPattern
                 OR translation LIKE :searchPattern
             ORDER BY
                 CASE 
-                    WHEN word LIKE :searchText THEN 1
+                    WHEN text LIKE :searchText THEN 1
                     WHEN translation LIKE :searchText THEN 1
-                    WHEN word LIKE :searchPatternEnd THEN 2
+                    WHEN text LIKE :searchPatternEnd THEN 2
                     WHEN translation LIKE :searchPatternEnd THEN 2
-                    WHEN word LIKE :searchPatternStart THEN 3
+                    WHEN text LIKE :searchPatternStart THEN 3
                     WHEN translation LIKE :searchPatternStart THEN 3
                     ELSE 4
                 END,
-                word ASC,
+                text ASC,
                 createdAt DESC
             LIMIT :limit OFFSET :offset;
         `,
@@ -59,8 +59,8 @@ export async function searchInDB(props: {
     return response.map((item: DictionaryWordDBInstance): DictionaryWord => ({
         ...item,
         contexts: [],
-        explanations: [],
-        images: [],
+        contextExplanations: [],
+        contextImages: [],
         sourceLanguage: Languages[item.sourceLanguage as LanguageKey],
         targetLanguage: Languages[item.targetLanguage as LanguageKey],
     }));

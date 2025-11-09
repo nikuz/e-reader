@@ -13,7 +13,7 @@ export const dbRetrieverActor = fromPromise(async (props: {
 
     return await getWordFromDB({
         db: dbController,
-        word: word.word,
+        text: word.text,
         sourceLanguage: word.sourceLanguage,
         targetLanguage: word.targetLanguage,
     });

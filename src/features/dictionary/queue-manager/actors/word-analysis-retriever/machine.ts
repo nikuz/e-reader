@@ -18,6 +18,7 @@ import { pronunciationActor } from './pronunciation-actor';
 
 interface InputParameters {
     dbController: DatabaseController,
+    bookId: string,
     word: DictionaryWord,
     highlight: BookHighlight,
     sourceLanguage: Language,
@@ -206,6 +207,7 @@ export const wordAnalysisRetrieverMachine = setup({
                 src: 'dbSaverActor',
                 input: ({ context }) => ({
                     dbController: context.dbController,
+                    bookId: context.bookId,
                     highlight: context.highlight,
                     translation: context.translation,
                     explanation: context.explanation,

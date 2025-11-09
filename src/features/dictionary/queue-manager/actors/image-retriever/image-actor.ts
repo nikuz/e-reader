@@ -14,12 +14,12 @@ export const imageActor = fromPromise(async (props: {
 }): Promise<string> => {
     const { word } = props.input;
 
-    if (!word.explanations) {
+    if (!word.explanation) {
         throw new Error('Word should have "aiExplanation" to generate an image');
     }
 
     const image = await firebaseGetImage({
-        textExplanation: word.explanations[0].text,
+        textExplanation: word.explanation,
         // style: 'ancient rome',
         // context: highlight.context,
     });
@@ -29,7 +29,7 @@ export const imageActor = fromPromise(async (props: {
     }
 
     // save image file
-    const fileName = `${converterUtils.stringToHash(word.word)}-${Date.now()}`;
+    const fileName = `${converterUtils.stringToHash(word.text)}-${Date.now()}`;
     const ext = image.mimeType.split('/')[1] ?? 'bin';
     const filePath = `${DICTIONARY_IMAGES_DIRECTORY}/${fileName}.${ext}`;
 

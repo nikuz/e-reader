@@ -26,8 +26,6 @@ export const initializerActor = fromPromise(async (props: {
 
     const dbController = props.input.dbController;
     await initializeDBService(dbController);
-    // TODO: remove this after first version release
-    // await dbController.deleteDB();
 
     const storedBooks = (await getAllBooksFromDB(dbController)).map((item) => new BookModel(item));
     storedBooks.sort((a, b) => b.addedAt - a.addedAt);

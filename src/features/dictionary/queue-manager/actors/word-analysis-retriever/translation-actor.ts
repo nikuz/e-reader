@@ -8,7 +8,7 @@ export const translationActor = fromPromise(async (props: {
     const { word } = props.input;
 
     return getTranslation({
-        word: word.word,
+        word: word.text,
         sourceLanguage: word.sourceLanguage,
         targetLanguage: word.targetLanguage,
     });

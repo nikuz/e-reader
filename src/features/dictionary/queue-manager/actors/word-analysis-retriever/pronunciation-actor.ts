@@ -11,7 +11,7 @@ export const pronunciationActor = fromPromise(async (props: {
     const { word } = props.input;
 
     const pronunciation = await firebaseGetPronunciation({
-        word: word.word,
+        word: word.text,
         sourceLanguage: word.sourceLanguage,
     });
 
@@ -21,7 +21,7 @@ export const pronunciationActor = fromPromise(async (props: {
 
     // save pronunciation file
     const wavBase64 = audioUtils.pcm16ToWavBase64(pronunciation.data);
-    const fileName = converterUtils.stringToHash(word.word);
+    const fileName = converterUtils.stringToHash(word.text);
     const filePath = `${DICTIONARY_PRONUNCIATIONS_DIRECTORY}/${fileName}.wav`;
 
     await FileStorageController.writeFile({

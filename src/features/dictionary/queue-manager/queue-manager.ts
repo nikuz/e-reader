@@ -41,6 +41,7 @@ export const queueManagerStateMachine = setup({
                             [event.word.id]: spawn('wordAnalysisRetrieverMachine', {
                                 input: {
                                     dbController: context.dbController,
+                                    bookId: event.bookId,
                                     highlight: event.highlight,
                                     word: event.word,
                                     sourceLanguage: event.sourceLanguage,

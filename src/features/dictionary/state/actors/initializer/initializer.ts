@@ -17,8 +17,6 @@ export const initializerActor = fromPromise(async (props: {
 
     const dbController = props.input.dbController;
     await initializeDBService(dbController);
-    // TODO: remove this after first version release
-    // await dbController.deleteDB();
 
     console.log('Dictionary initialized');
 });

@@ -8,7 +8,7 @@ export const explanationActor = fromPromise(async (props: {
     const { word } = props.input;
 
     return await firebaseGetExplanation({
-        word: word.word,
+        word: word.text,
         sourceLanguage: word.sourceLanguage,
         targetLanguage: word.targetLanguage,
     });
