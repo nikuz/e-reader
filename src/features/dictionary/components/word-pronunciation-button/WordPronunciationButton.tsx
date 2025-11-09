@@ -1,13 +1,15 @@
 import { useState, useRef, useMemo, useEffect, useEffectEvent } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
-import { converterUtils } from 'src/utils';
 import { Box, IconButton, CircularProgress } from 'src/design-system/components';
 import { PlayCircleIcon, StopCircleIcon } from 'src/design-system/icons';
+import type { SxProps } from 'src/design-system/styles';
+import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
+import { converterUtils } from 'src/utils';
 import type { DictionaryWord } from '../../types';
 
 interface Props {
     word: DictionaryWord | undefined,
+    sx?: SxProps,
 }
 
 export function DictionaryWordPronunciationButton(props: Props) {
@@ -104,7 +106,11 @@ export function DictionaryWordPronunciationButton(props: Props) {
     const isLoading = !src;
 
     return (
-        <Box>
+        <Box sx={{
+            position: 'relative',
+            display: 'inline-block',
+            ...props.sx,
+        }}>
             <audio
                 ref={audioRef}
                 src={src}
@@ -115,10 +121,19 @@ export function DictionaryWordPronunciationButton(props: Props) {
                 sx={{ opacity: isLoading ? 0.5 : 1 }}
                 onClick={playHandler}
             >
-                {isLoading && <CircularProgress size={24} />}
-                {!isLoading && isPlaying && <StopCircleIcon />}
-                {!isLoading && !isPlaying && <PlayCircleIcon />}
+                {isPlaying && <StopCircleIcon />}
+                {!isPlaying && <PlayCircleIcon />}
             </IconButton>
+            {isLoading && (
+                <CircularProgress
+                    size={24}
+                    sx={{
+                        position: 'absolute',
+                        left: '20%',
+                        top: '20%',
+                    }}
+                />
+            )}
         </Box>
     );
 }

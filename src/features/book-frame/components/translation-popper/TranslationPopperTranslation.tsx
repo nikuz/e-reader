@@ -13,6 +13,14 @@ export default function TranslationPopperTranslation() {
         return null;
     }
 
+    if (!translation) {
+        return (
+            <Typography className="loading-text">
+                Translating...
+            </Typography>
+        );
+    }
+
     return (
         <Typography>
             {translation}

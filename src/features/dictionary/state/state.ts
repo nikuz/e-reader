@@ -5,7 +5,10 @@ import { queueManagerStateMachine } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
 import { initializerActor, databaseCleanerActor } from './actors';
-import { updateTranslatingWordAction } from './actions';
+import {
+    updateTranslatingWordAction,
+    clearWordSelectionAction,
+} from './actions';
 import type {
     DictionaryStateContext,
     DictionaryStateEvents,
@@ -81,6 +84,9 @@ export const dictionaryStateMachine = setup({
                 },
                 REQUEST_IMAGE: {
                     actions: sendTo('queue-manager', ({ event }) => event),
+                },
+                CLEAR_WORD_SELECTION: {
+                    actions: enqueueActions(clearWordSelectionAction),
                 },
                 CLEAR_DATABASE: 'CLEARING_DATABASE',
             },

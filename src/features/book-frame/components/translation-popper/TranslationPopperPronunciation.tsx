@@ -8,6 +8,9 @@ export default function TranslationPopperPronunciation() {
     return (
         <DictionaryWordPronunciationButton
             word={translatingWord ?? selectedWord}
+            sx={{
+                mt: -0.5,
+            }}
         />
     );
 }

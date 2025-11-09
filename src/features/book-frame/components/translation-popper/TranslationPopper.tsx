@@ -1,13 +1,9 @@
-import { useState, useMemo } from 'react';
-import {
-    Popper,
-    Paper,
-    Box,
-    CircularProgress,
-} from 'src/design-system/components';
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { Popper, Paper, Box } from 'src/design-system/components';
 import { styled } from 'src/design-system/styles';
-import type { VirtualElement } from 'src/design-system/types';
-import { useDictionaryStateSelect } from 'src/features/dictionary/state';
+import type { PopperVirtualElement, PopperInstance } from 'src/design-system/types';
+import { useDictionaryStateSelect, dictionaryStateMachineActor } from 'src/features/dictionary/state';
+import { useLast } from 'src/hooks';
 import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
@@ -24,9 +20,12 @@ export function TranslationPopper() {
     const iframeEl = useBookFrameStateSelect('iframeEl');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const isAnalyzingWord = useBookFrameStateMatch(['ANALYZING_WORD']);
+    const lastIsAnalyzingWord = useLast(isAnalyzingWord);
     const translatingWord = useDictionaryStateSelect('translatingWord');
+    const selectedWord = useDictionaryStateSelect('selectedWord');
+    const popperRef = useRef<PopperInstance | null>(null);
 
-    const virtualElement = useMemo<VirtualElement | null>(() => {
+    const virtualElement = useMemo<PopperVirtualElement | null>(() => {
         if (!selectedHighlight?.range || !iframeEl) {
             return null;
         }
@@ -54,6 +53,19 @@ export function TranslationPopper() {
         };
     }, [iframeEl, selectedHighlight]);
 
+    useEffect(() => {
+        if (!translatingWord && !selectedWord) {
+            return;
+        }
+        popperRef.current?.forceUpdate();
+    }, [translatingWord, selectedWord]);
+
+    useEffect(() => {
+        if (!isAnalyzingWord && lastIsAnalyzingWord) {
+            dictionaryStateMachineActor.send({ type: 'CLEAR_WORD_SELECTION' });
+        }
+    }, [isAnalyzingWord, lastIsAnalyzingWord]);
+
     if (!isAnalyzingWord || !selectedHighlight || !virtualElement) {
         return null;
     }
@@ -63,6 +75,7 @@ export function TranslationPopper() {
             open={true}
             placement="bottom"
             anchorEl={virtualElement}
+            popperRef={popperRef}
             modifiers={[
                 {
                     name: 'offset',
@@ -119,10 +132,13 @@ export function TranslationPopper() {
                         },
                     }}
                 />
-                <TranslationPopperTranslation />
-                <TranslationPopperExplanation />
-                <TranslationPopperPronunciation />
-                {translatingWord && <CircularProgress />}
+                <Box className="flex">
+                    <Box className="flex-1">
+                        <TranslationPopperTranslation />
+                        <TranslationPopperExplanation />
+                    </Box>
+                    <TranslationPopperPronunciation />
+                </Box>
             </Paper>
         </StyledPopper>
     );
@@ -130,6 +146,7 @@ export function TranslationPopper() {
 
 const StyledPopper = styled(Popper)(() => ({
     zIndex: 1,
+    width: '50%',
     maxWidth: '375px',
     '&[data-popper-placement*="bottom"] .arrow': {
         top: 0,

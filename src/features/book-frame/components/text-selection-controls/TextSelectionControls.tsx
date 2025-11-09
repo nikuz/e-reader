@@ -5,7 +5,7 @@ import {
     IconButton,
 } from 'src/design-system/components';
 import { ContentCopyIcon, DeleteIcon, TranslateIcon } from 'src/design-system/icons';
-import type { VirtualElement } from 'src/design-system/types';
+import type { PopperVirtualElement } from 'src/design-system/types';
 import { dictionaryStateMachineActor } from 'src/features/dictionary/state';
 import { Languages } from 'src/features/dictionary/constants';
 import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../../state';
@@ -18,7 +18,7 @@ export function BookFrameTextSelectionControls() {
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const iframeEl = useBookFrameStateSelect('iframeEl');
 
-    const virtualElement = useMemo<VirtualElement | null>(() => {
+    const virtualElement = useMemo<PopperVirtualElement | null>(() => {
         if (!textSelection || !iframeEl || textSelection.rangeCount === 0) {
             return null;
         }
