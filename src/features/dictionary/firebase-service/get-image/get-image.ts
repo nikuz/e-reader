@@ -38,6 +38,10 @@ export async function firebaseGetImage(props: Props): Promise<{
     const preventTextOverlayPromptAddition = 'Don\'t embed any text into the image.';
     const prompt = `Generate image based on this word explanation: ${textExplanation} ${contextPromptAddition}. ${stylePromptAddition}. ${preventTextOverlayPromptAddition}`;
 
+    if (import.meta.env.DEV) {
+        console.log('Image prompt:', prompt);
+    }
+
     const result = await geminiImageModel.generateContent(prompt);
 
     const inlineDataParts = result.response.inlineDataParts();

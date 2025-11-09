@@ -25,6 +25,10 @@ export async function firebaseGetExplanation(props: Props): Promise<string> {
     }
 
     const prompt = `Give explanation of a word "${word}" ${contextPromptAddition}, and translate it from ${sourceLanguage.name} to ${targetLanguage.name}. Keep it concise.`;
+
+    if (import.meta.env.DEV) {
+        console.log('Explanation prompt:', prompt);
+    }
     
     const result = await geminiTextModel.generateContent(prompt);
 

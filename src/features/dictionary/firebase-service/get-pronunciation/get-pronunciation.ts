@@ -23,6 +23,10 @@ export async function firebaseGetPronunciation(props: Props): Promise<{
     
     const prompt = `Say the following in ${sourceLanguage.name}: "${word}"`;
 
+    if (import.meta.env.DEV) {
+        console.log('Pronunciation prompt:', prompt);
+    }
+
     const result = await geminiTTSModel.generateContent(prompt);
 
     const inlineDataParts = result.response.inlineDataParts();

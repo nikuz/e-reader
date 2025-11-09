@@ -11,7 +11,10 @@
     "copy": "npx cap copy",
     "sync": "npx cap sync",
     "android": "npx cap copy && npx cap open android",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^7.0.2",
@@ -46,12 +49,14 @@
     "@types/react-dom": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
+    "@vitest/ui": "^4.0.8",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "jeep-sqlite": "^2.8.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
   },
   "overrides": {
     "sql.js": "1.12.0"

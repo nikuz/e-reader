@@ -109,6 +109,7 @@ export function DictionaryWordPronunciationButton(props: Props) {
         <Box sx={{
             position: 'relative',
             display: 'inline-block',
+            alignSelf: 'flex-start',
             ...props.sx,
         }}>
             <audio

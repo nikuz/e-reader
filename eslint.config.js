@@ -57,7 +57,7 @@ export default [
         },
     },
     {
-        files: ['rsbuild.config.ts'],
+        files: ['rsbuild.config.ts', 'vitest.config.ts'],
         languageOptions: {
             parserOptions: {
                 project: './tsconfig.node.json',
