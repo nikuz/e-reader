@@ -41,6 +41,8 @@ export interface RequestImageEvent {
     word: DictionaryWord,
 }
 
+export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
+
 export type DictionaryStateEvents = 
     | InitializeEvent
     | RequestWordAnalysisEvent
@@ -49,4 +51,5 @@ export type DictionaryStateEvents =
     | QueueManagerWordAnalysisRequestErrorEvent
     | QueueManagerWordAnalysisTranslationRetrievedEvent
     | QueueManagerWordAnalysisExplanationRetrievedEvent
-    | QueueManagerWordAnalysisPronunciationRetrievedEvent;
+    | QueueManagerWordAnalysisPronunciationRetrievedEvent
+    | ClearDatabaseEvent;

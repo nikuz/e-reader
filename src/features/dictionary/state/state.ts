@@ -4,7 +4,7 @@ import { xStateUtils } from 'src/utils';
 import { queueManagerStateMachine } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
-import { initializerActor } from './actors';
+import { initializerActor, databaseCleanerActor } from './actors';
 import { updateTranslatingWordAction } from './actions';
 import type {
     DictionaryStateContext,
@@ -15,6 +15,7 @@ export const dictionaryStateMachine = setup({
     actors: {
         queueManagerStateMachine,
         initializerActor,
+        databaseCleanerActor,
     },
     types: {
         context: {} as DictionaryStateContext,
@@ -81,6 +82,7 @@ export const dictionaryStateMachine = setup({
                 REQUEST_IMAGE: {
                     actions: sendTo('queue-manager', ({ event }) => event),
                 },
+                CLEAR_DATABASE: 'CLEARING_DATABASE',
             },
         },
 
@@ -102,6 +104,15 @@ export const dictionaryStateMachine = setup({
                         xStateUtils.stateErrorTraceAction,
                     ],
                 },
+            },
+        },
+
+        CLEARING_DATABASE: {
+            invoke: {
+                src: 'databaseCleanerActor',
+                input: ({ context }) => ({
+                    dbController: context.dbController,
+                }),
             },
         },
     },

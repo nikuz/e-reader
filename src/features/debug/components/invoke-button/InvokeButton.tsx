@@ -1,10 +1,11 @@
-import { debugStateMachineActor } from '../../state';
+import { debugStateMachineActor, useDebugStateMatch } from '../../state';
 import './style.css';
 
 export default function InvokeButton() {
     const isDebugEnabled = localStorage.getItem('debug') === 'true';
+    const isOverlayVisible = useDebugStateMatch(['VISIBLE']);
 
-    if (!isDebugEnabled) {
+    if (!isDebugEnabled || isOverlayVisible) {
         return null;
     }
 

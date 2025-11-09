@@ -39,10 +39,13 @@ export interface UpdateBookHighlightsEvent {
     book: BookModel,
 }
 
+export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
+
 export type LibraryStateEvents =
     | SetNavigatorEvent
     | OpenFileEvent
     | CloseErrorToastEvent
     | SelectBookEvent
     | RemoveBookEvent
-    | UpdateBookHighlightsEvent;
+    | UpdateBookHighlightsEvent
+    | ClearDatabaseEvent;

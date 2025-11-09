@@ -1,4 +1,4 @@
-import { setup, createActor } from 'xstate';
+import { setup, createActor, assign } from 'xstate';
 import type {
     DebugStateContext,
     DebugStateEvents,
@@ -28,6 +28,15 @@ export const debugStateMachine = setup({
         VISIBLE: {
             on: {
                 HIDE: 'HIDDEN',
+                DISABLE: {
+                    target: 'HIDDEN',
+                    actions: [
+                        assign(() => ({ enabled: false })),
+                        () => {
+                            localStorage.removeItem('debug');
+                        },
+                    ],
+                },
             },
         },
     },
