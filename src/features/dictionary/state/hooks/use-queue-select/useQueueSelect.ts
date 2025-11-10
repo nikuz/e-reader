@@ -1,7 +1,7 @@
 import { useSelector } from '@xstate/react';
 import { dictionaryStateMachineActor } from '../../state';
 
-export function useDictionaryStateQueueSelect(wordId: string): boolean {
+export function useDictionaryStateQueueSelect(wordId: number): boolean {
     const queueActor = useSelector(dictionaryStateMachineActor, (state) => state.context.queueManagerRef);
     const requests = useSelector(queueActor, (state) => state?.context.requests);
 

@@ -21,7 +21,7 @@ export function deleteRequestAction(props: {
     const requests = { ...props.context.requests };
     const word = props.event.word;
 
-    stopChild(word.id);
+    stopChild(word.id.toString());
     delete requests[word.id];
 
     props.enqueue.assign({ requests });

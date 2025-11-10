@@ -14,7 +14,7 @@ export function getNewDictionaryWord(props: {
     const contextId = converterUtils.stringToHash(props.highlight.context);
     
     return {
-        id: Date.now().toString(),
+        id: Date.now(),
         bookId: props.bookId,
         text: props.highlight.text,
         translation: props.translation,

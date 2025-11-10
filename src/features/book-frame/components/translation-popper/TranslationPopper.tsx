@@ -152,8 +152,8 @@ const StyledPopper = styled(Popper)(() => ({
     zIndex: 1,
     width: '50%',
     maxWidth: '375px',
-    maxHeight: '300px',
-    overflow: 'auto',
+    // maxHeight: '300px',
+    // overflow: 'auto',
     '&[data-popper-placement*="bottom"] .arrow': {
         top: 0,
         left: 0,
