@@ -4,10 +4,11 @@ import type { BookHighlight } from 'src/types';
 import type { DictionaryWord, Language } from '../types';
 import { wordAnalysisRetrieverMachine } from './actors/word-analysis-retriever';
 import { imageRetrieverMachine } from './actors/image-retriever';
+import { contextAnalysisRetrieverMachine } from './actors/context-analysis-retriever';
 
 export interface QueueManagerStateContext {
     dbController: DatabaseController,
-    requests: Record<string, ActorRefFrom<typeof wordAnalysisRetrieverMachine | typeof imageRetrieverMachine>>,
+    requests: Record<string, ActorRefFrom<typeof wordAnalysisRetrieverMachine | typeof imageRetrieverMachine | typeof contextAnalysisRetrieverMachine>>,
 }
 
 export interface QueueManagerRequestWordAnalysisEvent {
@@ -50,19 +51,33 @@ export interface QueueManagerWordAnalysisPronunciationRetrievedEvent {
 
 export interface QueueManagerRequestImageEvent {
     type: 'REQUEST_IMAGE',
-    highlight: BookHighlight,
     word: DictionaryWord,
-    withContext?: boolean,
 }
 
 export interface QueueManagerImageRequestSuccessEvent {
     type: 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS',
     word: DictionaryWord,
-    image: string,
 }
 
 export interface QueueManagerImageRequestErrorEvent {
     type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
+    word: DictionaryWord,
+    error: unknown,
+}
+
+export interface QueueManagerRequestContextAnalysisEvent {
+    type: 'REQUEST_CONTEXT_ANALYSIS',
+    highlight: BookHighlight,
+    word: DictionaryWord,
+}
+
+export interface QueueManagerContextAnalysisRequestSuccessEvent {
+    type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS',
+    word: DictionaryWord,
+}
+
+export interface QueueManagerContextAnalysisRequestErrorEvent {
+    type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
     word: DictionaryWord,
     error: unknown,
 }
@@ -73,4 +88,7 @@ export type QueueManagerStateEvents =
     | QueueManagerWordAnalysisRequestErrorEvent
     | QueueManagerRequestImageEvent
     | QueueManagerImageRequestSuccessEvent
-    | QueueManagerImageRequestErrorEvent;
+    | QueueManagerImageRequestErrorEvent
+    | QueueManagerRequestContextAnalysisEvent
+    | QueueManagerContextAnalysisRequestSuccessEvent
+    | QueueManagerContextAnalysisRequestErrorEvent;

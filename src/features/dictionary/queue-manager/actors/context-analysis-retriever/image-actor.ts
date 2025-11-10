@@ -3,22 +3,35 @@ import { FileStorageController } from 'src/controllers';
 import { converterUtils } from 'src/utils';
 import { firebaseGetImage } from '../../../firebase-service';
 import { DICTIONARY_IMAGES_DIRECTORY } from '../../../constants';
-import type { DictionaryWord } from '../../../types';
+import type {
+    DictionaryWord,
+    DictionaryWordContext,
+    DictionaryWordContextImage,
+    DictionaryWordContextExplanation,
+} from '../../../types';
 
 export const imageActor = fromPromise(async (props: {
     input: {
         word: DictionaryWord,
+        contextExplanation?: DictionaryWordContextExplanation,
+        newContext: DictionaryWordContext,
         style?: string,
     },
-}): Promise<string> => {
-    const { word, style } = props.input;
+}): Promise<DictionaryWordContextImage> => {
+    const {
+        word,
+        newContext,
+        style,
+        contextExplanation,
+    } = props.input;
 
-    if (!word.explanation) {
-        throw new Error('Word should have "explanation" to generate an image');
+    if (!contextExplanation) {
+        throw new Error('"contextExplanation" should be provided to generate a context image');
     }
 
+    console.log(contextExplanation);
     const image = await firebaseGetImage({
-        textExplanation: word.explanation,
+        textExplanation: contextExplanation.text,
         style,
     });
     
@@ -40,5 +53,8 @@ export const imageActor = fromPromise(async (props: {
     // get file path URI
     const fileUri = await FileStorageController.getUri({ path: filePath });
 
-    return fileUri.uri;
+    return {
+        contextId: newContext.id,
+        src: fileUri.uri,
+    };
 });

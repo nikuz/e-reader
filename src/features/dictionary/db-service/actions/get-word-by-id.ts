@@ -3,22 +3,19 @@ import { getLanguageByCode } from '../../utils';
 import { DICTIONARY_DB_CONFIG } from '../../constants';
 import type {
     DictionaryWord,
-    Language,
     DictionaryWordDBInstance,
     LanguageCode,
 } from '../../types';
 
-export async function getWordFromDB(props: {
+export async function getWordByIdFromDB(props: {
     db: DatabaseController,
-    text: string,
-    sourceLanguage: Language,
-    targetLanguage: Language,
+    id: number,
 }): Promise<DictionaryWord | undefined> {
-    const { db, text, sourceLanguage, targetLanguage } = props;
+    const { db, id } = props;
 
     const response = await db.query(
-        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE text=? AND sourceLanguage=? AND targetLanguage=?;`,
-        [text, sourceLanguage.code, targetLanguage.code]
+        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE id=?;`,
+        [id]
     );
 
     if (!response || !response[0]) {

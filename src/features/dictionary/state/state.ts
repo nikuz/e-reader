@@ -5,6 +5,7 @@ import {
     queueManagerStateMachine,
     type QueueManagerRequestWordAnalysisEvent,
     type QueueManagerRequestImageEvent,
+    type QueueManagerRequestContextAnalysisEvent,
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
@@ -12,7 +13,7 @@ import { initializerActor, databaseCleanerActor } from './actors';
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
-    setSelectedWordImageAction,
+    updateSelectedWordAction,
 } from './actions';
 import type {
     DictionaryStateContext,
@@ -96,9 +97,18 @@ export const dictionaryStateMachine = setup({
                     actions: sendTo('queue-manager', ({ event }): QueueManagerRequestImageEvent => event),
                 },
                 QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
-                    actions: enqueueActions(setSelectedWordImageAction),
+                    actions: enqueueActions(updateSelectedWordAction),
                 },
                 QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
+                    actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
+                },
+                REQUEST_CONTEXT_ANALYSIS: {
+                    actions: sendTo('queue-manager', ({ event }): QueueManagerRequestContextAnalysisEvent => event),
+                },
+                QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {
+                    actions: enqueueActions(updateSelectedWordAction),
+                },
+                QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
                 },
                 CLEAR_WORD_SELECTION: {

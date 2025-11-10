@@ -1,7 +1,6 @@
 import { setup, sendParent, assign } from 'xstate';
 import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
-import type { BookHighlight } from 'src/types';
 import type { DictionaryWord } from '../../../types';
 import type {
     QueueManagerImageRequestSuccessEvent,
@@ -13,9 +12,7 @@ import { dbSaverActor } from './db-saver-actor';
 interface InputParameters {
     dbController: DatabaseController,
     word: DictionaryWord,
-    highlight: BookHighlight,
     style?: string,
-    withContext?: boolean,
 }
 
 export const imageRetrieverMachine = setup({
@@ -42,9 +39,7 @@ export const imageRetrieverMachine = setup({
                 src: 'imageActor',
                 input: ({ context }) => ({
                     word: context.word,
-                    highlight: context.highlight,
                     style: context.style,
-                    withContext: context.withContext,
                 }),
                 onDone: {
                     target: 'SAVING_TO_DB',
@@ -72,10 +67,9 @@ export const imageRetrieverMachine = setup({
                     image: context.image,
                 }),
                 onDone: {
-                    actions: sendParent(({ context, event }): QueueManagerImageRequestSuccessEvent => ({
+                    actions: sendParent(({ event }): QueueManagerImageRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS',
-                        word: context.word,
-                        image: event.output,
+                        word: event.output,
                     })),
                 },
                 onError: {

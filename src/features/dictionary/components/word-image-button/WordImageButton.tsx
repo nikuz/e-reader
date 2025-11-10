@@ -23,25 +23,36 @@ export function WordImageButton(props: Props) {
     const isLoading = wordIsInQueue;
     const isImageRequested = useRef(false);
 
+    const imageSrc = useMemo(() => {
+        let imageSrc = word.image;
+        const contextId = converterUtils.stringToHash(highlight.context);
+        const contextImage = word.contextImages.find(item => item.contextId === contextId);
+
+        if (contextImage) {
+            imageSrc = contextImage.src;
+        }
+
+        return imageSrc;
+    }, [word, highlight]);
+
     const nativeSrc = useMemo(() => {
-        if (!word.image || !Capacitor.isNativePlatform()) {
+        if (!imageSrc || !Capacitor.isNativePlatform()) {
             return undefined;
         }
-        return Capacitor.convertFileSrc(word.image);
-    }, [word]);
+        return Capacitor.convertFileSrc(imageSrc);
+    }, [imageSrc]);
 
     const clickHandler = useCallback(() => {
-        if (word.image) {
+        if (imageSrc) {
             setIsPreviewOpen(true);
         } else {
             isImageRequested.current = true;
             dictionaryStateMachineActor.send({
                 type: 'REQUEST_IMAGE',
                 word,
-                highlight,
             });
         }
-    }, [word, highlight]);
+    }, [word, imageSrc]);
 
     const closePreviewHandler = useCallback(() => {
         setIsPreviewOpen(false);
@@ -55,19 +66,19 @@ export function WordImageButton(props: Props) {
     });
 
     useEffect(() => {
-        if (!word.image || Capacitor.isNativePlatform()) {
+        if (!imageSrc || Capacitor.isNativePlatform()) {
             return;
         }
 
         async function startFetching() {
             setBlobSrc(undefined);
 
-            if (!word || !word.image) {
+            if (!imageSrc) {
                 return;
             }
 
             const staticFileContent = await FileStorageController.readFile({
-                path: word.image.replace(FILE_STORAGE_DEFAULT_DIRECTORY, ''),
+                path: imageSrc.replace(FILE_STORAGE_DEFAULT_DIRECTORY, ''),
             });
 
             if (!ignore) {
@@ -84,15 +95,15 @@ export function WordImageButton(props: Props) {
             ignore = true;
             revokeObjectUrlSrc();
         };
-    }, [word]);
+    }, [imageSrc]);
 
     useEffect(() => {
-        if (isImageRequested.current && word.image) {
+        if (isImageRequested.current && imageSrc) {
             isImageRequested.current = false;
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsPreviewOpen(true);
         }
-    }, [word]);
+    }, [imageSrc]);
 
     // Use nativeSrc for native platforms, blobSrc for web
     const src = Capacitor.isNativePlatform() ? nativeSrc : blobSrc;
@@ -107,7 +118,7 @@ export function WordImageButton(props: Props) {
                 disabled={isLoading}
                 onClick={clickHandler}
             >
-                {word.image ? <ImageIcon /> : <AddPhotoAlternateIcon />}
+                {imageSrc ? <ImageIcon /> : <AddPhotoAlternateIcon />}
             </IconButton>
             {isLoading && (
                 <CircularProgress

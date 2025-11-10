@@ -134,7 +134,7 @@ export function TranslationPopper() {
                     }}
                 />
                 <Box>
-                    <Box sx={{ float: 'right', ml: 1, mt: -0.5 }}>
+                    <Box sx={{ float: 'right', ml: 1, mt: -0.5, mb: 0.5 }}>
                         <TranslationPopperPronunciation />
                         <TranslationPopperImage />
                     </Box>

@@ -1,9 +1,10 @@
 import { DatabaseController } from 'src/controllers';
-import { DICTIONARY_DB_CONFIG, Languages } from '../../constants';
+import { getLanguageByCode } from '../../utils';
+import { DICTIONARY_DB_CONFIG } from '../../constants';
 import type {
     DictionaryWord,
     DictionaryWordDBInstance,
-    LanguageKey,
+    LanguageCode,
 } from '../../types';
 
 export async function searchInDB(props: {
@@ -61,7 +62,7 @@ export async function searchInDB(props: {
         contexts: [],
         contextExplanations: [],
         contextImages: [],
-        sourceLanguage: Languages[item.sourceLanguage as LanguageKey],
-        targetLanguage: Languages[item.targetLanguage as LanguageKey],
+        sourceLanguage: getLanguageByCode(item.sourceLanguage as LanguageCode),
+        targetLanguage: getLanguageByCode(item.targetLanguage as LanguageCode),
     }));
 }

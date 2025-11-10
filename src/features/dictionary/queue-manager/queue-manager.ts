@@ -1,6 +1,10 @@
 import { setup, assign, enqueueActions, sendParent } from 'xstate';
 import { DatabaseController } from 'src/controllers';
-import { wordAnalysisRetrieverMachine, imageRetrieverMachine } from './actors';
+import {
+    wordAnalysisRetrieverMachine,
+    imageRetrieverMachine,
+    contextAnalysisRetrieverMachine,
+} from './actors';
 import { deleteRequestAction } from './actions';
 import type {
     QueueManagerStateContext,
@@ -15,6 +19,7 @@ export const queueManagerStateMachine = setup({
     actors: {
         wordAnalysisRetrieverMachine,
         imageRetrieverMachine,
+        contextAnalysisRetrieverMachine,
     },
     types: {
         context: {} as QueueManagerStateContext,
@@ -86,8 +91,6 @@ export const queueManagerStateMachine = setup({
                                 input: {
                                     dbController: context.dbController,
                                     word: event.word,
-                                    highlight: event.highlight,
-                                    withContext: event.withContext,
                                 },
                             }),
                         },
@@ -102,6 +105,35 @@ export const queueManagerStateMachine = setup({
                 },
 
                 QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
+                    ],
+                },
+
+                REQUEST_CONTEXT_ANALYSIS: {
+                    actions: assign(({ event, context, spawn }) => ({
+                        requests: {
+                            ...context.requests,
+                            [event.word.id]: spawn('contextAnalysisRetrieverMachine', {
+                                input: {
+                                    dbController: context.dbController,
+                                    word: event.word,
+                                    highlight: event.highlight,
+                                },
+                            }),
+                        },
+                    })),
+                },
+
+                QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
+                    ],
+                },
+                
+                QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR: {
                     actions: [
                         enqueueActions(deleteRequestAction),
                         sendParent(({ event }) => event),

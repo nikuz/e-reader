@@ -12,7 +12,6 @@ export const geminiImageModel = getGenerativeModel(firebaseAi, {
 interface Props {
     textExplanation: string,
     style?: string,
-    context?: string,
 }
 
 export async function firebaseGetImage(props: Props): Promise<{
@@ -21,22 +20,16 @@ export async function firebaseGetImage(props: Props): Promise<{
 } | undefined> {
     const {
         textExplanation,
-        context,
         style,
     } = props;
 
-    let contextPromptAddition = '';
-    if (context) {
-        contextPromptAddition = `in this context "${context}"`;
-    }
-    
     let stylePromptAddition = '';
     if (style) {
         stylePromptAddition = `Make it in ${style} style.`;
     }
     
     const preventTextOverlayPromptAddition = 'Don\'t embed any text into the image.';
-    const prompt = `Generate image based on this word explanation: ${textExplanation} ${contextPromptAddition}. ${stylePromptAddition} ${preventTextOverlayPromptAddition}`;
+    const prompt = `Generate image based on this word explanation: ${textExplanation}. ${stylePromptAddition} ${preventTextOverlayPromptAddition}`;
 
     if (import.meta.env.DEV) {
         console.log('Image prompt:', prompt);

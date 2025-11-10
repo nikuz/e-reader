@@ -9,9 +9,9 @@ export interface DictionaryWord {
     pronunciation?: string,
     contexts: DictionaryWordContext[],
     explanation?: string,
-    contextExplanations: DictionaryWordExplanation[],
+    contextExplanations: DictionaryWordContextExplanation[],
     image?: string,
-    contextImages: DictionaryWordImage[],
+    contextImages: DictionaryWordContextImage[],
     sourceLanguage: Language,
     targetLanguage: Language,
     createdAt: string,
@@ -25,12 +25,12 @@ export interface DictionaryWordContext {
     text: string,
 }
 
-export interface DictionaryWordExplanation {
+export interface DictionaryWordContextExplanation {
     contextId?: string,
     text: string,
 }
 
-export interface DictionaryWordImage {
+export interface DictionaryWordContextImage {
     contextId?: string,
     src: string,
 }

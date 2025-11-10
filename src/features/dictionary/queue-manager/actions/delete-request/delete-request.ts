@@ -5,13 +5,17 @@ import type {
     QueueManagerWordAnalysisRequestErrorEvent,
     QueueManagerImageRequestSuccessEvent,
     QueueManagerImageRequestErrorEvent,
+    QueueManagerContextAnalysisRequestSuccessEvent,
+    QueueManagerContextAnalysisRequestErrorEvent,
 } from '../../types';
 
 type InputEvent = 
     | QueueManagerWordAnalysisRequestSuccessEvent
     | QueueManagerWordAnalysisRequestErrorEvent
     | QueueManagerImageRequestSuccessEvent
-    | QueueManagerImageRequestErrorEvent;
+    | QueueManagerImageRequestErrorEvent
+    | QueueManagerContextAnalysisRequestSuccessEvent
+    | QueueManagerContextAnalysisRequestErrorEvent;
 
 export function deleteRequestAction(props: {
     event: InputEvent,
