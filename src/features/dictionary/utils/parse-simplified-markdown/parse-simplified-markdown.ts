@@ -4,16 +4,19 @@ interface TextSegment {
 }
 
 export function parseSimplifiedMarkdown(text: string): TextSegment[] {
+    // Preprocess: convert headers (lines starting with #) to bold markdown
+    const processedText = text.replace(/^(#+)\s+(.+)$/gm, '**$2**');
+
     const segments: TextSegment[] = [];
     const boldPattern = /\*\*(.+?)\*\*/g;
     let lastIndex = 0;
     let match;
 
-    while ((match = boldPattern.exec(text)) !== null) {
+    while ((match = boldPattern.exec(processedText)) !== null) {
         // Add regular text before the bold text
         if (match.index > lastIndex) {
             segments.push({
-                text: text.slice(lastIndex, match.index),
+                text: processedText.slice(lastIndex, match.index),
                 bold: false,
             });
         }
@@ -28,9 +31,9 @@ export function parseSimplifiedMarkdown(text: string): TextSegment[] {
     }
 
     // Add remaining text
-    if (lastIndex < text.length) {
+    if (lastIndex < processedText.length) {
         segments.push({
-            text: text.slice(lastIndex),
+            text: processedText.slice(lastIndex),
             bold: false,
         });
     }

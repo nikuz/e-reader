@@ -168,4 +168,96 @@ describe('parseSimplifiedMarkdown', () => {
             ]);
         });
     });
+
+    describe('headers', () => {
+        it('should convert single level header to bold', () => {
+            const result = parseSimplifiedMarkdown('# Header');
+            expect(result).toEqual([
+                { text: 'Header', bold: true },
+            ]);
+        });
+
+        it('should convert multiple level headers to bold', () => {
+            const result = parseSimplifiedMarkdown('## Header Level 2');
+            expect(result).toEqual([
+                { text: 'Header Level 2', bold: true },
+            ]);
+        });
+
+        it('should convert triple level header to bold', () => {
+            const result = parseSimplifiedMarkdown('### Header Level 3');
+            expect(result).toEqual([
+                { text: 'Header Level 3', bold: true },
+            ]);
+        });
+
+        it('should convert header with plain text after', () => {
+            const result = parseSimplifiedMarkdown('# Header\nPlain text');
+            expect(result).toEqual([
+                { text: 'Header', bold: true },
+                { text: '\nPlain text', bold: false },
+            ]);
+        });
+
+        it('should convert multiple headers', () => {
+            const result = parseSimplifiedMarkdown('# First\n## Second\n### Third');
+            expect(result).toEqual([
+                { text: 'First', bold: true },
+                { text: '\n', bold: false },
+                { text: 'Second', bold: true },
+                { text: '\n', bold: false },
+                { text: 'Third', bold: true },
+            ]);
+        });
+
+        it('should handle header mixed with bold text', () => {
+            const result = parseSimplifiedMarkdown('# Header\nSome **bold** text');
+            expect(result).toEqual([
+                { text: 'Header', bold: true },
+                { text: '\nSome ', bold: false },
+                { text: 'bold', bold: true },
+                { text: ' text', bold: false },
+            ]);
+        });
+
+        it('should not convert # without space as header', () => {
+            const result = parseSimplifiedMarkdown('#NoSpace');
+            expect(result).toEqual([
+                { text: '#NoSpace', bold: false },
+            ]);
+        });
+
+        it('should not convert # in the middle of line', () => {
+            const result = parseSimplifiedMarkdown('Text with # sign');
+            expect(result).toEqual([
+                { text: 'Text with # sign', bold: false },
+            ]);
+        });
+
+        it('should handle header with special characters', () => {
+            const result = parseSimplifiedMarkdown('## Header with !@# symbols');
+            expect(result).toEqual([
+                { text: 'Header with !@# symbols', bold: true },
+            ]);
+        });
+
+        it('should handle header with numbers', () => {
+            const result = parseSimplifiedMarkdown('# Section 123');
+            expect(result).toEqual([
+                { text: 'Section 123', bold: true },
+            ]);
+        });
+
+        it('should handle complex text with headers and bold', () => {
+            const result = parseSimplifiedMarkdown('# Title\nIntro text\n## Subtitle\nMore **bold** content');
+            expect(result).toEqual([
+                { text: 'Title', bold: true },
+                { text: '\nIntro text\n', bold: false },
+                { text: 'Subtitle', bold: true },
+                { text: '\nMore ', bold: false },
+                { text: 'bold', bold: true },
+                { text: ' content', bold: false },
+            ]);
+        });
+    });
 });
