@@ -12,7 +12,7 @@ export async function updateWordImageInDB(props: {
     await db.execute(
         `
             UPDATE "${DICTIONARY_DB_CONFIG.name}"
-            SET image=:image
+            SET image=:image, updatedAt=datetime("now")
             WHERE id=:id;
         `,
         [image, word.id]

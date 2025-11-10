@@ -25,7 +25,6 @@ export async function getWordFromDB(props: {
     }
 
     const existingWord = response[0] as DictionaryWordDBInstance;
-    console.log(existingWord);
     
     return {
         ...existingWord,

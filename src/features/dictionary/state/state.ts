@@ -92,14 +92,14 @@ export const dictionaryStateMachine = setup({
                         errorMessage: event.error?.toString(),
                     })),
                 },
+                REQUEST_IMAGE: {
+                    actions: sendTo('queue-manager', ({ event }): QueueManagerRequestImageEvent => event),
+                },
                 QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
                     actions: enqueueActions(setSelectedWordImageAction),
                 },
                 QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
-                },
-                REQUEST_IMAGE: {
-                    actions: sendTo('queue-manager', ({ event }): QueueManagerRequestImageEvent => event),
                 },
                 CLEAR_WORD_SELECTION: {
                     actions: enqueueActions(clearWordSelectionAction),
