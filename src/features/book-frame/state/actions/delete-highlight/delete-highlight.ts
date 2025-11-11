@@ -66,7 +66,7 @@ export function deleteHighlightAction(props: {
             .replace(FONT_CSS_PLACEHOLDER, fontCSS)
             .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
         
-        const blob = new Blob([modifiedContent], { type: 'text/html' });
+        const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
         spineClone[readProgress.chapter] = {
             ...chapter,
             url: URL.createObjectURL(blob),

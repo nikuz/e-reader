@@ -54,7 +54,7 @@ export const bookLoaderActor = fromPromise(async (props: {
                     .replace(FONT_CSS_PLACEHOLDER, fontCSS)
                     .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
 
-                const blob = new Blob([modifiedContent], { type: 'text/html' });
+                const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
                 const blobUrl = URL.createObjectURL(blob);
 
                 spine[key] = {
@@ -78,7 +78,7 @@ export const bookLoaderActor = fromPromise(async (props: {
                 path: chapterFullPath,
                 encoding: FileStorageEncoding.UTF8,
             });
-            const xmlDoc = new DOMParser().parseFromString(fileContent.data, 'text/xml');
+            const xmlDoc = new DOMParser().parseFromString(fileContent.data, 'application/xhtml+xml');
             
             await webRetrieveStaticContent({ xmlDoc });
 
@@ -89,7 +89,7 @@ export const bookLoaderActor = fromPromise(async (props: {
                 .replace(FONT_CSS_PLACEHOLDER, fontCSS)
                 .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
 
-            const blob = new Blob([modifiedContent], { type: 'text/html' });
+            const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
             const blobUrl = URL.createObjectURL(blob);
 
             spine[key] = {

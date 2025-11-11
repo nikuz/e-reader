@@ -67,6 +67,7 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
         return `    
             body { ${bodyCss} }
             :not(a) { ${allCss} }
+            ::first-letter { ${allCss} }
         `;
     }
 

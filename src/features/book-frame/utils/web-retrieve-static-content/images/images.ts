@@ -36,4 +36,30 @@ export async function retrieveImages(props: {
 
         staticMapping.set(src, blobUrl);
     }
+
+    const svgImages = xmlDoc.querySelectorAll('image');
+    for (const image of svgImages) {
+        const href = image.getAttribute('xlink:href')?.replace(`/${FILE_STORAGE_DEFAULT_DIRECTORY}`, '');
+        if (!href) {
+            continue;
+        }
+
+        const cachedBlobUrl = staticMapping.get(href);
+
+        if (cachedBlobUrl) {
+            image.setAttribute('xlink:href', cachedBlobUrl);
+            continue;
+        }
+
+        const staticFileContent = await FileStorageController.readFile({ path: href });
+
+        const extension = href.replace(/.+\.([^.]+)$/, '$1');
+
+        const blobData = converterUtils.base64ToBlob(staticFileContent.data, `image/${extension}`);
+        const blobUrl = URL.createObjectURL(blobData);
+
+        image.setAttribute('xlink:href', blobUrl);
+
+        staticMapping.set(href, blobUrl);
+    }
 }

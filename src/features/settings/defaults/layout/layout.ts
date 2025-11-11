@@ -47,6 +47,7 @@ export class DefaultLayoutSettings extends SettingsGroup<LayoutProps> implements
         });
         const bodyChildCss = this.getCssProps({
             padding: `0 ${this.marginRight} 0 ${this.marginLeft}`,
+            boxSizing: 'border-box',
         });
         const paragraphCss = this.getCssProps({
             paddingBottom: this.paragraphMargin,

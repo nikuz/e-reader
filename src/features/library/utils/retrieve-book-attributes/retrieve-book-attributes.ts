@@ -1,7 +1,7 @@
 import type { BookAttributes, BookChapter } from 'src/types';
 
 export async function retrieveBookAttributes(opfFileContent: string): Promise<BookAttributes> {
-    const xmlDoc = new DOMParser().parseFromString(opfFileContent, 'text/xml');
+    const xmlDoc = new DOMParser().parseFromString(opfFileContent, 'application/xhtml+xml');
     const metadataNode = xmlDoc.querySelector('metadata');
     const manifestNode = xmlDoc.querySelector('manifest');
     const spineNode = xmlDoc.querySelector('spine');

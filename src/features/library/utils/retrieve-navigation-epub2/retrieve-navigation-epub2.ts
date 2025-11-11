@@ -22,7 +22,7 @@ export async function retrieveNavigationEpub2(book: BookAttributes): Promise<Boo
         throw new Error('Unable to read EPUB2 navigation file');
     }
 
-    const xmlDoc = new DOMParser().parseFromString(tocContent.data, 'text/xml');
+    const xmlDoc = new DOMParser().parseFromString(tocContent.data, 'application/xhtml+xml');
     const navMapNode = xmlDoc.querySelector('navMap');
 
     if (!navMapNode) {

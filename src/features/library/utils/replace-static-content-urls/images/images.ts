@@ -3,6 +3,7 @@ import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/contr
 import { pathUtils } from 'src/utils';
 
 const imageRegexp = /<img.+?src=["']([^"']+)["'].*?>/gi;
+const sgvImageRegexp = /<image.+?xlink:href=["']([^"']+)["'].*?>/gi;
 
 export async function replaceImageUrls(props: {
     fileContent: string,
@@ -17,13 +18,26 @@ export async function replaceImageUrls(props: {
 
     let modifiedFileContent = fileContent;
     const images = fileContent.match(imageRegexp);
+    const svgImages = fileContent.match(sgvImageRegexp);
+    const srcs: string[] = [];
 
-    if (!images) {
+    if (images) {
+        for (const image of images) {
+            srcs.push(image.replace(imageRegexp, '$1'));
+        }
+    }
+
+    if (svgImages) {
+        for (const image of svgImages) {
+            srcs.push(image.replace(sgvImageRegexp, '$1'));
+        }
+    }
+
+    if (!srcs.length) {
         return fileContent;
     }
 
-    for (const image of images) {
-        const src = image.replace(imageRegexp, '$1');
+    for (const src of srcs) {
         if (!src || src.startsWith(`/${FILE_STORAGE_DEFAULT_DIRECTORY}`)) {
             continue;
         }
@@ -43,6 +57,6 @@ export async function replaceImageUrls(props: {
         staticMapping.set(src, imageFileUri);
         modifiedFileContent = modifiedFileContent.replace(src, imageFileUri);
     }
-
+    
     return modifiedFileContent;
 }

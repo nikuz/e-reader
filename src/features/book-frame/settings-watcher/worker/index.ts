@@ -47,7 +47,7 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
                 .replace(FONT_CSS_PLACEHOLDER, fontCSS)
                 .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
             
-            const blob = new Blob([modifiedContent], { type: 'text/html' });
+            const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
             const blobUrl = URL.createObjectURL(blob);
             chapter.url = blobUrl;
         }

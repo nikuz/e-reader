@@ -22,7 +22,7 @@ export function frameResizeAction(props: {
     if (!iframeWindow || !iframeBodyEl) {
         return;
     }
-    
+
     const newScreenRect = {
         width: iframeWindow.innerWidth,
         height: iframeWindow.innerHeight,
@@ -42,7 +42,11 @@ export function frameResizeAction(props: {
     } else {
         const scrollPositionPercent = scrollPosition / ((chapterRect.width - screenRect.width) / 100);
         const pagesAmount = Math.max(Math.round(newChapterRect.width / newScreenRect.width) - 1, 0);
-        newScrollPosition = Math.round(pagesAmount / 100 * scrollPositionPercent) * newScreenRect.width;
+        if (pagesAmount === 0) {
+            newScrollPosition = 0;
+        } else {
+            newScrollPosition = Math.round(pagesAmount / 100 * scrollPositionPercent) * newScreenRect.width;
+        }
     }
 
     // always set newScrollPosition without comparing it to previous value

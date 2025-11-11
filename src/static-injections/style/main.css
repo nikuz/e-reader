@@ -34,6 +34,11 @@ img {
     height: auto!important;
 }
 
+body>div:empty,
+body>div:has(> a:only-child) {
+    height: auto !important;
+}
+
 table th,
 table td {
     background: transparent!important;
