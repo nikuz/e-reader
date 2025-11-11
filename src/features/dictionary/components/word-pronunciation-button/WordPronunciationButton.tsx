@@ -1,10 +1,11 @@
-import { useState, useRef, useMemo, useEffect, useEffectEvent } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect, useEffectEvent } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Box, IconButton, CircularProgress } from 'src/design-system/components';
 import { PlayCircleIcon, StopCircleIcon } from 'src/design-system/icons';
 import type { SxProps } from 'src/design-system/styles';
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 import { converterUtils } from 'src/utils';
+import { dictionaryStateMachineActor, useDictionaryStateQueueSelect } from '../../state';
 import type { DictionaryWord } from '../../types';
 
 interface Props {
@@ -16,7 +17,11 @@ export function DictionaryWordPronunciationButton(props: Props) {
     const { word } = props;
     const [blobSrc, setBlobSrc] = useState<string>();
     const [isPlaying, setIsPlaying] = useState(false);
+    const wordIsInQueue = useDictionaryStateQueueSelect(word.id);
+    const wordPronunciationIsInQueue = useDictionaryStateQueueSelect(`${word.id}-pronunciation`);
+    const isLoading = wordIsInQueue || wordPronunciationIsInQueue;
     const audioRef = useRef<HTMLAudioElement>(null);
+    const isPronunciationRequested = useRef(false);   
 
     const nativeSrc = useMemo(() => {
         if (!word.pronunciation || !Capacitor.isNativePlatform()) {
@@ -25,7 +30,18 @@ export function DictionaryWordPronunciationButton(props: Props) {
         return Capacitor.convertFileSrc(word.pronunciation);
     }, [word]);
 
-    const playHandler = () => {
+    // Use nativeSrc for native platforms, blobSrc for web
+    const src = Capacitor.isNativePlatform() ? nativeSrc : blobSrc;
+
+    const playHandler = useCallback(() => {
+        if (!src) {
+            isPronunciationRequested.current = true;
+            dictionaryStateMachineActor.send({
+                type: 'REQUEST_PRONUNCIATION',
+                word,
+            });
+            return;
+        }
         const audioElement = audioRef.current;
         if (!audioElement) {
             return;
@@ -39,7 +55,16 @@ export function DictionaryWordPronunciationButton(props: Props) {
             audioElement.currentTime = 0;
             setIsPlaying(false);
         }
-    };
+    }, [src, word]);
+
+    useEffect(() => {
+        if (isPronunciationRequested.current && src) {
+            isPronunciationRequested.current = false;
+            audioRef.current?.play();
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsPlaying(true);
+        }
+    }, [src, playHandler]);
 
     const revokeObjectUrlSrc = useEffectEvent(() => {
         if (Capacitor.isNativePlatform() || !blobSrc) {
@@ -96,10 +121,6 @@ export function DictionaryWordPronunciationButton(props: Props) {
             audioElement.removeEventListener('ended', handleEnded);
         };
     }, []);
-
-    // Use nativeSrc for native platforms, blobSrc for web
-    const src = Capacitor.isNativePlatform() ? nativeSrc : blobSrc;
-    const isLoading = !src;
 
     return (
         <Box sx={{

@@ -14,13 +14,13 @@ export const imageActor = fromPromise(async (props: {
     input: {
         word: DictionaryWord,
         contextExplanation?: DictionaryWordContextExplanation,
-        newContext: DictionaryWordContext,
+        context: DictionaryWordContext,
         style?: string,
     },
 }): Promise<DictionaryWordContextImage> => {
     const {
         word,
-        newContext,
+        context,
         style,
         contextExplanation,
     } = props.input;
@@ -29,7 +29,6 @@ export const imageActor = fromPromise(async (props: {
         throw new Error('"contextExplanation" should be provided to generate a context image');
     }
 
-    console.log(contextExplanation);
     const image = await firebaseGetImage({
         textExplanation: contextExplanation.text,
         style,
@@ -54,7 +53,7 @@ export const imageActor = fromPromise(async (props: {
     const fileUri = await FileStorageController.getUri({ path: filePath });
 
     return {
-        contextId: newContext.id,
+        contextId: context.id,
         src: fileUri.uri,
     };
 });

@@ -1,5 +1,4 @@
 import { fromPromise } from 'xstate';
-import type { BookHighlight } from 'src/types';
 import { firebaseGetExplanation } from '../../../firebase-service';
 import type {
     DictionaryWord,
@@ -10,21 +9,20 @@ import type {
 export const explanationActor = fromPromise(async (props: {
     input: {
         word: DictionaryWord,
-        highlight: BookHighlight,
-        newContext: DictionaryWordContext,
+        context: DictionaryWordContext,
     },
 }): Promise<DictionaryWordContextExplanation> => {
-    const { word, highlight, newContext } = props.input;
+    const { word, context } = props.input;
 
     const explanation = await firebaseGetExplanation({
         word: word.text,
         sourceLanguage: word.sourceLanguage,
         targetLanguage: word.targetLanguage,
-        context: highlight.context,
+        context: context.text,
     });
 
     return {
-        contextId: newContext.id,
+        contextId: context.id,
         text: explanation,
     };
 });

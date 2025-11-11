@@ -1,11 +1,19 @@
 import type {
     QueueManagerImageRequestSuccessEvent,
-    QueueManagerContextAnalysisRequestSuccessEvent
+    QueueManagerPronunciationRequestSuccessEvent,
+    QueueManagerContextAnalysisExplanationRequestSuccessEvent,
+    QueueManagerContextAnalysisRequestSuccessEvent,
 } from '../../../queue-manager/types';
 import type { DictionaryStateContext } from '../../types';
 
+type InputEvent =
+    | QueueManagerImageRequestSuccessEvent
+    | QueueManagerPronunciationRequestSuccessEvent
+    | QueueManagerContextAnalysisExplanationRequestSuccessEvent
+    | QueueManagerContextAnalysisRequestSuccessEvent;
+
 export function updateSelectedWordAction(props: {
-    event: QueueManagerImageRequestSuccessEvent | QueueManagerContextAnalysisRequestSuccessEvent,
+    event: InputEvent,
     context: DictionaryStateContext,
     enqueue: { assign: (context: Partial<DictionaryStateContext>) => void },
 }) {

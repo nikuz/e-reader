@@ -3,6 +3,7 @@ import { DatabaseController } from 'src/controllers';
 import {
     wordAnalysisRetrieverMachine,
     imageRetrieverMachine,
+    pronunciationRetrieverMachine,
     contextAnalysisRetrieverMachine,
 } from './actors';
 import { deleteRequestAction } from './actions';
@@ -19,6 +20,7 @@ export const queueManagerStateMachine = setup({
     actors: {
         wordAnalysisRetrieverMachine,
         imageRetrieverMachine,
+        pronunciationRetrieverMachine,
         contextAnalysisRetrieverMachine,
     },
     types: {
@@ -87,7 +89,7 @@ export const queueManagerStateMachine = setup({
                     actions: assign(({ event, context, spawn }) => ({
                         requests: {
                             ...context.requests,
-                            [event.word.id]: spawn('imageRetrieverMachine', {
+                            [`${event.word.id}-image`]: spawn('imageRetrieverMachine', {
                                 input: {
                                     dbController: context.dbController,
                                     word: event.word,
@@ -111,19 +113,51 @@ export const queueManagerStateMachine = setup({
                     ],
                 },
 
-                REQUEST_CONTEXT_ANALYSIS: {
+                REQUEST_PRONUNCIATION: {
                     actions: assign(({ event, context, spawn }) => ({
                         requests: {
                             ...context.requests,
-                            [event.word.id]: spawn('contextAnalysisRetrieverMachine', {
+                            [`${event.word.id}-pronunciation`]: spawn('pronunciationRetrieverMachine', {
                                 input: {
                                     dbController: context.dbController,
                                     word: event.word,
-                                    highlight: event.highlight,
                                 },
                             }),
                         },
                     })),
+                },
+
+                QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
+                    ],
+                },
+
+                QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR: {
+                    actions: [
+                        enqueueActions(deleteRequestAction),
+                        sendParent(({ event }) => event),
+                    ],
+                },
+
+                REQUEST_CONTEXT_ANALYSIS: {
+                    actions: assign(({ event, context, spawn }) => ({
+                        requests: {
+                            ...context.requests,
+                            [`${event.word.id}-${event.context.id}`]: spawn('contextAnalysisRetrieverMachine', {
+                                input: {
+                                    dbController: context.dbController,
+                                    word: event.word,
+                                    context: event.context,
+                                },
+                            }),
+                        },
+                    })),
+                },
+
+                QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS: {
+                    actions: sendParent(({ event }) => event),
                 },
 
                 QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {

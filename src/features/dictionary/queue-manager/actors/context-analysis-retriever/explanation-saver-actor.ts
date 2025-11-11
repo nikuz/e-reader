@@ -1,40 +1,36 @@
 import { fromPromise } from 'xstate';
 import type { DatabaseController } from 'src/controllers';
-import { updateWordContextInDB, getWordByIdFromDB } from '../../../db-service';
+import { addWordContextInDB, getWordByIdFromDB } from '../../../db-service';
 import type {
     DictionaryWord,
     DictionaryWordContext,
     DictionaryWordContextExplanation,
-    DictionaryWordContextImage,
 } from '../../../types';
 
-export const dbSaverActor = fromPromise(async (props: {
+export const explanationSaverActor = fromPromise(async (props: {
     input: {
         dbController: DatabaseController,
         word: DictionaryWord,
-        newContext: DictionaryWordContext,
+        context: DictionaryWordContext,
         contextExplanation?: DictionaryWordContextExplanation,
-        contextImage?: DictionaryWordContextImage,
     },
 }): Promise<DictionaryWord> => {
     const {
         dbController,
         word,
-        newContext,
+        context,
         contextExplanation,
-        contextImage,
     } = props.input;
 
-    if (!contextExplanation || !contextImage) {
-        throw new Error('Can\'t update dictionary word context without "contextExplanation" and "contextImage" parameters.');
+    if (!contextExplanation) {
+        throw new Error('Can\'t update dictionary word context without "contextExplanation" parameter.');
     }
 
-    await updateWordContextInDB({
+    await addWordContextInDB({
         db: dbController,
         word,
-        newContext,
+        newContext: context,
         contextExplanation,
-        contextImage,
     });
 
     const storedWord = await getWordByIdFromDB({

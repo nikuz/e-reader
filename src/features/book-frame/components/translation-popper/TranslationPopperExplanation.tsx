@@ -32,7 +32,10 @@ export default function TranslationPopperExplanation() {
         dictionaryStateMachineActor.send({
             type: 'REQUEST_CONTEXT_ANALYSIS',
             word: selectedWord,
-            highlight: selectedHighlight,
+            context: {
+                id: converterUtils.stringToHash(selectedHighlight.context),
+                text: selectedHighlight.context,
+            },
         });
     }, [selectedWord, selectedHighlight]);
 

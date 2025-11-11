@@ -4,31 +4,20 @@ import type {
     DictionaryWord,
     DictionaryWordContext,
     DictionaryWordContextExplanation,
-    DictionaryWordContextImage,
 } from '../../types';
 
-export async function updateWordContextInDB(props: {
+export async function addWordContextInDB(props: {
     db: DatabaseController,
     word: DictionaryWord,
     newContext: DictionaryWordContext,
     contextExplanation: DictionaryWordContextExplanation,
-    contextImage: DictionaryWordContextImage,
 }): Promise<void> {
     const {
         db,
         word,
         newContext,
         contextExplanation,
-        contextImage,
     } = props;
-    const wordContextExplanations = [
-        ...word.contextExplanations,
-        contextExplanation,
-    ];
-    const wordContextImages = [
-        ...word.contextImages,
-        contextImage,
-    ];
     const wordContexts = [...word.contexts];
 
     if (!wordContexts.find(item => item.id === newContext.id)) {
@@ -38,13 +27,15 @@ export async function updateWordContextInDB(props: {
     await db.execute(
         `
             UPDATE "${DICTIONARY_DB_CONFIG.name}"
-            SET contexts=:contexts, contextExplanations=:explanations, contextImages=:images, updatedAt=datetime("now")
+            SET contexts=:contexts, contextExplanations=:explanations, updatedAt=datetime("now")
             WHERE id=:id;
         `,
         [
             JSON.stringify(wordContexts),
-            JSON.stringify(wordContextExplanations),
-            JSON.stringify(wordContextImages),
+            JSON.stringify([
+                ...word.contextExplanations,
+                contextExplanation,
+            ]),
             word.id
         ]
     );

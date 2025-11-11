@@ -19,13 +19,14 @@ export function WordImageButton(props: Props) {
     const { word, highlight } = props;
     const [blobSrc, setBlobSrc] = useState<string>();
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const wordIsInQueue = useDictionaryStateQueueSelect(word.id);
-    const isLoading = wordIsInQueue;
+    const contextId = useMemo(() => converterUtils.stringToHash(highlight.context), [highlight]);
+    const wordImageIsInQueue = useDictionaryStateQueueSelect(`${word.id}-image`);
+    const wordContextAnalysisIsInQueue = useDictionaryStateQueueSelect(`${word.id}-${contextId}`);
+    const isLoading = wordImageIsInQueue || wordContextAnalysisIsInQueue;
     const isImageRequested = useRef(false);
 
     const imageSrc = useMemo(() => {
         let imageSrc = word.image;
-        const contextId = converterUtils.stringToHash(highlight.context);
         const contextImage = word.contextImages.find(item => item.contextId === contextId);
 
         if (contextImage) {
@@ -33,7 +34,7 @@ export function WordImageButton(props: Props) {
         }
 
         return imageSrc;
-    }, [word, highlight]);
+    }, [word, contextId]);
 
     const nativeSrc = useMemo(() => {
         if (!imageSrc || !Capacitor.isNativePlatform()) {

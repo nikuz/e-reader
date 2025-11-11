@@ -1,5 +1,5 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
-import { Popper, Paper, Box } from 'src/design-system/components';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { Popper, Paper, Box, Toast } from 'src/design-system/components';
 import { styled } from 'src/design-system/styles';
 import type { PopperVirtualElement, PopperInstance } from 'src/design-system/types';
 import { useDictionaryStateSelect, dictionaryStateMachineActor } from 'src/features/dictionary/state';
@@ -24,6 +24,7 @@ export function TranslationPopper() {
     const lastIsAnalyzingWord = useLast(isAnalyzingWord);
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedWord = useDictionaryStateSelect('selectedWord');
+    const dictionaryErrorMessage = useDictionaryStateSelect('errorMessage');
     const popperRef = useRef<PopperInstance | null>(null);
 
     const virtualElement = useMemo<PopperVirtualElement | null>(() => {
@@ -54,6 +55,10 @@ export function TranslationPopper() {
         };
     }, [iframeEl, selectedHighlight]);
 
+    const closeDictionaryErrorHandler = useCallback(() => {
+        dictionaryStateMachineActor.send({ type: 'CLEAR_ERROR_MESSAGE' });
+    }, []);
+
     useEffect(() => {
         if (!translatingWord && !selectedWord) {
             return;
@@ -71,7 +76,7 @@ export function TranslationPopper() {
         return null;
     }
 
-    return (
+    return <>
         <StyledPopper
             open={true}
             placement="bottom"
@@ -133,8 +138,8 @@ export function TranslationPopper() {
                         },
                     }}
                 />
-                <Box>
-                    <Box sx={{ float: 'right', ml: 1, mt: -0.5, mb: 0.5 }}>
+                <Box sx={{ overflow: 'hidden' }}>
+                    <Box sx={{ float: 'right', ml: 1, mt: -0.5 }}>
                         <TranslationPopperPronunciation />
                         <TranslationPopperImage />
                     </Box>
@@ -145,7 +150,16 @@ export function TranslationPopper() {
                 </Box>
             </Paper>
         </StyledPopper>
-    );
+        {dictionaryErrorMessage && (
+            <Toast
+                color="error"
+                withToolbar
+                onClose={closeDictionaryErrorHandler}
+            >
+                {dictionaryErrorMessage}
+            </Toast>
+        )}
+    </>;
 }
 
 const StyledPopper = styled(Popper)(() => ({

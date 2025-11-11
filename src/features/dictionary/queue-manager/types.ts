@@ -1,14 +1,20 @@
 import type { ActorRefFrom } from 'xstate';
 import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
-import type { DictionaryWord, Language } from '../types';
+import type { DictionaryWord, DictionaryWordContext, Language } from '../types';
 import { wordAnalysisRetrieverMachine } from './actors/word-analysis-retriever';
 import { imageRetrieverMachine } from './actors/image-retriever';
+import { pronunciationRetrieverMachine } from './actors/pronunciation-retriever';
 import { contextAnalysisRetrieverMachine } from './actors/context-analysis-retriever';
 
 export interface QueueManagerStateContext {
     dbController: DatabaseController,
-    requests: Record<string, ActorRefFrom<typeof wordAnalysisRetrieverMachine | typeof imageRetrieverMachine | typeof contextAnalysisRetrieverMachine>>,
+    requests: Record<string, ActorRefFrom<
+        typeof wordAnalysisRetrieverMachine
+        | typeof imageRetrieverMachine
+        | typeof pronunciationRetrieverMachine
+        | typeof contextAnalysisRetrieverMachine
+    >>,
 }
 
 export interface QueueManagerRequestWordAnalysisEvent {
@@ -65,20 +71,43 @@ export interface QueueManagerImageRequestErrorEvent {
     error: unknown,
 }
 
+export interface QueueManagerRequestPronunciationEvent {
+    type: 'REQUEST_PRONUNCIATION',
+    word: DictionaryWord,
+}
+
+export interface QueueManagerPronunciationRequestSuccessEvent {
+    type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS',
+    word: DictionaryWord,
+}
+
+export interface QueueManagerPronunciationRequestErrorEvent {
+    type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR',
+    word: DictionaryWord,
+    error: unknown,
+}
+
 export interface QueueManagerRequestContextAnalysisEvent {
     type: 'REQUEST_CONTEXT_ANALYSIS',
-    highlight: BookHighlight,
+    word: DictionaryWord,
+    context: DictionaryWordContext,
+}
+
+export interface QueueManagerContextAnalysisExplanationRequestSuccessEvent {
+    type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS',
     word: DictionaryWord,
 }
 
 export interface QueueManagerContextAnalysisRequestSuccessEvent {
     type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS',
     word: DictionaryWord,
+    context: DictionaryWordContext,
 }
 
 export interface QueueManagerContextAnalysisRequestErrorEvent {
     type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
     word: DictionaryWord,
+    context: DictionaryWordContext,
     error: unknown,
 }
 
@@ -89,6 +118,10 @@ export type QueueManagerStateEvents =
     | QueueManagerRequestImageEvent
     | QueueManagerImageRequestSuccessEvent
     | QueueManagerImageRequestErrorEvent
+    | QueueManagerRequestPronunciationEvent
+    | QueueManagerPronunciationRequestSuccessEvent
+    | QueueManagerPronunciationRequestErrorEvent
     | QueueManagerRequestContextAnalysisEvent
+    | QueueManagerContextAnalysisExplanationRequestSuccessEvent
     | QueueManagerContextAnalysisRequestSuccessEvent
     | QueueManagerContextAnalysisRequestErrorEvent;

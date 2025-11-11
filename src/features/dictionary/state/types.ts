@@ -9,9 +9,15 @@ import {
     type QueueManagerWordAnalysisTranslationRetrievedEvent,
     type QueueManagerWordAnalysisExplanationRetrievedEvent,
     type QueueManagerWordAnalysisPronunciationRetrievedEvent,
+    type QueueManagerRequestImageEvent,
     type QueueManagerImageRequestSuccessEvent,
     type QueueManagerImageRequestErrorEvent,
+    type QueueManagerRequestPronunciationEvent,
+    type QueueManagerPronunciationRequestSuccessEvent,
+    type QueueManagerPronunciationRequestErrorEvent,
+    type QueueManagerRequestContextAnalysisEvent,
     type QueueManagerContextAnalysisRequestSuccessEvent,
+    type QueueManagerContextAnalysisExplanationRequestSuccessEvent,
     type QueueManagerContextAnalysisRequestErrorEvent,
 } from '../queue-manager';
 import type { DictionaryWord, Language } from '../types';
@@ -40,18 +46,9 @@ export interface RequestWordAnalysisEvent {
     targetLanguage: Language,
 }
 
-export interface RequestImageEvent {
-    type: 'REQUEST_IMAGE',
-    word: DictionaryWord,
-}
-
-export interface RequestContextAnalysisEvent {
-    type: 'REQUEST_CONTEXT_ANALYSIS',
-    highlight: BookHighlight,
-    word: DictionaryWord,
-}
-
 export interface ClearWordSelectionEvent { type: 'CLEAR_WORD_SELECTION' }
+
+export interface ClearErrorMessageEvent { type: 'CLEAR_ERROR_MESSAGE' }
 
 export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
 
@@ -63,11 +60,16 @@ export type DictionaryStateEvents =
     | QueueManagerWordAnalysisTranslationRetrievedEvent
     | QueueManagerWordAnalysisExplanationRetrievedEvent
     | QueueManagerWordAnalysisPronunciationRetrievedEvent
-    | RequestImageEvent
+    | QueueManagerRequestImageEvent
     | QueueManagerImageRequestSuccessEvent
     | QueueManagerImageRequestErrorEvent
-    | RequestContextAnalysisEvent
+    | QueueManagerRequestPronunciationEvent
+    | QueueManagerPronunciationRequestSuccessEvent
+    | QueueManagerPronunciationRequestErrorEvent
+    | QueueManagerRequestContextAnalysisEvent
     | QueueManagerContextAnalysisRequestSuccessEvent
+    | QueueManagerContextAnalysisExplanationRequestSuccessEvent
     | QueueManagerContextAnalysisRequestErrorEvent
     | ClearWordSelectionEvent
-    | ClearDatabaseEvent;
+    | ClearDatabaseEvent
+    | ClearErrorMessageEvent;

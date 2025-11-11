@@ -5,6 +5,7 @@ import {
     queueManagerStateMachine,
     type QueueManagerRequestWordAnalysisEvent,
     type QueueManagerRequestImageEvent,
+    type QueueManagerRequestPronunciationEvent,
     type QueueManagerRequestContextAnalysisEvent,
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
@@ -52,6 +53,7 @@ export const dictionaryStateMachine = setup({
     states: {
         IDLE: {
             on: {
+                // analysis (translation, explanation, and pronunciation together)
                 REQUEST_WORD_ANALYSIS: {
                     actions: [
                         assign(({ event }) => ({
@@ -88,11 +90,10 @@ export const dictionaryStateMachine = setup({
                     })),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
-                    actions: assign(({ event }) => ({
-                        translatingWord: undefined,
-                        errorMessage: event.error?.toString(),
-                    })),
+                    actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
                 },
+
+                // image
                 REQUEST_IMAGE: {
                     actions: sendTo('queue-manager', ({ event }): QueueManagerRequestImageEvent => event),
                 },
@@ -102,8 +103,24 @@ export const dictionaryStateMachine = setup({
                 QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
                 },
+
+                // pronunciation
+                REQUEST_PRONUNCIATION: {
+                    actions: sendTo('queue-manager', ({ event }): QueueManagerRequestPronunciationEvent => event),
+                },
+                QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS: {
+                    actions: enqueueActions(updateSelectedWordAction),
+                },
+                QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR: {
+                    actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
+                },
+
+                // context (explanation and image in context together)
                 REQUEST_CONTEXT_ANALYSIS: {
                     actions: sendTo('queue-manager', ({ event }): QueueManagerRequestContextAnalysisEvent => event),
+                },
+                QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS: {
+                    actions: enqueueActions(updateSelectedWordAction),
                 },
                 QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {
                     actions: enqueueActions(updateSelectedWordAction),
@@ -111,8 +128,12 @@ export const dictionaryStateMachine = setup({
                 QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
                 },
+
                 CLEAR_WORD_SELECTION: {
                     actions: enqueueActions(clearWordSelectionAction),
+                },
+                CLEAR_ERROR_MESSAGE: {
+                    actions: assign(() => ({ errorMessage: undefined })),
                 },
                 CLEAR_DATABASE: 'CLEARING_DATABASE',
             },

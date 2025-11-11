@@ -1,7 +1,6 @@
 import { setup, sendParent, assign } from 'xstate';
 import { DatabaseController } from 'src/controllers';
-import { xStateUtils, converterUtils } from 'src/utils';
-import type { BookHighlight } from 'src/types';
+import { xStateUtils } from 'src/utils';
 import type {
     DictionaryWord,
     DictionaryWordContext,
@@ -10,28 +9,31 @@ import type {
 } from '../../../types';
 import type {
     QueueManagerContextAnalysisRequestSuccessEvent,
+    QueueManagerContextAnalysisExplanationRequestSuccessEvent,
     QueueManagerContextAnalysisRequestErrorEvent,
 } from '../../types';
 import { explanationActor } from './explanation-actor';
 import { imageActor } from './image-actor';
-import { dbSaverActor } from './db-saver-actor';
+import { explanationSaverActor } from './explanation-saver-actor';
+import { imageSaverActor } from './image-saver-actor';
 
 interface InputParameters {
     dbController: DatabaseController,
     word: DictionaryWord,
-    highlight: BookHighlight,
+    context: DictionaryWordContext,
     style?: string,
 }
 
 export const contextAnalysisRetrieverMachine = setup({
     actors: {
         explanationActor,
+        explanationSaverActor,
         imageActor,
-        dbSaverActor,
+        imageSaverActor,
     },
     types: {
         context: {} as InputParameters & {
-            newContext: DictionaryWordContext,
+            context: DictionaryWordContext,
             contextExplanation?: DictionaryWordContextExplanation,
             contextImage?: DictionaryWordContextImage,
         },
@@ -40,13 +42,7 @@ export const contextAnalysisRetrieverMachine = setup({
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER_CONTEXT_ANALYSIS_RETRIEVER',
 
-    context: ({ input }) => ({
-        ...input,
-        newContext: {
-            id: converterUtils.stringToHash(input.highlight.context),
-            text: input.highlight.context,
-        },
-    }),
+    context: ({ input }) => input,
 
     initial: 'RETRIEVING_EXPLANATION',
 
@@ -56,11 +52,10 @@ export const contextAnalysisRetrieverMachine = setup({
                 src: 'explanationActor',
                 input: ({ context }) => ({
                     word: context.word,
-                    newContext: context.newContext,
-                    highlight: context.highlight,
+                    context: context.context,
                 }),
                 onDone: {
-                    target: 'RETRIEVING_IMAGE',
+                    target: 'SAVING_EXPLANATION',
                     actions: assign(({ event }) => ({ contextExplanation: event.output })),
                 },
                 onError: {
@@ -69,6 +64,37 @@ export const contextAnalysisRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
+                            context: context.context,
+                            error: new Error('Can\'t retrieve word context analysis'),
+                        })),
+                    ],
+                },
+            },
+        },
+
+        SAVING_EXPLANATION: {
+            invoke: {
+                src: 'explanationSaverActor',
+                input: ({ context }) => ({
+                    dbController: context.dbController,
+                    word: context.word,
+                    context: context.context,
+                    contextExplanation: context.contextExplanation,
+                }),
+                onDone: {
+                    target: 'RETRIEVING_IMAGE',
+                    actions: sendParent(({ event }): QueueManagerContextAnalysisExplanationRequestSuccessEvent => ({
+                        type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS',
+                        word: event.output,
+                    })),
+                },
+                onError: {
+                    actions: [
+                        xStateUtils.stateErrorTraceAction,
+                        sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
+                            type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
+                            word: context.word,
+                            context: context.context,
                             error: new Error('Can\'t retrieve word context analysis'),
                         })),
                     ],
@@ -82,11 +108,11 @@ export const contextAnalysisRetrieverMachine = setup({
                 input: ({ context }) => ({
                     word: context.word,
                     contextExplanation: context.contextExplanation,
-                    newContext: context.newContext,
+                    context: context.context,
                     style: context.style,
                 }),
                 onDone: {
-                    target: 'SAVING_TO_DB',
+                    target: 'SAVING_IMAGE',
                     actions: assign(({ event }) => ({ contextImage: event.output })),
                 },
                 onError: {
@@ -95,6 +121,7 @@ export const contextAnalysisRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
+                            context: context.context,
                             error: new Error('Can\'t retrieve word context image'),
                         })),
                     ],
@@ -102,20 +129,19 @@ export const contextAnalysisRetrieverMachine = setup({
             },
         },
 
-        SAVING_TO_DB: {
+        SAVING_IMAGE: {
             invoke: {
-                src: 'dbSaverActor',
+                src: 'imageSaverActor',
                 input: ({ context }) => ({
                     dbController: context.dbController,
                     word: context.word,
-                    newContext: context.newContext,
-                    contextExplanation: context.contextExplanation,
                     contextImage: context.contextImage,
                 }),
                 onDone: {
-                    actions: sendParent(({ event }): QueueManagerContextAnalysisRequestSuccessEvent => ({
+                    actions: sendParent(({ context, event }): QueueManagerContextAnalysisRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS',
                         word: event.output,
+                        context: context.context,
                     })),
                 },
                 onError: {
@@ -124,6 +150,7 @@ export const contextAnalysisRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
+                            context: context.context,
                             error: new Error('Can\'t update word context explanation in local DB'),
                         }))
                     ],
