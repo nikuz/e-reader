@@ -10,7 +10,7 @@ import {
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
-import { initializerActor, databaseCleanerActor, wordsListChunkRetrievalActor } from './actors';
+import { initializerActor, databaseCleanerActor, wordsListChunkRetrievalActor, wordRemoverActor } from './actors';
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
@@ -20,6 +20,7 @@ import type {
     DictionaryStateContext,
     DictionaryStateEvents,
     ListGetWordsChunkEvent,
+    DeleteWordEvent,
 } from './types';
 
 export const dictionaryStateMachine = setup({
@@ -28,6 +29,7 @@ export const dictionaryStateMachine = setup({
         initializerActor,
         databaseCleanerActor,
         wordsListChunkRetrievalActor,
+        wordRemoverActor,
     },
     types: {
         context: {} as DictionaryStateContext,
@@ -139,6 +141,7 @@ export const dictionaryStateMachine = setup({
                 },
                 CLEAR_DATABASE: 'CLEARING_DATABASE',
                 LIST_GET_WORDS_CHUNK: 'LOADING_WORDS_LIST',
+                DELETE_WORD: 'DELETING_WORD',
             },
         },
 
@@ -187,6 +190,33 @@ export const dictionaryStateMachine = setup({
                             ...context.storedWords,
                             ...event.output,
                         ],
+                    })),
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+
+        DELETING_WORD: {
+            invoke: {
+                src: 'wordRemoverActor',
+                input: ({ context, event }) => ({
+                    dbController: context.dbController,
+                    wordId: (event as DeleteWordEvent).wordId,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: assign(({ context, event }) => ({
+                        storedWords: context.storedWords.filter(
+                            word => word.id !== event.output
+                        ),
                     })),
                 },
                 onError: {

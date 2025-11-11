@@ -8,3 +8,4 @@ export * from './update-word-image';
 export * from './update-word-pronunciation';
 export * from './add-word-context';
 export * from './add-word-context-image';
+export * from './delete-word';
