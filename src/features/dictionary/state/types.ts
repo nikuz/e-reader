@@ -50,9 +50,17 @@ export interface ClearWordSelectionEvent { type: 'CLEAR_WORD_SELECTION' }
 
 export interface ClearErrorMessageEvent { type: 'CLEAR_ERROR_MESSAGE' }
 
+export interface ListGetWordsChunkEvent {
+    type: 'LIST_GET_WORDS_CHUNK',
+    from: number,
+    to: number,
+}
+
+export interface CleanupEvent { type: 'CLEANUP' }
+
 export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
 
-export type DictionaryStateEvents = 
+export type DictionaryStateEvents =
     | InitializeEvent
     | RequestWordAnalysisEvent
     | QueueManagerWordAnalysisRequestSuccessEvent
@@ -71,5 +79,7 @@ export type DictionaryStateEvents =
     | QueueManagerContextAnalysisExplanationRequestSuccessEvent
     | QueueManagerContextAnalysisRequestErrorEvent
     | ClearWordSelectionEvent
-    | ClearDatabaseEvent
-    | ClearErrorMessageEvent;
+    | ClearErrorMessageEvent
+    | ListGetWordsChunkEvent
+    | CleanupEvent
+    | ClearDatabaseEvent;

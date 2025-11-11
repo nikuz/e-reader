@@ -10,7 +10,7 @@ import {
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
 import { DICTIONARY_DB_CONFIG } from '../constants';
-import { initializerActor, databaseCleanerActor } from './actors';
+import { initializerActor, databaseCleanerActor, wordsListChunkRetrievalActor } from './actors';
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
@@ -19,6 +19,7 @@ import {
 import type {
     DictionaryStateContext,
     DictionaryStateEvents,
+    ListGetWordsChunkEvent,
 } from './types';
 
 export const dictionaryStateMachine = setup({
@@ -26,6 +27,7 @@ export const dictionaryStateMachine = setup({
         queueManagerStateMachine,
         initializerActor,
         databaseCleanerActor,
+        wordsListChunkRetrievalActor,
     },
     types: {
         context: {} as DictionaryStateContext,
@@ -136,6 +138,7 @@ export const dictionaryStateMachine = setup({
                     actions: assign(() => ({ errorMessage: undefined })),
                 },
                 CLEAR_DATABASE: 'CLEARING_DATABASE',
+                LIST_GET_WORDS_CHUNK: 'LOADING_WORDS_LIST',
             },
         },
 
@@ -168,6 +171,41 @@ export const dictionaryStateMachine = setup({
                 }),
             },
         },
+
+        LOADING_WORDS_LIST: {
+            invoke: {
+                src: 'wordsListChunkRetrievalActor',
+                input: ({ context, event }) => ({
+                    dbController: context.dbController,
+                    from: (event as ListGetWordsChunkEvent).from,
+                    to: (event as ListGetWordsChunkEvent).to,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: assign(({ context, event }) => ({
+                        storedWords: [
+                            ...context.storedWords,
+                            ...event.output,
+                        ],
+                    })),
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+    },
+
+    on: {
+        CLEANUP: {
+            actions: assign(() => ({ storedWords: [] })),
+        }
     },
 });
 

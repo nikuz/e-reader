@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, AppBar, Toolbar, IconButton, Typography } from 'src/design-system/components';
 import { ArrowBackIosNewIcon, SettingsIcon } from 'src/design-system/icons';
+import { WordsList } from './components';
 import { dictionaryStateMachineActor } from './state';
 
 export default function Dictionary() {
@@ -9,6 +10,10 @@ export default function Dictionary() {
 
     useEffect(() => {
         dictionaryStateMachineActor.send({ type: 'INITIALIZE' });
+
+        return () => {
+            dictionaryStateMachineActor.send({ type: 'CLEANUP' });
+        };
     }, []);
 
     const navigateToLibraryHandler = () => {
@@ -48,6 +53,8 @@ export default function Dictionary() {
                     </IconButton>
                 </Toolbar>
             </AppBar>
+
+            <WordsList />
         </Box>
     );
 }
