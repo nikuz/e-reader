@@ -1,10 +1,9 @@
-import { DatabaseController } from 'src/controllers';
+import { db } from 'src/controllers';
 import type { BookAttributes } from 'src/types';
-import { LIBRARY_DB_CONFIG } from '../../constants';
 
-export async function updateHighlightsInDB(db: DatabaseController, book: BookAttributes) {
+export async function updateHighlightsInDB(book: BookAttributes) {
     const query = `
-        UPDATE "${LIBRARY_DB_CONFIG.name}"
+        UPDATE "books"
         SET highlights=?
         WHERE id=?;
     `;

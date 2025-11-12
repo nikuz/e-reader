@@ -1,5 +1,4 @@
 import { fromPromise } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
 import { addWordContextInDB, getWordByIdFromDB } from '../../../db-service';
 import type {
     DictionaryWord,
@@ -9,14 +8,12 @@ import type {
 
 export const explanationSaverActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController,
         word: DictionaryWord,
         context: DictionaryWordContext,
         contextExplanation?: DictionaryWordContextExplanation,
     },
 }): Promise<DictionaryWord> => {
     const {
-        dbController,
         word,
         context,
         contextExplanation,
@@ -27,14 +24,12 @@ export const explanationSaverActor = fromPromise(async (props: {
     }
 
     await addWordContextInDB({
-        db: dbController,
         word,
         newContext: context,
         contextExplanation,
     });
 
     const storedWord = await getWordByIdFromDB({
-        db: dbController,
         id: word.id,
     });
 

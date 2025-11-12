@@ -1,24 +1,19 @@
-import { DatabaseController } from 'src/controllers';
-import { getLanguageByCode } from '../../utils';
-import { DICTIONARY_DB_CONFIG } from '../../constants';
+import { db } from 'src/controllers';
+import { getLanguageByCode } from '../utils';
 import type {
     DictionaryWord,
-    Language,
     DictionaryWordDBInstance,
     LanguageCode,
-} from '../../types';
+} from '../types';
 
-export async function getWordFromDB(props: {
-    db: DatabaseController,
-    text: string,
-    sourceLanguage: Language,
-    targetLanguage: Language,
+export async function getWordByIdFromDB(props: {
+    id: number,
 }): Promise<DictionaryWord | undefined> {
-    const { db, text, sourceLanguage, targetLanguage } = props;
+    const { id } = props;
 
     const response = await db.query(
-        `SELECT * FROM "${DICTIONARY_DB_CONFIG.name}" WHERE text=? AND sourceLanguage=? AND targetLanguage=?;`,
-        [text, sourceLanguage.code, targetLanguage.code]
+        'SELECT * FROM "dictionary-words" WHERE id=?;',
+        [id]
     );
 
     if (!response || !response[0]) {

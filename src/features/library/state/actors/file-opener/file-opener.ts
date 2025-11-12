@@ -1,7 +1,6 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import JSZip from 'jszip';
-import type { DatabaseController } from 'src/controllers';
 import { pathUtils, fileReaderUtils, imageUtils } from 'src/utils';
 import { createBookInDB, deleteBookFromDB } from '../../../db-service';
 import {
@@ -17,7 +16,6 @@ import { BookModel } from 'src/models';
 export const fileOpenerActor = fromPromise(async (props: {
     input: {
         file: File,
-        dbController: DatabaseController,
     },
 }): Promise<BookModel | undefined> => {
     const { file } = props.input;
@@ -46,7 +44,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         if (bookDirectoryStats) {
             // recreate directory in dev only
             if (import.meta.env.DEV) {
-                await deleteBookFromDB(props.input.dbController, bookAttributes);
+                await deleteBookFromDB(bookAttributes);
                 await FileStorageController.rmdir({
                     path: bookRootDirectory,
                     recursive: true,
@@ -97,7 +95,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         });
     }
 
-    await createBookInDB(props.input.dbController, bookAttributes);
+    await createBookInDB(bookAttributes);
 
     const newBook = new BookModel(bookAttributes);
     newBook.cover = await getBookCoverObjectUrl(bookAttributes);

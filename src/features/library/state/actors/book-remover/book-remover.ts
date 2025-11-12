@@ -1,6 +1,5 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
-import type { DatabaseController } from 'src/controllers';
 import { pathUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
 import { deleteBookFromDB } from '../../../db-service';
@@ -9,12 +8,11 @@ import { LIBRARY_DIRECTORY } from '../../../constants';
 export const bookRemoverActor = fromPromise(async (props: {
     input: {
         bookAttributes: BookAttributes,
-        dbController: DatabaseController,
     },
 }): Promise<BookAttributes> => {
-    const { bookAttributes, dbController } = props.input;
+    const { bookAttributes } = props.input;
 
-    await deleteBookFromDB(dbController, bookAttributes);
+    await deleteBookFromDB(bookAttributes);
 
     const bookDirectory = pathUtils.join([LIBRARY_DIRECTORY, bookAttributes.eisbn]);
 

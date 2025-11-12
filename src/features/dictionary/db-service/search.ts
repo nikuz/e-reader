@@ -1,27 +1,25 @@
-import { DatabaseController } from 'src/controllers';
-import { getLanguageByCode } from '../../utils';
-import { DICTIONARY_DB_CONFIG } from '../../constants';
+import { db } from 'src/controllers';
+import { getLanguageByCode } from '../utils';
 import type {
     DictionaryWord,
     DictionaryWordDBInstance,
     LanguageCode,
-} from '../../types';
+} from '../types';
 
 export async function searchInDB(props: {
-    db: DatabaseController,
     searchText: string,
     from: number,
     to: number,
 }): Promise<DictionaryWord[]> {
-    const { db, searchText, from, to } = props;
+    const { searchText, from, to } = props;
     const searchPattern = `%${searchText}%`;
     const searchPatternStart = `%${searchText}`;
     const searchPatternEnd = `${searchText}%`;
-    
+
     const response = await db.query(
         `
             SELECT id, text, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
-            FROM "${DICTIONARY_DB_CONFIG.name}"
+            FROM "dictionary-words"
             WHERE
                 text LIKE :searchPattern
                 OR translation LIKE :searchPattern

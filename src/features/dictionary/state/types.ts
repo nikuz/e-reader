@@ -1,6 +1,5 @@
 import type { ActorRefFrom } from 'xstate';
 import type { NavigateFunction } from 'react-router-dom';
-import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
 import {
     queueManagerStateMachine,
@@ -23,7 +22,6 @@ import {
 import type { DictionaryWord, Language } from '../types';
 
 export interface DictionaryStateContext {
-    dbController: DatabaseController,
     navigator?: NavigateFunction,
 
     storedWords: DictionaryWord[],

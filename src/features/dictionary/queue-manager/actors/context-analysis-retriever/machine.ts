@@ -1,5 +1,4 @@
 import { setup, sendParent, assign } from 'xstate';
-import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type {
     DictionaryWord,
@@ -18,7 +17,6 @@ import { explanationSaverActor } from './explanation-saver-actor';
 import { imageSaverActor } from './image-saver-actor';
 
 interface InputParameters {
-    dbController: DatabaseController,
     word: DictionaryWord,
     context: DictionaryWordContext,
     style?: string,
@@ -76,7 +74,6 @@ export const contextAnalysisRetrieverMachine = setup({
             invoke: {
                 src: 'explanationSaverActor',
                 input: ({ context }) => ({
-                    dbController: context.dbController,
                     word: context.word,
                     context: context.context,
                     contextExplanation: context.contextExplanation,
@@ -133,7 +130,6 @@ export const contextAnalysisRetrieverMachine = setup({
             invoke: {
                 src: 'imageSaverActor',
                 input: ({ context }) => ({
-                    dbController: context.dbController,
                     word: context.word,
                     contextImage: context.contextImage,
                 }),

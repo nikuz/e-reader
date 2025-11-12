@@ -1,17 +1,14 @@
 import { fromPromise } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
 import { updateWordPronunciationInDB, getWordByIdFromDB } from '../../../db-service';
 import type { DictionaryWord } from '../../../types';
 
 export const dbSaverActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController,
         word: DictionaryWord,
         pronunciation?: string,
     },
 }): Promise<DictionaryWord> => {
     const {
-        dbController,
         word,
         pronunciation,
     } = props.input;
@@ -21,13 +18,11 @@ export const dbSaverActor = fromPromise(async (props: {
     }
 
     await updateWordPronunciationInDB({
-        db: dbController,
         word,
         pronunciation,
     });
 
     const storedWord = await getWordByIdFromDB({
-        db: dbController,
         id: word.id,
     });
 

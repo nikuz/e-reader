@@ -1,5 +1,4 @@
 import { setup, createActor, assign, sendTo, enqueueActions } from 'xstate';
-import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import {
     queueManagerStateMachine,
@@ -9,7 +8,6 @@ import {
     type QueueManagerRequestContextAnalysisEvent,
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
-import { DICTIONARY_DB_CONFIG } from '../constants';
 import { initializerActor, databaseCleanerActor, wordsListChunkRetrievalActor, wordRemoverActor } from './actors';
 import {
     updateTranslatingWordAction,
@@ -39,16 +37,12 @@ export const dictionaryStateMachine = setup({
     id: 'DICTIONARY',
 
     context: {
-        dbController: new DatabaseController(DICTIONARY_DB_CONFIG),
         storedWords: [],
     },
 
-    entry: assign(({ context, spawn }) => ({
+    entry: assign(({ spawn }) => ({
         queueManagerRef: spawn('queueManagerStateMachine', {
             id: 'queue-manager',
-            input: {
-                dbController: context.dbController,
-            },
         }),
     })),
 
@@ -148,9 +142,6 @@ export const dictionaryStateMachine = setup({
         INITIALIZING: {
             invoke: {
                 src: 'initializerActor',
-                input: ({ context }) => ({
-                    dbController: context.dbController,
-                }),
                 onDone: {
                     target: 'IDLE',
                 },
@@ -169,17 +160,13 @@ export const dictionaryStateMachine = setup({
         CLEARING_DATABASE: {
             invoke: {
                 src: 'databaseCleanerActor',
-                input: ({ context }) => ({
-                    dbController: context.dbController,
-                }),
             },
         },
 
         LOADING_WORDS_LIST: {
             invoke: {
                 src: 'wordsListChunkRetrievalActor',
-                input: ({ context, event }) => ({
-                    dbController: context.dbController,
+                input: ({ event }) => ({
                     from: (event as ListGetWordsChunkEvent).from,
                     to: (event as ListGetWordsChunkEvent).to,
                 }),
@@ -207,8 +194,7 @@ export const dictionaryStateMachine = setup({
         DELETING_WORD: {
             invoke: {
                 src: 'wordRemoverActor',
-                input: ({ context, event }) => ({
-                    dbController: context.dbController,
+                input: ({ event }) => ({
                     wordId: (event as DeleteWordEvent).wordId,
                 }),
                 onDone: {

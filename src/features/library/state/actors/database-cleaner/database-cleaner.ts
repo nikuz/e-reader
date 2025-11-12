@@ -1,17 +1,13 @@
 import { fromPromise } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
+import { db } from 'src/controllers';
 
-export const databaseCleanerActor = fromPromise(async (props: {
-    input: {
-        dbController: DatabaseController,
-    },
-}): Promise<void> => {
+export const databaseCleanerActor = fromPromise(async (): Promise<void> => {
     if (!import.meta.env.DEV) {
         alert('Not available in production');
         return;
     }
 
-    await props.input.dbController.deleteDB();
+    await db.deleteDB();
 
     window.location.reload();
 });

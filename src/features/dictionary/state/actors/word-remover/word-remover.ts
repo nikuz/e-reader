@@ -1,17 +1,14 @@
 import { fromPromise } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
-import { deleteWordFromDB } from '../../../db-service/actions';
+import { deleteWordFromDB } from '../../../db-service';
 
 export const wordRemoverActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController,
         wordId: number,
     },
 }): Promise<number> => {
-    const { dbController, wordId } = props.input;
+    const { wordId } = props.input;
 
     await deleteWordFromDB({
-        db: dbController,
         wordId,
     });
 

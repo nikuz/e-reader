@@ -1,5 +1,4 @@
 import type { ActorRefFrom } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
 import type { DictionaryWord, DictionaryWordContext, Language } from '../types';
 import { wordAnalysisRetrieverMachine } from './actors/word-analysis-retriever';
@@ -8,7 +7,6 @@ import { pronunciationRetrieverMachine } from './actors/pronunciation-retriever'
 import { contextAnalysisRetrieverMachine } from './actors/context-analysis-retriever';
 
 export interface QueueManagerStateContext {
-    dbController: DatabaseController,
     requests: Record<string, ActorRefFrom<
         typeof wordAnalysisRetrieverMachine
         | typeof imageRetrieverMachine
@@ -113,6 +111,9 @@ export interface QueueManagerContextAnalysisRequestErrorEvent {
 
 export type QueueManagerStateEvents = 
     | QueueManagerRequestWordAnalysisEvent
+    | QueueManagerWordAnalysisTranslationRetrievedEvent
+    | QueueManagerWordAnalysisExplanationRetrievedEvent
+    | QueueManagerWordAnalysisPronunciationRetrievedEvent
     | QueueManagerWordAnalysisRequestSuccessEvent
     | QueueManagerWordAnalysisRequestErrorEvent
     | QueueManagerRequestImageEvent

@@ -1,9 +1,7 @@
 import type { NavigateFunction } from 'react-router-dom';
-import type { DatabaseController } from 'src/controllers';
 import type { BookModel } from 'src/models';
 
 export interface LibraryStateContext {
-    dbController: DatabaseController,
     navigator?: NavigateFunction,
 
     storedBooks: BookModel[],
@@ -16,6 +14,8 @@ interface SetNavigatorEvent {
     type: 'SET_NAVIGATOR',
     navigator: NavigateFunction,
 }
+
+export interface LoadBooksEvent { type: 'LOAD_BOOKS' }
 
 export interface OpenFileEvent {
     type: 'OPEN_FILE',
@@ -43,6 +43,7 @@ export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
 
 export type LibraryStateEvents =
     | SetNavigatorEvent
+    | LoadBooksEvent
     | OpenFileEvent
     | CloseErrorToastEvent
     | SelectBookEvent

@@ -1,5 +1,4 @@
 import { setup, sendParent, assign } from 'xstate';
-import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
 import type { DictionaryWord, Language } from '../../../types';
@@ -17,7 +16,6 @@ import { explanationActor } from './explanation-actor';
 import { pronunciationActor } from './pronunciation-actor';
 
 interface InputParameters {
-    dbController: DatabaseController,
     bookId: string,
     word: DictionaryWord,
     highlight: BookHighlight,
@@ -53,7 +51,6 @@ export const wordAnalysisRetrieverMachine = setup({
             invoke: {
                 src: 'dbRetrieverActor',
                 input: ({ context }) => ({
-                    dbController: context.dbController,
                     word: context.word,
                 }),
                 onDone: [
@@ -206,7 +203,6 @@ export const wordAnalysisRetrieverMachine = setup({
             invoke: {
                 src: 'dbSaverActor',
                 input: ({ context }) => ({
-                    dbController: context.dbController,
                     bookId: context.bookId,
                     highlight: context.highlight,
                     translation: context.translation,

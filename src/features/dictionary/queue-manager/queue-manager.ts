@@ -1,5 +1,4 @@
 import { setup, assign, enqueueActions, sendParent } from 'xstate';
-import { DatabaseController } from 'src/controllers';
 import {
     wordAnalysisRetrieverMachine,
     imageRetrieverMachine,
@@ -12,10 +11,6 @@ import type {
     QueueManagerStateEvents,
 } from './types';
 
-interface InputParameters {
-    dbController: DatabaseController,
-}
-
 export const queueManagerStateMachine = setup({
     actors: {
         wordAnalysisRetrieverMachine,
@@ -26,15 +21,13 @@ export const queueManagerStateMachine = setup({
     types: {
         context: {} as QueueManagerStateContext,
         events: {} as QueueManagerStateEvents,
-        input: {} as InputParameters,
     }
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER',
 
-    context: ({ input }) => ({
-        ...input,
+    context: {
         requests: {},
-    }),
+    },
 
     initial: 'IDLE',
 
@@ -47,7 +40,6 @@ export const queueManagerStateMachine = setup({
                             ...context.requests,
                             [event.word.id]: spawn('wordAnalysisRetrieverMachine', {
                                 input: {
-                                    dbController: context.dbController,
                                     bookId: event.bookId,
                                     highlight: event.highlight,
                                     word: event.word,
@@ -91,7 +83,6 @@ export const queueManagerStateMachine = setup({
                             ...context.requests,
                             [`${event.word.id}-image`]: spawn('imageRetrieverMachine', {
                                 input: {
-                                    dbController: context.dbController,
                                     word: event.word,
                                 },
                             }),
@@ -119,7 +110,6 @@ export const queueManagerStateMachine = setup({
                             ...context.requests,
                             [`${event.word.id}-pronunciation`]: spawn('pronunciationRetrieverMachine', {
                                 input: {
-                                    dbController: context.dbController,
                                     word: event.word,
                                 },
                             }),
@@ -147,7 +137,6 @@ export const queueManagerStateMachine = setup({
                             ...context.requests,
                             [`${event.word.id}-${event.context.id}`]: spawn('contextAnalysisRetrieverMachine', {
                                 input: {
-                                    dbController: context.dbController,
                                     word: event.word,
                                     context: event.context,
                                 },

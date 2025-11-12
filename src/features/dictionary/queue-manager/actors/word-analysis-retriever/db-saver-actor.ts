@@ -1,5 +1,4 @@
 import { fromPromise } from 'xstate';
-import type { DatabaseController } from 'src/controllers';
 import type { BookHighlight } from 'src/types';
 import { createWordInDB, getWordFromDB } from '../../../db-service';
 import { getNewDictionaryWord } from '../../../utils';
@@ -7,7 +6,6 @@ import type { DictionaryWord, Language } from '../../../types';
 
 export const dbSaverActor = fromPromise(async (props: {
     input: {
-        dbController: DatabaseController,
         bookId: string,
         highlight: BookHighlight,
         translation?: string,
@@ -18,7 +16,6 @@ export const dbSaverActor = fromPromise(async (props: {
     },
 }): Promise<DictionaryWord> => {
     const {
-        dbController,
         bookId,
         highlight,
         translation,
@@ -43,13 +40,11 @@ export const dbSaverActor = fromPromise(async (props: {
     });
 
     await createWordInDB({
-        db: dbController,
         bookId,
         word: newWord,
     });
 
     const storedWord = await getWordFromDB({
-        db: dbController,
         text: newWord.text,
         sourceLanguage: newWord.sourceLanguage,
         targetLanguage: newWord.targetLanguage,

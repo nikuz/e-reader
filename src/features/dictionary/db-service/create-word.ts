@@ -1,17 +1,15 @@
-import { DatabaseController } from 'src/controllers';
-import { DICTIONARY_DB_CONFIG } from '../../constants';
-import type { DictionaryWord } from '../../types';
+import { db } from 'src/controllers';
+import type { DictionaryWord } from '../types';
 
 export async function createWordInDB(props: {
-    db: DatabaseController,
     bookId: string,
     word: DictionaryWord,
 }): Promise<void> {
-    const { db, bookId, word } = props;
+    const { bookId, word } = props;
 
     await db.execute(
         `
-            INSERT INTO "${DICTIONARY_DB_CONFIG.name}" (
+            INSERT INTO "dictionary-words" (
                 bookId,
                 text,
                 translation,

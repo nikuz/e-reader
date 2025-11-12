@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Box, AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
@@ -18,6 +19,10 @@ export default function Library() {
     const closeErrorHandler = () => {
         libraryStateMachineActor.send({ type: 'CLOSE_ERROR_TOAST' });
     };
+
+    useEffect(() => {
+        libraryStateMachineActor.send({ type: 'LOAD_BOOKS' });
+    }, []);
 
     return (
         <Box
@@ -48,8 +53,6 @@ export default function Library() {
                     withToolbar
                     onClose={closeErrorHandler}
                 >
-                    File loading error
-                    <br />
                     {errorMessage}
                 </Toast>
             )}

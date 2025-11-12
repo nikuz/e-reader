@@ -1,5 +1,4 @@
 import { setup, sendParent, assign } from 'xstate';
-import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
 import type { DictionaryWord } from '../../../types';
 import type {
@@ -10,7 +9,6 @@ import { pronunciationActor } from './pronunciation-actor';
 import { dbSaverActor } from './db-saver-actor';
 
 interface InputParameters {
-    dbController: DatabaseController,
     word: DictionaryWord,
     style?: string,
 }
@@ -59,7 +57,6 @@ export const pronunciationRetrieverMachine = setup({
             invoke: {
                 src: 'dbSaverActor',
                 input: ({ context }) => ({
-                    dbController: context.dbController,
                     word: context.word,
                     pronunciation: context.pronunciation,
                 }),

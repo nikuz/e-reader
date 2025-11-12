@@ -1,9 +1,8 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
-import { DatabaseController } from 'src/controllers';
 import { xStateUtils } from 'src/utils';
-import { LIBRARY_DB_CONFIG } from '../constants';
 import {
     initializerActor,
+    booksLoaderActor,
     fileOpenerActor,
     bookSelectorActor,
     bookRemoverActor,
@@ -27,6 +26,7 @@ import type {
 export const libraryStateMachine = setup({
     actors: {
         initializerActor,
+        booksLoaderActor,
         fileOpenerActor,
         bookSelectorActor,
         bookRemoverActor,
@@ -41,7 +41,6 @@ export const libraryStateMachine = setup({
     id: 'LIBRARY',
 
     context: {
-        dbController: new DatabaseController(LIBRARY_DB_CONFIG),
         storedBooks: [],
     },
 
@@ -50,6 +49,7 @@ export const libraryStateMachine = setup({
     states: {
         IDLE: {
             on: {
+                LOAD_BOOKS: 'LOADING_BOOKS',
                 OPEN_FILE: 'OPENING_FILE',
                 REMOVE_BOOK: 'REMOVING_BOOK',
                 CLOSE_ERROR_TOAST: {
@@ -64,9 +64,22 @@ export const libraryStateMachine = setup({
         INITIALIZING: {
             invoke: {
                 src: 'initializerActor',
-                input: ({ context }) => ({
-                    dbController: context.dbController,
-                }),
+                onDone: 'IDLE',
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+
+        LOADING_BOOKS: {
+            invoke: {
+                src: 'booksLoaderActor',
                 onDone: {
                     target: 'IDLE',
                     actions: assign(({ event }) => ({
@@ -89,9 +102,8 @@ export const libraryStateMachine = setup({
         OPENING_FILE: {
             invoke: {
                 src: 'fileOpenerActor',
-                input: ({ event, context }) => ({
+                input: ({ event }) => ({
                     file: (event as OpenFileEvent).file,
-                    dbController: context.dbController,
                 }),
                 onDone: {
                     target: 'IDLE',
@@ -134,9 +146,8 @@ export const libraryStateMachine = setup({
         REMOVING_BOOK: {
             invoke: {
                 src: 'bookRemoverActor',
-                input: ({ event, context }) => ({
+                input: ({ event }) => ({
                     bookAttributes: (event as RemoveBookEvent).book,
-                    dbController: context.dbController,
                 }),
                 onDone: {
                     target: 'IDLE',
@@ -161,9 +172,8 @@ export const libraryStateMachine = setup({
         UPDATING_BOOK_HIGHLIGHTS: {
             invoke: {
                 src: 'highlightUpdaterActor',
-                input: ({ event, context }) => ({
+                input: ({ event }) => ({
                     book: (event as UpdateBookHighlightsEvent).book,
-                    dbController: context.dbController,
                 }),
                 onDone: {
                     target: 'IDLE',
@@ -184,9 +194,6 @@ export const libraryStateMachine = setup({
         CLEARING_DATABASE: {
             invoke: {
                 src: 'databaseCleanerActor',
-                input: ({ context }) => ({
-                    dbController: context.dbController,
-                }),
             },
         },
     },

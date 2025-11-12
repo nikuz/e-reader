@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { DatabaseProvider } from './controllers/database';
 import SettingsProvider from './features/settings';
 import { LibraryProvider } from './features/library';
 import AppRouter from './router';
@@ -10,11 +11,13 @@ if (container) {
     const root = createRoot(container);
     root.render(
         <StrictMode>
-            <SettingsProvider>
-                <LibraryProvider>
-                    <AppRouter />
-                </LibraryProvider>
-            </SettingsProvider>
+            <DatabaseProvider>
+                <SettingsProvider>
+                    <LibraryProvider>
+                        <AppRouter />
+                    </LibraryProvider>
+                </SettingsProvider>
+            </DatabaseProvider>
         </StrictMode>,
     );
 }
