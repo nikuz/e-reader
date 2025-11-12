@@ -17,7 +17,8 @@ const defaultHighlightValues: HighlightProps = {
 export type HighlightSettings = SettingsGroup<HighlightProps>
     & HighlightProps
     & {
-        getHighlightCssValue: () => string,
+    getHighlightCssValue: (type: HighlightType) => string,
+        getHighlightCss: () => string,
     };
 
 export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> implements HighlightSettings {
@@ -43,10 +44,10 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
         return JSON.stringify(this.toObject());
     }
 
-    getHighlightCssValue(): string {
+    getHighlightCssValue(type: HighlightType): string {
         let cssValue = '';
 
-        switch (this.selectedHighlightType) {
+        switch (type) {
             case 'underline':
                 cssValue = this.getCssProps({
                     backgroundColor: 'transparent',
@@ -91,8 +92,22 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
         return cssValue;
     }
 
+    getHighlightCss(): string {
+        let cssValue = `/*current highlight type: ${this.selectedHighlightType}*/`;
+
+        for (const type of HIGHLIGHT_TYPES) {
+            cssValue += `
+                ::highlight(${type}) {
+                    ${this.getHighlightCssValue(type)}
+                }
+            `;
+        }
+        
+        return cssValue;
+    }
+
     toCss(): string {
-        const cssValue = this.getHighlightCssValue();
+        const cssValue = this.getHighlightCssValue(this.selectedHighlightType);
 
         return `::selection { ${cssValue} }`;
     }

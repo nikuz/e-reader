@@ -36,7 +36,7 @@ export const settingsStateMachine = setup({
         highlight: new DefaultHighlightSettings(),
         settingsCSS: '',
         fontCSS: '',
-        highlightsCSSValue: '',
+        highlightsCSS: '',
     },
 
     initial: 'INITIALIZING',

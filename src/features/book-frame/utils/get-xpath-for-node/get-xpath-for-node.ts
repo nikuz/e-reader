@@ -11,6 +11,9 @@ export function getXpathForNode(node: Node, root: Node): string {
             const el = n as Element;
             const tag = el.tagName.toLowerCase();
 
+            // Add xhtml prefix for XHTML namespace elements
+            const prefix = el.namespaceURI === 'http://www.w3.org/1999/xhtml' ? 'xhtml:' : '';
+
             // position among same-tag siblings (1-based)
             let index = 1;
             let sib = el.previousElementSibling;
@@ -18,7 +21,7 @@ export function getXpathForNode(node: Node, root: Node): string {
                 if (sib.tagName.toLowerCase() === tag) index++;
                 sib = sib.previousElementSibling;
             }
-            segments.push(`${tag}[${index}]`);
+            segments.push(`${prefix}${tag}[${index}]`);
         }
         // Text node
         else if (n.nodeType === Node.TEXT_NODE) {

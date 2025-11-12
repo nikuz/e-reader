@@ -102,7 +102,7 @@ export interface UpdateFontCSSEvent {
 
 export interface UpdateHighlightsCSSEvent {
     type: 'UPDATE_HIGHLIGHTS_CSS',
-    highlightsCSSValue: string,
+    highlightsCSS: string,
 }
 
 export interface HideMenuPanelsEvent {

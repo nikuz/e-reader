@@ -1,5 +1,4 @@
 import { getInjectedCSS } from '../../utils/get-injected-css';
-import { generateChapterHighlightsCss } from '../../utils/generate-chapter-highlights-css';
 import {
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_PLACEHOLDER,
@@ -24,7 +23,7 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
         bookAttributes,
         settingsCSS,
         fontCSS,
-        highlightsCSSValue,
+        highlightsCSS,
         currentChapterUrl,
     } = event;
 
@@ -41,11 +40,10 @@ function updateInjectedCSS(event: SettingsCSSChangeMessage) {
                 URL.revokeObjectURL(chapter.url);
             }
 
-            const highlightCSS = generateChapterHighlightsCss(bookAttributes.highlights[key], highlightsCSSValue);
             const modifiedContent = chapter.content
                 .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
                 .replace(FONT_CSS_PLACEHOLDER, fontCSS)
-                .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
+                .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightsCSS);
             
             const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
             const blobUrl = URL.createObjectURL(blob);

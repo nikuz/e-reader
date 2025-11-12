@@ -14,7 +14,6 @@ import {
     webRetrieveStaticContent,
     getReadProgressStorageKey,
     getInjectedCSS,
-    generateChapterHighlightsCss,
 } from '../../../utils';
 import type { BookReadProgress } from 'src/features/book-frame/types';
 
@@ -31,7 +30,7 @@ export const bookLoaderActor = fromPromise(async (props: {
     const settingsSnapshot = settingsStateMachineActor.getSnapshot().context;
     const settingsCSS = settingsSnapshot.settingsCSS;
     const fontCSS = settingsSnapshot.fontCSS;
-    const highlightsCSSValue = settingsSnapshot.highlightsCSSValue;
+    const highlightsCSS = settingsSnapshot.highlightsCSS;
     const injectedCSS = getInjectedCSS(settingsCSS);
     const readProgress = await Preferences.get({ key: getReadProgressStorageKey(book) });
 
@@ -41,7 +40,6 @@ export const bookLoaderActor = fromPromise(async (props: {
             jobs.push((async () => {
                 const chapter = spine[key];
                 const chapterFullPath = pathUtils.join([book.dirname, chapter.filePath]);
-                const highlightCSS = generateChapterHighlightsCss(book.highlights[key], highlightsCSSValue);
 
                 const fileReadResponse = await FileStorageController.readFile({
                     path: chapterFullPath,
@@ -52,7 +50,7 @@ export const bookLoaderActor = fromPromise(async (props: {
                 const modifiedContent = originalContent
                     .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
                     .replace(FONT_CSS_PLACEHOLDER, fontCSS)
-                    .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
+                    .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightsCSS);
 
                 const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
                 const blobUrl = URL.createObjectURL(blob);
@@ -72,7 +70,6 @@ export const bookLoaderActor = fromPromise(async (props: {
         for (const key in spine) {
             const chapter = spine[key];
             const chapterFullPath = pathUtils.join([book.dirname, chapter.filePath]);
-            const highlightCSS = generateChapterHighlightsCss(book.highlights[key], highlightsCSSValue);
 
             const fileContent = await FileStorageController.readFile({
                 path: chapterFullPath,
@@ -87,7 +84,7 @@ export const bookLoaderActor = fromPromise(async (props: {
             const modifiedContent = originalContent
                 .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
                 .replace(FONT_CSS_PLACEHOLDER, fontCSS)
-                .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightCSS);
+                .replace(HIGHLIGHTS_CSS_PLACEHOLDER, highlightsCSS);
 
             const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
             const blobUrl = URL.createObjectURL(blob);

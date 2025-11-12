@@ -14,8 +14,8 @@ export function SettingsWatcher() {
     const lastSettingsCSS = useLast(settingsCSS);
     const fontCSS = useSettingsStateSelect('fontCSS');
     const lastFontCSS = useLast(fontCSS);
-    const highlightsCSSValue = useSettingsStateSelect('highlightsCSSValue');
-    const lastHighlightsCSSValue = useLast(highlightsCSSValue);
+    const highlightsCSS = useSettingsStateSelect('highlightsCSS');
+    const lastHighlightsCSS = useLast(highlightsCSS);
     const bookSnapshot = useBookFrameStateSnapshot('book');
     const currentChapterUrlSnapshot = useBookFrameStateSnapshot('chapterUrl');
 
@@ -29,7 +29,7 @@ export function SettingsWatcher() {
     }, []);
     
     useEffect(() => {
-        if (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS && highlightsCSSValue === lastHighlightsCSSValue) {
+        if (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS && highlightsCSS === lastHighlightsCSS) {
             return;
         }
         
@@ -46,10 +46,10 @@ export function SettingsWatcher() {
             });
         }
 
-        if (highlightsCSSValue !== lastHighlightsCSSValue) {
+        if (highlightsCSS !== lastHighlightsCSS) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_HIGHLIGHTS_CSS',
-                highlightsCSSValue,
+                highlightsCSS,
             });
         }
 
@@ -60,7 +60,7 @@ export function SettingsWatcher() {
                 bookAttributes: book.toTransferableObject(),
                 settingsCSS,
                 fontCSS,
-                highlightsCSSValue,
+                highlightsCSS,
                 currentChapterUrl: currentChapterUrlSnapshot(),
             });
         }
@@ -69,8 +69,8 @@ export function SettingsWatcher() {
         lastSettingsCSS,
         fontCSS,
         lastFontCSS,
-        highlightsCSSValue,
-        lastHighlightsCSSValue,
+        highlightsCSS,
+        lastHighlightsCSS,
         bookSnapshot,
         currentChapterUrlSnapshot,
     ]);

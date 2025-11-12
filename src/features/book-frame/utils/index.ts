@@ -7,3 +7,4 @@ export * from './generate-chapter-highlights-css';
 export * from './deserialize-text-selection';
 export * from './extract-context-from-text-selection';
 export * from './find-highlight-by-coordinates';
+export * from './set-chapter-highlights';

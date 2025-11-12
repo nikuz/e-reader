@@ -5,7 +5,7 @@ export interface SettingsCSSChangeMessage {
     bookAttributes: BookAttributes,
     settingsCSS: string,
     fontCSS: string,
-    highlightsCSSValue: string,
+    highlightsCSS: string,
     currentChapterUrl?: string,
 }
 
