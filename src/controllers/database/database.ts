@@ -10,10 +10,6 @@ if (import.meta.env.DEV && !Capacitor.isNativePlatform()) {
     });
 }
 
-type SQLiteQueryResult = {
-    values?: Array<Record<string, unknown>>;
-};
-
 // SQLite implementation for native platforms using Capacitor plugin
 export class DatabaseController {
     constructor(config: DatabaseConfig) {
@@ -82,36 +78,6 @@ export class DatabaseController {
         }
     }
 
-    async get(key: string): Promise<any | undefined> {
-        const db = this.ensureDB();
-        const result: SQLiteQueryResult = await db.query(
-            `SELECT * FROM "${this.config.name}" WHERE id = ?`,
-            [key],
-        );
-
-        return result.values?.[0]?.value;
-    }
-
-    async getAll(): Promise<any[] | undefined> {
-        const db = this.ensureDB();
-        const result: SQLiteQueryResult = await db.query(
-            `SELECT * FROM "${this.config.name}"`,
-        );
-
-        return result.values;
-    }
-
-    async delete(key: string): Promise<void> {
-        const db = this.ensureDB();
-        await db.run(
-            `DELETE FROM "${this.config.name}" WHERE id = ?`,
-            [key],
-        );
-        if (!Capacitor.isNativePlatform()) {
-            await this.saveToStore();
-        }
-    }
-
     async query(query: string, values?: any[]): Promise<any[] | undefined> {
         const db = this.ensureDB();
         return (await db.query(query, values)).values;
@@ -126,37 +92,6 @@ export class DatabaseController {
         }
 
         return result;
-    }
-
-    async clear(): Promise<void> {
-        const db = this.ensureDB();
-        await db.run(`DELETE FROM "${this.config.name}"`, []);
-        if (!Capacitor.isNativePlatform()) {
-            await this.saveToStore();
-        }
-    }
-
-    async count(): Promise<number> {
-        const db = this.ensureDB();
-        const result: SQLiteQueryResult = await db.query(
-            `SELECT COUNT(*) as count FROM "${this.config.name}"`,
-        );
-
-        const rawCount = result.values?.[0]?.count;
-
-        return typeof rawCount === 'number'
-            ? rawCount
-            : Number(rawCount ?? 0);
-    }
-
-    async has(key: string): Promise<boolean> {
-        const db = this.ensureDB();
-        const result: SQLiteQueryResult = await db.query(
-            `SELECT 1 FROM "${this.config.name}" WHERE id = ? LIMIT 1`,
-            [key],
-        );
-
-        return Boolean(result.values?.length);
     }
 
     async deleteDB(): Promise<void> {
