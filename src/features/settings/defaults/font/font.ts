@@ -90,6 +90,7 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
             @font-face {
                 font-family: ${selectedFont.value};
                 src: url(${window.location.origin}${selectedFont.url});
+                font-display: block;
                 font-style: normal;
                 font-weight: normal;
             }
