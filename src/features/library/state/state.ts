@@ -2,6 +2,7 @@ import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { xStateUtils } from 'src/utils';
 import {
     initializerActor,
+    lastSelectedBookLoaderActor,
     booksLoaderActor,
     fileOpenerActor,
     bookSelectorActor,
@@ -26,6 +27,7 @@ import type {
 export const libraryStateMachine = setup({
     actors: {
         initializerActor,
+        lastSelectedBookLoaderActor,
         booksLoaderActor,
         fileOpenerActor,
         bookSelectorActor,
@@ -49,6 +51,7 @@ export const libraryStateMachine = setup({
     states: {
         IDLE: {
             on: {
+                LOAD_LAST_SELECTED_BOOK: 'LOADING_LAST_SELECTED_BOOK',
                 LOAD_BOOKS: 'LOADING_BOOKS',
                 OPEN_FILE: 'OPENING_FILE',
                 REMOVE_BOOK: 'REMOVING_BOOK',
@@ -77,14 +80,34 @@ export const libraryStateMachine = setup({
             },
         },
 
+        LOADING_LAST_SELECTED_BOOK: {
+            invoke: {
+                src: 'lastSelectedBookLoaderActor',
+                onDone: {
+                    target: 'IDLE',
+                    actions: assign(({ event }) => ({
+                        lastSelectedBook: event.output,
+                    })),
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+        
         LOADING_BOOKS: {
             invoke: {
                 src: 'booksLoaderActor',
                 onDone: {
                     target: 'IDLE',
                     actions: assign(({ event }) => ({
-                        storedBooks: event.output.books,
-                        lastSelectedBook: event.output.lastSelectedBook,
+                        storedBooks: event.output,
                     })),
                 },
                 onError: {

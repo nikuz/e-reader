@@ -15,6 +15,8 @@ interface SetNavigatorEvent {
     navigator: NavigateFunction,
 }
 
+export interface LoadLastSelectedBookEvent { type: 'LOAD_LAST_SELECTED_BOOK' }
+
 export interface LoadBooksEvent { type: 'LOAD_BOOKS' }
 
 export interface OpenFileEvent {
@@ -43,6 +45,7 @@ export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
 
 export type LibraryStateEvents =
     | SetNavigatorEvent
+    | LoadLastSelectedBookEvent
     | LoadBooksEvent
     | OpenFileEvent
     | CloseErrorToastEvent
