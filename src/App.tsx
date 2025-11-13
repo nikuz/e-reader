@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Paper } from 'src/design-system/components';
 import { ThemeProvider, darkTheme } from 'src/design-system/styles';
@@ -11,10 +11,11 @@ import './App.css';
 export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
+    const initialRedirectFinished = useRef(false);
     
     useEffect(() => {
         const libraryStateChangeSubscription = libraryStateMachineActor.subscribe((snapshot) => {
-            if (location.pathname === RouterPath.LIBRARY) {
+            if (initialRedirectFinished.current || location.pathname === RouterPath.LIBRARY) {
                 return;
             }
             if (snapshot.context.lastSelectedBook) {
@@ -25,8 +26,10 @@ export default function App() {
                 if (location.pathname !== RouterPath.BOOK) {
                     navigate(RouterPath.BOOK, { replace: true });
                 }
+                initialRedirectFinished.current = true;
             } else if (snapshot.matches('IDLE')) {
                 navigate(RouterPath.LIBRARY, { replace: true });
+                initialRedirectFinished.current = true;
             }
         });
         return () => {

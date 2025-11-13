@@ -8,7 +8,7 @@ import {
     type QueueManagerRequestContextAnalysisEvent,
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
-import { initializerActor, databaseCleanerActor, wordsListChunkRetrievalActor, wordRemoverActor } from './actors';
+import { initializerActor, wordsListChunkRetrievalActor, wordRemoverActor } from './actors';
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
@@ -25,7 +25,6 @@ export const dictionaryStateMachine = setup({
     actors: {
         queueManagerStateMachine,
         initializerActor,
-        databaseCleanerActor,
         wordsListChunkRetrievalActor,
         wordRemoverActor,
     },
@@ -133,7 +132,6 @@ export const dictionaryStateMachine = setup({
                 CLEAR_ERROR_MESSAGE: {
                     actions: assign(() => ({ errorMessage: undefined })),
                 },
-                CLEAR_DATABASE: 'CLEARING_DATABASE',
                 LIST_GET_WORDS_CHUNK: 'LOADING_WORDS_LIST',
                 DELETE_WORD: 'DELETING_WORD',
             },
@@ -154,12 +152,6 @@ export const dictionaryStateMachine = setup({
                         xStateUtils.stateErrorTraceAction,
                     ],
                 },
-            },
-        },
-
-        CLEARING_DATABASE: {
-            invoke: {
-                src: 'databaseCleanerActor',
             },
         },
 

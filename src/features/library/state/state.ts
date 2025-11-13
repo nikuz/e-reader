@@ -8,7 +8,6 @@ import {
     bookSelectorActor,
     bookRemoverActor,
     highlightUpdaterActor,
-    databaseCleanerActor,
 } from './actors';
 import {
     addOpenedBookAction,
@@ -32,7 +31,6 @@ export const libraryStateMachine = setup({
         bookSelectorActor,
         bookRemoverActor,
         highlightUpdaterActor,
-        databaseCleanerActor,
     },
     types: {
         context: {} as LibraryStateContext,
@@ -59,7 +57,6 @@ export const libraryStateMachine = setup({
                 },
                 SELECT_BOOK: 'SELECTING_BOOK',
                 UPDATE_BOOK_HIGHLIGHTS: 'UPDATING_BOOK_HIGHLIGHTS',
-                CLEAR_DATABASE: 'CLEARING_DATABASE',
             },
         },
 
@@ -212,12 +209,6 @@ export const libraryStateMachine = setup({
                         xStateUtils.stateErrorTraceAction,
                     ],
                 },
-            },
-        },
-
-        CLEARING_DATABASE: {
-            invoke: {
-                src: 'databaseCleanerActor',
             },
         },
     },

@@ -56,8 +56,6 @@ export interface ListGetWordsChunkEvent {
 
 export interface CleanupEvent { type: 'CLEANUP' }
 
-export interface ClearDatabaseEvent { type: 'CLEAR_DATABASE' }
-
 export interface DeleteWordEvent {
     type: 'DELETE_WORD',
     wordId: number,
@@ -85,5 +83,4 @@ export type DictionaryStateEvents =
     | ClearErrorMessageEvent
     | ListGetWordsChunkEvent
     | CleanupEvent
-    | ClearDatabaseEvent
     | DeleteWordEvent;

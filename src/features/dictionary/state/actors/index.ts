@@ -1,4 +1,3 @@
 export * from './initializer';
-export * from './database-cleaner';
 export * from './words-list-chunk-retrieval';
 export * from './word-remover';

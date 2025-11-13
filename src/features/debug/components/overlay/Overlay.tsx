@@ -6,9 +6,8 @@ import {
     DialogTitle,
     DialogContent,
 } from 'src/design-system/components';
-import { libraryStateMachineActor } from 'src/features/library/state';
+import { db } from 'src/controllers';
 import { useBookFrameStateSelect } from 'src/features/book-frame/state';
-import { dictionaryStateMachineActor } from 'src/features/dictionary/state';
 import { debugStateMachineActor, useDebugStateMatch } from '../../state';
 
 export default function Overlay() {
@@ -26,12 +25,19 @@ export default function Overlay() {
         window.location.reload();
     }, []);
     
-    const clearLibraryDBHandler = useCallback(() => {
-        libraryStateMachineActor.send({ type: 'CLEAR_DATABASE' });
+    const clearLibraryDBTableHandler = useCallback(async () => {
+        await db.execute('DELETE FROM "books"');
+        window.location.reload();
     }, []);
     
-    const clearDictionaryDBHandler = useCallback(() => {
-        dictionaryStateMachineActor.send({ type: 'CLEAR_DATABASE' });
+    const clearDictionaryDBTableHandler = useCallback(async () => {
+        await db.execute('DELETE FROM "dictionary-words"');
+        window.location.reload();
+    }, []);
+
+    const clearDBHandler = useCallback(async () => {
+        await db.deleteDB();
+        window.location.reload();
     }, []);
 
     if (!isVisible) {
@@ -59,17 +65,26 @@ export default function Overlay() {
                     <Button
                         variant="outlined"
                         color="error"
-                        sx={{ mr: 1 }}
-                        onClick={clearLibraryDBHandler}
+                        sx={{ mr: 1, mb: 1 }}
+                        onClick={clearLibraryDBTableHandler}
                     >
-                        Clear library DB
+                        Clear library table
                     </Button>
                     <Button
                         variant="outlined"
                         color="error"
-                        onClick={clearDictionaryDBHandler}
+                        sx={{ mr: 1, mb: 1 }}
+                        onClick={clearDictionaryDBTableHandler}
                     >
-                        Clear dictionary DB
+                        Clear dictionary table
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        sx={{ mr: 1, mb: 1 }}
+                        onClick={clearDBHandler}
+                    >
+                        Clear DB
                     </Button>
                 </Box>
 
