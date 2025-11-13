@@ -14,16 +14,19 @@ export default function App() {
     
     useEffect(() => {
         const libraryStateChangeSubscription = libraryStateMachineActor.subscribe((snapshot) => {
-            if (snapshot.context.lastSelectedBook && location.pathname !== RouterPath.LIBRARY) {
+            if (location.pathname === RouterPath.LIBRARY) {
+                return;
+            }
+            if (snapshot.context.lastSelectedBook) {
                 bookFrameStateMachineActor.send({
                     type: 'LOAD_BOOK',
                     book: snapshot.context.lastSelectedBook,
                 });
                 if (location.pathname !== RouterPath.BOOK) {
-                    requestAnimationFrame(() => {
-                        navigate(RouterPath.BOOK, { replace: true });
-                    });
+                    navigate(RouterPath.BOOK, { replace: true });
                 }
+            } else if (snapshot.matches('IDLE')) {
+                navigate(RouterPath.LIBRARY, { replace: true });
             }
         });
         return () => {

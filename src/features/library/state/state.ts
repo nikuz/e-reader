@@ -20,7 +20,6 @@ import type {
     LibraryStateEvents,
     OpenFileEvent,
     RemoveBookEvent,
-    SelectBookEvent,
     UpdateBookHighlightsEvent,
 } from './types';
 
@@ -129,7 +128,7 @@ export const libraryStateMachine = setup({
                     file: (event as OpenFileEvent).file,
                 }),
                 onDone: {
-                    target: 'IDLE',
+                    target: 'SELECTING_BOOK',
                     actions: enqueueActions(addOpenedBookAction),
                 },
                 onError: {
@@ -147,8 +146,10 @@ export const libraryStateMachine = setup({
         SELECTING_BOOK: {
             invoke: {
                 src: 'bookSelectorActor',
-                input: ({ event }) => ({
-                    book: (event as SelectBookEvent).book,
+                input: ({ context, event }) => ({
+                    book: event.type === 'SELECT_BOOK'
+                        ? event.book
+                        : context.storedBooks[0]
                 }),
                 onDone: {
                     target: 'IDLE',
