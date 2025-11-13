@@ -1,28 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
-import { pathUtils } from 'src/utils';
-
-// Regular expressions for different image embedding patterns
-const patterns = {
-    // <img src="...">
-    imgSrc: /<img([^>]+)src=["']([^"']+)["']([^>]*)>/gi,
-    // <img srcset="url1 1x, url2 2x, ...">
-    imgSrcset: /<img([^>]+)srcset=["']([^"']+)["']([^>]*)>/gi,
-    // SVG <image xlink:href="...">
-    svgImageXlinkHref: /<image([^>]+)xlink:href=["']([^"']+)["']([^>]*)>/gi,
-    // SVG <image href="...">
-    svgImageHref: /<image([^>]+)href=["']([^"']+)["']([^>]*)>/gi,
-    // <object data="...">
-    objectData: /<object([^>]+)data=["']([^"']+)["']([^>]*)>/gi,
-    // <embed src="...">
-    embedSrc: /<embed([^>]+)src=["']([^"']+)["']([^>]*)>/gi,
-    // <input type="image" src="...">
-    inputImageSrc: /<input([^>]+)type=["']image["']([^>]+)src=["']([^"']+)["']([^>]*)>/gi,
-    // <source srcset="..."> (inside <picture>)
-    sourceSrcset: /<source([^>]+)srcset=["']([^"']+)["']([^>]*)>/gi,
-    // CSS background-image: url(...) in style attributes
-    cssBackgroundUrl: /style=["']([^"']*background-image:\s*url\(['"]?)([^'")\s]+)(['"]?\)[^"']*)["']/gi,
-};
+import { pathUtils, imageUtils } from 'src/utils';
 
 export async function replaceImageUrls(props: {
     fileContent: string,
@@ -39,71 +17,14 @@ export async function replaceImageUrls(props: {
     const urlsToReplace = new Map<string, string>(); // original URL -> replacement URL
 
     // Extract all image URLs from various patterns
-    const urlsFound: string[] = [];
+    const urlsFound: string[] = imageUtils.extractSrcList(fileContent).filter(url => !shouldSkipUrl(url));
 
-    // 1. <img src="...">
-    const imgSrcMatches = [...fileContent.matchAll(patterns.imgSrc)];
-    for (const match of imgSrcMatches) {
-        urlsFound.push(match[2]);
-    }
-
-    // 2. <img srcset="...">
-    const imgSrcsetMatches = [...fileContent.matchAll(patterns.imgSrcset)];
-    for (const match of imgSrcsetMatches) {
-        urlsFound.push(...extractUrlsFromSrcset(match[2]));
-    }
-
-    // 3. SVG <image xlink:href="...">
-    const svgXlinkMatches = [...fileContent.matchAll(patterns.svgImageXlinkHref)];
-    for (const match of svgXlinkMatches) {
-        urlsFound.push(match[2]);
-    }
-
-    // 4. SVG <image href="...">
-    const svgHrefMatches = [...fileContent.matchAll(patterns.svgImageHref)];
-    for (const match of svgHrefMatches) {
-        urlsFound.push(match[2]);
-    }
-
-    // 5. <object data="...">
-    const objectDataMatches = [...fileContent.matchAll(patterns.objectData)];
-    for (const match of objectDataMatches) {
-        urlsFound.push(match[2]);
-    }
-
-    // 6. <embed src="...">
-    const embedSrcMatches = [...fileContent.matchAll(patterns.embedSrc)];
-    for (const match of embedSrcMatches) {
-        urlsFound.push(match[2]);
-    }
-
-    // 7. <input type="image" src="...">
-    const inputImageMatches = [...fileContent.matchAll(patterns.inputImageSrc)];
-    for (const match of inputImageMatches) {
-        urlsFound.push(match[3]);
-    }
-
-    // 8. <source srcset="...">
-    const sourceSrcsetMatches = [...fileContent.matchAll(patterns.sourceSrcset)];
-    for (const match of sourceSrcsetMatches) {
-        urlsFound.push(...extractUrlsFromSrcset(match[2]));
-    }
-
-    // 9. CSS background-image: url(...)
-    const cssBackgroundMatches = [...fileContent.matchAll(patterns.cssBackgroundUrl)];
-    for (const match of cssBackgroundMatches) {
-        urlsFound.push(match[2]);
-    }
-
-    // Remove duplicates and filter out URLs that should be skipped
-    const uniqueUrls = [...new Set(urlsFound)].filter(url => !shouldSkipUrl(url));
-
-    if (uniqueUrls.length === 0) {
+    if (urlsFound.length === 0) {
         return fileContent;
     }
 
     // Get replacement URLs for all unique URLs
-    for (const url of uniqueUrls) {
+    for (const url of urlsFound) {
         try {
             const replacementUrl = await replaceUrl(url, chapterDirname, staticMapping);
             urlsToReplace.set(url, replacementUrl);
@@ -128,14 +49,6 @@ export async function replaceImageUrls(props: {
     return modifiedFileContent;
 }
 
-
-// Helper to extract URLs from srcset attribute (format: "url1 1x, url2 2x, url3 600w")
-function extractUrlsFromSrcset(srcset: string): string[] {
-    return srcset
-        .split(',')
-        .map(entry => entry.trim().split(/\s+/)[0])
-        .filter(url => url && !url.startsWith('data:'));
-}
 
 // Helper to check if URL should be skipped
 function shouldSkipUrl(url: string): boolean {

@@ -19,7 +19,8 @@ export interface BookAttributes {
     // highlights
     highlights: BookHighlight[][],
 
-    addedAt: number,
+    createdAt: number,
+    updatedAt?: number,
 }
 
 export interface BookChapter {

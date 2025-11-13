@@ -7,7 +7,8 @@ export class BookModel implements BookAttributes {
     declare author: string;
     declare language: string;
     declare dirname: string;
-    declare addedAt: number;
+    declare createdAt: number;
+    declare updatedAt?: number;
     #cover: string | undefined;
     #spine: BookChapter[];
     #highlights: BookHighlight[][];

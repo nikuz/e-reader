@@ -9,7 +9,9 @@ export const createTables: DatabaseMigration = {
             title TEXT NOT NULL COLLATE NOCASE,
             author TEXT NOT NULL COLLATE NOCASE,
             attributes TEXT NOT NULL,
-            highlights TEXT
+            highlights TEXT,
+            createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TEXT
         );`,
         `
         CREATE INDEX IF NOT EXISTS "books_title_author_idx"

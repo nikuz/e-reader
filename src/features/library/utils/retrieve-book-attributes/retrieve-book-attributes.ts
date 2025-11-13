@@ -19,7 +19,7 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
 
         spine: [],
         highlights: [],
-        addedAt: Date.now(),
+        createdAt: Date.now(),
     };
 
     // navigation

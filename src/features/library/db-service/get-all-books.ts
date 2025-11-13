@@ -7,7 +7,7 @@ interface SqliteResponse {
 }
 
 export async function getAllBooksFromDB(): Promise<BookAttributes[]> {
-    const storedBooks = await db.query('SELECT * FROM "books"');
+    const storedBooks = await db.query('SELECT * FROM "books" ORDER BY createdAt DESC');
 
     if (!storedBooks) {
         return [];

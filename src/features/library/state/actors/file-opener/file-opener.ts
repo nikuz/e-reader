@@ -7,8 +7,8 @@ import {
     retrieveBookAttributes,
     generateFakeIsbn,
     replaceStaticContentUrls,
-    getBookCoverObjectUrl,
     retrieveNavigationEpub2,
+    extractBookCover,
 } from '../../../utils';
 import { LIBRARY_DIRECTORY } from '../../../constants';
 import { BookModel } from 'src/models';
@@ -95,12 +95,11 @@ export const fileOpenerActor = fromPromise(async (props: {
         });
     }
 
+    bookAttributes.cover = await extractBookCover(bookAttributes);
+
     await createBookInDB(bookAttributes);
 
-    const newBook = new BookModel(bookAttributes);
-    newBook.cover = await getBookCoverObjectUrl(bookAttributes);
-
-    return newBook;
+    return new BookModel(bookAttributes);
 });
 
 async function createBookFoldersFromArchive(

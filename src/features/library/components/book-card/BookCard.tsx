@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import {
+    Box,
     IconButton,
     Dropdown,
     List,
     ListItemButton,
     Card,
-    CardMedia,
     CardContent,
     Typography,
     Dialog,
@@ -14,8 +14,9 @@ import {
     Button,
 } from 'src/design-system/components';
 import { MoreVertIcon } from 'src/design-system/icons';
-import { libraryStateMachineActor } from '../../state';
 import type { BookModel } from 'src/models';
+import { libraryStateMachineActor } from '../../state';
+import { BookCover } from '../book-cover';
 
 interface Props {
     book: BookModel,
@@ -48,22 +49,21 @@ export function BookCard({ book }: Props) {
     };
 
     return <>
-        <Card className="min-h-80 cursor-pointer rounded-b-lg">
+        <Card className="min-h-80 cursor-pointer rounded-b-lg grid grid-rows-[auto_70px]">
             {book.cover && (
-                <CardMedia
-                    component="img"
-                    image={book.cover}
-                    alt={book.title}
-                    onClick={cardClickHandler}
-                />
+                <Box className="flex-1" onClick={cardClickHandler}>
+                    <BookCover book={book} />
+                </Box>
             )}
             <CardContent className="mt-1 flex items-start gap-2 p-0!">
-                <Typography
-                    className="flex-1 text-sm py-2! pl-2!"
-                    onClick={cardClickHandler}
-                >
-                    {book.title}
-                </Typography>
+                <Box className="flex-1 py-2 pl-2">
+                    <Typography
+                        className="text-sm line-clamp-2 text-ellipsis"
+                        onClick={cardClickHandler}
+                    >
+                        {book.title}
+                    </Typography>
+                </Box>
                 <Dropdown
                     content={(closeDropdown) => (
                         <List disablePadding>

@@ -4,7 +4,7 @@ import type { BookAttributes } from 'src/types';
 export async function updateHighlightsInDB(book: BookAttributes) {
     const query = `
         UPDATE "books"
-        SET highlights=?
+        SET highlights=?, updatedAt=datetime("now")
         WHERE id=?;
     `;
     const params: string[] = [
