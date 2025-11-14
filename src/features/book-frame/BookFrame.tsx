@@ -1,5 +1,7 @@
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Toast, PageLoader } from 'src/design-system/components';
+import { DictionaryInvokeButton } from 'src/features/dictionary/components';
 import { RouterPath } from 'src/router/constants';
 import {
     BookFrameTopMenu,
@@ -22,10 +24,14 @@ export default function BookFrame() {
     const bookLoadErrorMessage = useBookFrameStateSelect('errorMessage');
     const bookIsLoading = useBookLoaderStateMatch(['LOADING_BOOK']);
 
-    const closeErrorHandler = () => {
+    const closeErrorHandler = useCallback(() => {
         bookFrameStateMachineActor.send({ type: 'CLOSE_BOOK_LOAD_ERROR' });
         navigate(RouterPath.LIBRARY);
-    };
+    }, [navigate]);
+    
+    const hideMenuHandler = useCallback(() => {
+        bookFrameStateMachineActor.send({ type: 'HIDE_MENU_PANELS' });
+    }, []);
 
     return (
         <Box
@@ -35,6 +41,7 @@ export default function BookFrame() {
             }}
         >
             <BookFrameTopMenu>
+                <DictionaryInvokeButton onClick={hideMenuHandler} />
                 <BookFrameSettings />
             </BookFrameTopMenu>
 

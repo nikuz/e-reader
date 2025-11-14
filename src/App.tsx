@@ -6,6 +6,7 @@ import { libraryStateMachineActor } from 'src/features/library/state';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { RouterPath } from 'src/router/constants';
 import Debug from './features/debug';
+import { OrientationChangeWatcher } from './features/screen-orientation/daemons';
 import './App.css';
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
                 className="relative h-full overflow-hidden"
             >
                 <Outlet />
+                <OrientationChangeWatcher />
                 <Debug />
             </Paper>
         </ThemeProvider>

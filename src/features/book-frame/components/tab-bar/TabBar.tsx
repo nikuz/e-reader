@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import {
     BottomNavigation,
     BottomNavigationAction,
@@ -8,25 +7,32 @@ import {
 import {
     FormatListBulletedIcon,
     SearchIcon,
-    TranslateIcon,
     MoreHorizIcon,
+    ScreenLockLandscapeIcon,
+    ScreenLockPortraitIcon,
 } from 'src/design-system/icons';
-import { RouterPath } from 'src/router/constants';
 import {
-    useBookFrameStateSelect,
-    bookFrameStateMachineActor,
-} from '../../state';
+    screenOrientationStateMachineActor,
+    useScreenOrientationStateSelect,
+} from 'src/features/screen-orientation/state';
+import { useBookFrameStateSelect } from '../../state';
+import { useCallback } from 'react';
 
 export function BookFrameTabBar() {
     const menuPanelsVisible = useBookFrameStateSelect('menuPanelsVisible');
-    const navigate = useNavigate();
+    const screenOrientation = useScreenOrientationStateSelect('orientation');
 
-    const changeHandler = (_: React.SyntheticEvent, value: string) => {
-        if (value === 'dictionary') {
-            navigate(RouterPath.DICTIONARY);
-            bookFrameStateMachineActor.send({ type: 'HIDE_MENU_PANELS' });
+    const changeHandler = useCallback((_: React.SyntheticEvent, value: string) => {
+        switch (value) {
+            case 'rotate':
+                if (screenOrientation === 'landscape') {
+                    screenOrientationStateMachineActor.send({ type: 'LOCK_PORTRAIT' });
+                } else {
+                    screenOrientationStateMachineActor.send({ type: 'LOCK_LANDSCAPE' });
+                }
+                break;
         }
-    };
+    }, [screenOrientation]);
 
     return (
         <Fade
@@ -49,13 +55,17 @@ export function BookFrameTabBar() {
                         />
 
                         <BottomNavigationAction
-                            icon={<SearchIcon />}
-                            value="search"
+                            icon={
+                                screenOrientation === 'landscape'
+                                    ? <ScreenLockPortraitIcon />
+                                    : <ScreenLockLandscapeIcon />
+                            }
+                            value="rotate"
                         />
 
                         <BottomNavigationAction
-                            icon={<TranslateIcon />}
-                            value="dictionary"
+                            icon={<SearchIcon />}
+                            value="search"
                         />
 
                         <BottomNavigationAction

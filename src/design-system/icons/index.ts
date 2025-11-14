@@ -18,3 +18,5 @@ export { default as PlayCircleIcon } from '@mui/icons-material/PlayCircle';
 export { default as StopCircleIcon } from '@mui/icons-material/StopCircle';
 export { default as AddPhotoAlternateIcon } from '@mui/icons-material/AddPhotoAlternate';
 export { default as ImageIcon } from '@mui/icons-material/Image';
+export { default as ScreenLockLandscapeIcon } from '@mui/icons-material/ScreenLockLandscape';
+export { default as ScreenLockPortraitIcon } from '@mui/icons-material/ScreenLockPortrait';

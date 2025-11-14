@@ -15,7 +15,7 @@ import {
 } from '../../state';
 
 interface Props {
-    children: React.ReactElement,
+    children: React.ReactElement[],
 }
 
 export function BookFrameTopMenu(props: Props) {

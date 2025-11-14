@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Box, AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
+import { DictionaryInvokeButton } from 'src/features/dictionary/components';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
 import {
@@ -36,6 +37,7 @@ export default function Library() {
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         Library
                     </Typography>
+                    <DictionaryInvokeButton />
                 </Toolbar>
             </AppBar>
 
