@@ -25,6 +25,7 @@ export interface DictionaryStateContext {
     navigator?: NavigateFunction,
 
     storedWords: DictionaryWord[],
+    storedWordsCounter: number,
 
     translatingWord?: DictionaryWord,
     selectedWord?: DictionaryWord,

@@ -18,5 +18,5 @@ export async function createBookInDB(book: BookAttributes) {
         JSON.stringify(book),
     ];
 
-    await db.execute(query, params);
+    await db.run(query, params);
 }

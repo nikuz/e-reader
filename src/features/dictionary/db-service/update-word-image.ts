@@ -7,7 +7,7 @@ export async function updateWordImageInDB(props: {
 }): Promise<void> {
     const { word, image } = props;
 
-    await db.execute(
+    await db.run(
         `
             UPDATE "dictionary-words"
             SET image=:image, updatedAt=datetime("now")

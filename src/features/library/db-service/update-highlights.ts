@@ -12,5 +12,5 @@ export async function updateHighlightsInDB(book: BookAttributes) {
         book.eisbn,
     ];
 
-    await db.execute(query, params);
+    await db.run(query, params);
 }

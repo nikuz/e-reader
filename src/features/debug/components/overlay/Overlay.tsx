@@ -26,12 +26,12 @@ export default function Overlay() {
     }, []);
     
     const clearLibraryDBTableHandler = useCallback(async () => {
-        await db.execute('DELETE FROM "books"');
+        await db.run('DELETE FROM "books"');
         window.location.reload();
     }, []);
     
     const clearDictionaryDBTableHandler = useCallback(async () => {
-        await db.execute('DELETE FROM "dictionary-words"');
+        await db.run('DELETE FROM "dictionary-words"');
         window.location.reload();
     }, []);
 

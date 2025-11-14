@@ -7,7 +7,7 @@ export async function updateWordPronunciationInDB(props: {
 }): Promise<void> {
     const { word, pronunciation } = props;
 
-    await db.execute(
+    await db.run(
         `
             UPDATE "dictionary-words"
             SET pronunciation=:pronunciation, updatedAt=datetime("now")

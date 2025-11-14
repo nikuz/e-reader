@@ -7,7 +7,7 @@ export async function createWordInDB(props: {
 }): Promise<void> {
     const { bookId, word } = props;
 
-    await db.execute(
+    await db.run(
         `
             INSERT INTO "dictionary-words" (
                 bookId,

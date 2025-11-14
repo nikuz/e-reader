@@ -7,13 +7,14 @@ export const wordsListChunkRetrievalActor = fromPromise(async (props: {
         from: number,
         to: number,
     },
-}): Promise<DictionaryWord[]> => {
+}): Promise<{
+    words: DictionaryWord[],
+    counter: number,
+}> => {
     const { from, to } = props.input;
 
-    const words = await getWordsListFromDB({
+    return await getWordsListFromDB({
         from,
         to,
     });
-
-    return words;
 });

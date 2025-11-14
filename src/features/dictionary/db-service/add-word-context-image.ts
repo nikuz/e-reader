@@ -10,7 +10,7 @@ export async function addWordContextImageInDB(props: {
         contextImage,
     } = props;
 
-    await db.execute(
+    await db.run(
         `
             UPDATE "dictionary-words"
             SET contextImages=:images, updatedAt=datetime("now")

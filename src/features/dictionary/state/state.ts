@@ -8,7 +8,11 @@ import {
     type QueueManagerRequestContextAnalysisEvent,
 } from '../queue-manager';
 import { getNewDictionaryWord } from '../utils';
-import { initializerActor, wordsListChunkRetrievalActor, wordRemoverActor } from './actors';
+import {
+    initializerActor,
+    wordsListChunkRetrievalActor,
+    wordRemoverActor,
+} from './actors';
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
@@ -37,6 +41,7 @@ export const dictionaryStateMachine = setup({
 
     context: {
         storedWords: [],
+        storedWordsCounter: 0,
     },
 
     entry: assign(({ spawn }) => ({
@@ -167,8 +172,9 @@ export const dictionaryStateMachine = setup({
                     actions: assign(({ context, event }) => ({
                         storedWords: [
                             ...context.storedWords,
-                            ...event.output,
+                            ...event.output.words,
                         ],
+                        storedWordsCounter: event.output.counter,
                     })),
                 },
                 onError: {
@@ -195,6 +201,7 @@ export const dictionaryStateMachine = setup({
                         storedWords: context.storedWords.filter(
                             word => word.id !== event.output
                         ),
+                        storedWordsCounter: context.storedWordsCounter - 1,
                     })),
                 },
                 onError: {

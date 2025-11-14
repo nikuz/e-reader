@@ -1,5 +1,10 @@
 import { Capacitor } from '@capacitor/core';
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection, type capSQLiteChanges } from '@capacitor-community/sqlite';
+import {
+    CapacitorSQLite,
+    SQLiteConnection,
+    SQLiteDBConnection,
+    type capSQLiteChanges,
+} from '@capacitor-community/sqlite';
 import type { DatabaseConfig, DatabaseMigration } from './types';
 
 if (import.meta.env.DEV && !Capacitor.isNativePlatform()) {
@@ -83,7 +88,7 @@ export class DatabaseController {
         return (await db.query(query, values)).values;
     }
 
-    async execute(query: string, values?: any[]): Promise<capSQLiteChanges> {
+    async run(query: string, values?: any[]): Promise<capSQLiteChanges> {
         const db = this.ensureDB();
         const result = await db.run(query, values);
 

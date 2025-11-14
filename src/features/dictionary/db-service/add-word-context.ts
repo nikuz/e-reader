@@ -21,7 +21,7 @@ export async function addWordContextInDB(props: {
         wordContexts.push(newContext);
     }
 
-    await db.execute(
+    await db.run(
         `
             UPDATE "dictionary-words"
             SET contexts=:contexts, contextExplanations=:explanations, updatedAt=datetime("now")

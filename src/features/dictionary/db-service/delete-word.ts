@@ -5,7 +5,7 @@ export async function deleteWordFromDB(props: {
 }): Promise<void> {
     const { wordId } = props;
 
-    await db.execute(
+    await db.run(
         `
             DELETE FROM "dictionary-words"
             WHERE id = :wordId;

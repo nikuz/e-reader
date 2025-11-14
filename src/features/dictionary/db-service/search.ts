@@ -10,13 +10,16 @@ export async function searchInDB(props: {
     searchText: string,
     from: number,
     to: number,
-}): Promise<DictionaryWord[]> {
+}): Promise<{
+    words: DictionaryWord[],
+    counter: number,
+}> {
     const { searchText, from, to } = props;
     const searchPattern = `%${searchText}%`;
     const searchPatternStart = `%${searchText}`;
     const searchPatternEnd = `${searchText}%`;
 
-    const response = await db.query(
+    const wordsRequest = db.query(
         `
             SELECT id, text, translation, pronunciation, sourceLanguage, targetLanguage, createdAt, updatedAt
             FROM "dictionary-words"
@@ -50,17 +53,25 @@ export async function searchInDB(props: {
             from,
         ]
     );
+    const wordsCounterRequest = db.query('SELECT COUNT(id) FROM "dictionary-words"');
+    const [words, wordsCounter] = await Promise.all([wordsRequest, wordsCounterRequest]);
 
-    if (!response) {
-        return [];
+    if (!words) {
+        return {
+            words: [],
+            counter: 0,
+        };
     }
 
-    return response.map((item: DictionaryWordDBInstance): DictionaryWord => ({
-        ...item,
-        contexts: [],
-        contextExplanations: [],
-        contextImages: [],
-        sourceLanguage: getLanguageByCode(item.sourceLanguage as LanguageCode),
-        targetLanguage: getLanguageByCode(item.targetLanguage as LanguageCode),
-    }));
+    return {
+        words: words.map((item: DictionaryWordDBInstance): DictionaryWord => ({
+            ...item,
+            contexts: [],
+            contextExplanations: [],
+            contextImages: [],
+            sourceLanguage: getLanguageByCode(item.sourceLanguage as LanguageCode),
+            targetLanguage: getLanguageByCode(item.targetLanguage as LanguageCode),
+        })),
+        counter: wordsCounter?.[0]['COUNT(id)'] ?? 0,
+    };
 }
