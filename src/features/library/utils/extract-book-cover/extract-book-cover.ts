@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 import { pathUtils, converterUtils, imageUtils } from 'src/utils';
 import type { BookAttributes } from 'src/types';
@@ -50,7 +51,11 @@ export async function extractBookCover(book: BookAttributes): Promise<string | u
             data: imageFileContent,
         });
 
-        return newCoverPath;
+        const fileUri = await FileStorageController.getUri({
+            path: newCoverPath,
+        });
+        
+        return Capacitor.convertFileSrc(fileUri.uri);
     } else {
         const coverFileContent = await FileStorageController.readFile({ path: coverPath });
         const filePathParts = book.cover.split('/');
@@ -62,7 +67,11 @@ export async function extractBookCover(book: BookAttributes): Promise<string | u
             data: coverFileContent.data,
         });
 
-        return newCoverPath;
+        const fileUri = await FileStorageController.getUri({
+            path: newCoverPath,
+        });
+
+        return Capacitor.convertFileSrc(fileUri.uri);
     }
 };
 
