@@ -1,7 +1,7 @@
-import { useEffect, Fragment } from 'react';
-import { Box, List, Divider, Typography } from 'src/design-system/components';
+import { useEffect } from 'react';
+import { Box, List, Typography } from 'src/design-system/components';
 import { dictionaryStateMachineActor } from '../../state';
-import { useDictionaryStateSelect } from '../../state/hooks';
+import { useDictionaryStateSelect, useDictionaryStateMatch } from '../../state/hooks';
 import { DICTIONARY_LIST_ITEMS_PER_PAGE } from '../../constants';
 import { WordsListItem } from './WordsListItem';
 import type { DictionaryWord } from '../../types';
@@ -9,6 +9,10 @@ import type { DictionaryWord } from '../../types';
 export function WordsList() {
     const storedWords = useDictionaryStateSelect('storedWords');
     const storedWordsCounter = useDictionaryStateSelect('storedWordsCounter');
+    const searchWords = useDictionaryStateSelect('searchWords');
+    const isLoading = useDictionaryStateMatch(['LOADING_WORDS_LIST']);
+    
+    const displayWords = searchWords !== undefined ? searchWords : storedWords;
 
     const handleDeleteWord = (word: DictionaryWord) => {
         dictionaryStateMachineActor.send({
@@ -19,13 +23,25 @@ export function WordsList() {
 
     useEffect(() => {
         dictionaryStateMachineActor.send({
-            type: 'LIST_GET_WORDS_CHUNK',
+            type: 'GET_WORDS_LIST_CHUNK',
             from: 0,
             to: DICTIONARY_LIST_ITEMS_PER_PAGE,
         });
     }, []);
 
-    if (storedWordsCounter === 0) {
+    // Show "no results" message when search is active but returned no results
+    if (searchWords !== undefined && searchWords.length === 0) {
+        return (
+            <Box sx={{ paddingTop: 4 }}>
+                <Typography textAlign="center" padding="0 70px" color="text.secondary">
+                    No words found matching your search.
+                </Typography>
+            </Box>
+        );
+    }
+
+    // Show empty state when dictionary has no words
+    if (storedWordsCounter === 0 && !isLoading) {
         return (
             <Box className="h-full flex items-center">
                 <Box>
@@ -41,17 +57,14 @@ export function WordsList() {
     }
 
     return (
-        <List>
-            {storedWords.map((word, key) => (
-                <Fragment key={word.id}>
-                    <WordsListItem
-                        word={word}
-                        onDelete={handleDeleteWord}
-                    />
-                    {key < storedWords.length - 1 && (
-                        <Divider />
-                    )}
-                </Fragment>
+        <List disablePadding className="h-full overflow-y-auto">
+            {displayWords.map((word, key) => (
+                <WordsListItem
+                    key={key}
+                    word={word}
+                    divider={key < displayWords.length - 1}
+                    onDelete={handleDeleteWord}
+                />
             ))}
         </List>
     );

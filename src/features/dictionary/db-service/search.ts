@@ -25,15 +25,15 @@ export async function searchInDB(props: {
             FROM "dictionary-words"
             WHERE
                 text LIKE :searchPattern
-                OR translation LIKE :searchPattern
+                OR translation LIKE :searchPattern2
             ORDER BY
                 CASE 
                     WHEN text LIKE :searchText THEN 1
-                    WHEN translation LIKE :searchText THEN 1
+                    WHEN translation LIKE :searchText2 THEN 1
                     WHEN text LIKE :searchPatternEnd THEN 2
-                    WHEN translation LIKE :searchPatternEnd THEN 2
+                    WHEN translation LIKE :searchPatternEnd2 THEN 2
                     WHEN text LIKE :searchPatternStart THEN 3
-                    WHEN translation LIKE :searchPatternStart THEN 3
+                    WHEN translation LIKE :searchPatternStart2 THEN 3
                     ELSE 4
                 END,
                 text ASC,

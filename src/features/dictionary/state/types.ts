@@ -27,6 +27,9 @@ export interface DictionaryStateContext {
     storedWords: DictionaryWord[],
     storedWordsCounter: number,
 
+    searchWords?: DictionaryWord[],
+    searchWordsCounter?: number,
+
     translatingWord?: DictionaryWord,
     selectedWord?: DictionaryWord,
 
@@ -50,7 +53,7 @@ export interface ClearWordSelectionEvent { type: 'CLEAR_WORD_SELECTION' }
 export interface ClearErrorMessageEvent { type: 'CLEAR_ERROR_MESSAGE' }
 
 export interface ListGetWordsChunkEvent {
-    type: 'LIST_GET_WORDS_CHUNK',
+    type: 'GET_WORDS_LIST_CHUNK',
     from: number,
     to: number,
 }
@@ -61,6 +64,13 @@ export interface DeleteWordEvent {
     type: 'DELETE_WORD',
     wordId: number,
 }
+
+export interface SearchWordEvent {
+    type: 'SEARCH_WORD',
+    searchText: string,
+}
+
+export interface ClearSearchResultsEvent { type: 'CLEAR_SEARCH_RESULTS' }
 
 export type DictionaryStateEvents =
     | InitializeEvent
@@ -84,4 +94,6 @@ export type DictionaryStateEvents =
     | ClearErrorMessageEvent
     | ListGetWordsChunkEvent
     | CleanupEvent
-    | DeleteWordEvent;
+    | DeleteWordEvent
+    | SearchWordEvent
+    | ClearSearchResultsEvent;

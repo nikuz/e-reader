@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, AppBar, Toolbar, IconButton, Typography } from 'src/design-system/components';
 import { ArrowBackIosNewIcon, SettingsIcon } from 'src/design-system/icons';
-import { WordsList } from './components';
+import { WordsList, WordsListCounter, SearchField } from './components';
 import { dictionaryStateMachineActor } from './state';
 
 export default function Dictionary() {
@@ -22,7 +22,7 @@ export default function Dictionary() {
 
     return (
         <Box
-            className="h-full"
+            className="h-full grid grid-rows-[auto_1fr]"
             sx={{
                 padding: 'env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0',
             }}
@@ -54,7 +54,11 @@ export default function Dictionary() {
                 </Toolbar>
             </AppBar>
 
-            <WordsList />
+            <Box className="grid grid-rows-[auto_auto_1fr] overflow-hidden">
+                <SearchField />
+                <WordsListCounter />
+                <WordsList />
+            </Box>
         </Box>
     );
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import {
     ListItem,
+    ListItemButton,
     ListItemText,
     Box,
 } from 'src/design-system/components';
@@ -9,18 +10,19 @@ import { DictionaryWordPronunciationButton } from '../word-pronunciation-button'
 import type { DictionaryWord } from '../../types';
 
 interface Props {
-    word: DictionaryWord;
-    onDelete?: (word: DictionaryWord) => void;
+    word: DictionaryWord,
+    divider: boolean,
+    onDelete?: (word: DictionaryWord) => void,
 }
 
 export function WordsListItem(props: Props) {
-    const { word, onDelete } = props;
+    const { word, divider, onDelete } = props;
     const [translateX, setTranslateX] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const touchStartX = useRef(0);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLLIElement>(null);
 
     const handleTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
@@ -65,8 +67,10 @@ export function WordsListItem(props: Props) {
     };
 
     return (
-        <Box
+        <ListItem
             ref={containerRef}
+            component="li"
+            divider={divider}
             sx={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -96,16 +100,17 @@ export function WordsListItem(props: Props) {
                     touchAction: 'pan-y', // Allow vertical scrolling
                 }}
             >
-                <ListItem
-                    secondaryAction={<DictionaryWordPronunciationButton word={word} />}
-                    sx={{ height: '100%' }}
-                >
-                    <ListItemText
-                        primary={word.text}
-                        secondary={word.translation}
-                    />
-                </ListItem>
+                <Box className="h-full flex items-center px-1">
+                    <ListItemButton>
+                        <ListItemText
+                            primary={word.text}
+                            secondary={word.translation}
+                            className="flex-1"
+                        />
+                    </ListItemButton>
+                    <DictionaryWordPronunciationButton word={word} />
+                </Box>
             </Box>
-        </Box>
+        </ListItem>
     );
 }

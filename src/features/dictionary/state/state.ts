@@ -12,6 +12,7 @@ import {
     initializerActor,
     wordsListChunkRetrievalActor,
     wordRemoverActor,
+    wordSearcherActor,
 } from './actors';
 import {
     updateTranslatingWordAction,
@@ -23,6 +24,7 @@ import type {
     DictionaryStateEvents,
     ListGetWordsChunkEvent,
     DeleteWordEvent,
+    SearchWordEvent,
 } from './types';
 
 export const dictionaryStateMachine = setup({
@@ -31,6 +33,7 @@ export const dictionaryStateMachine = setup({
         initializerActor,
         wordsListChunkRetrievalActor,
         wordRemoverActor,
+        wordSearcherActor,
     },
     types: {
         context: {} as DictionaryStateContext,
@@ -137,8 +140,15 @@ export const dictionaryStateMachine = setup({
                 CLEAR_ERROR_MESSAGE: {
                     actions: assign(() => ({ errorMessage: undefined })),
                 },
-                LIST_GET_WORDS_CHUNK: 'LOADING_WORDS_LIST',
+                GET_WORDS_LIST_CHUNK: 'LOADING_WORDS_LIST',
                 DELETE_WORD: 'DELETING_WORD',
+                SEARCH_WORD: 'SEARCHING_WORDS',
+                CLEAR_SEARCH_RESULTS: {
+                    actions: assign(() => ({
+                        searchWords: undefined,
+                        searchWordsCounter: undefined,
+                    })),
+                },
             },
         },
 
@@ -209,6 +219,33 @@ export const dictionaryStateMachine = setup({
                     actions: [
                         assign(({ event }) => ({
                             errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+
+        SEARCHING_WORDS: {
+            invoke: {
+                src: 'wordSearcherActor',
+                input: ({ event }) => ({
+                    searchText: (event as SearchWordEvent).searchText,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: assign(({ event }) => ({
+                        searchWords: event.output.words,
+                        searchWordsCounter: event.output.counter,
+                    })),
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                            searchWords: [],
+                            searchWordsCounter: 0,
                         })),
                         xStateUtils.stateErrorTraceAction,
                     ],
