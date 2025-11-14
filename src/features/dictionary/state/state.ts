@@ -256,7 +256,12 @@ export const dictionaryStateMachine = setup({
 
     on: {
         CLEANUP: {
-            actions: assign(() => ({ storedWords: [] })),
+            actions: assign(() => ({
+                storedWords: [],
+                storedWordsCounter: 0,
+                searchWords: undefined,
+                searchWordsCounter: undefined,
+            })),
         }
     },
 });

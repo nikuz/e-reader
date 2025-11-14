@@ -100,7 +100,7 @@ export function WordsListItem(props: Props) {
                     touchAction: 'pan-y', // Allow vertical scrolling
                 }}
             >
-                <Box className="h-full flex items-center px-1">
+                <Box className="h-full flex items-center px-1 pr-2">
                     <ListItemButton>
                         <ListItemText
                             primary={word.text}

@@ -35,7 +35,7 @@ export function SearchField() {
                 fullWidth
                 value={searchValue}
                 onChange={handleSearchChange}
-                placeholder="Search for new words"
+                placeholder="Search word"
                 startAdornment={<SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />}
                 endAdornment={
                     searchValue && (

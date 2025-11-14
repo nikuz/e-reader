@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Box, List, Typography } from 'src/design-system/components';
 import { dictionaryStateMachineActor } from '../../state';
 import { useDictionaryStateSelect, useDictionaryStateMatch } from '../../state/hooks';
@@ -11,6 +11,7 @@ export function WordsList() {
     const storedWordsCounter = useDictionaryStateSelect('storedWordsCounter');
     const searchWords = useDictionaryStateSelect('searchWords');
     const isLoading = useDictionaryStateMatch(['LOADING_WORDS_LIST']);
+    const initialListLoaded = useRef(false);
     
     const displayWords = searchWords !== undefined ? searchWords : storedWords;
 
@@ -22,6 +23,10 @@ export function WordsList() {
     };
 
     useEffect(() => {
+        if (initialListLoaded.current) {
+            return;
+        }
+        initialListLoaded.current = true;
         dictionaryStateMachineActor.send({
             type: 'GET_WORDS_LIST_CHUNK',
             from: 0,
