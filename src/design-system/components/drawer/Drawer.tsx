@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
-import MUIDrawer, { type DrawerProps } from '@mui/material/Drawer';
+import MUIDrawer, { type SwipeableDrawerProps } from '@mui/material/SwipeableDrawer';
 
-interface Props extends Omit<DrawerProps, 'onClose' | 'open' | 'content'> {
+interface Props extends Omit<SwipeableDrawerProps, 'onClose' | 'open' | 'content' | 'onOpen'> {
     content: React.ReactNode | React.ReactNode[] | ((close: () => void) => React.ReactNode),
     onClose?: () => void,
 }
@@ -31,7 +31,10 @@ export function Drawer({
         <MUIDrawer
             {...drawerProps}
             open={!!anchorEl}
+            disableDiscovery
+            disableSwipeToOpen
             onClose={closeHandler}
+            onOpen={() => {}}
         >
             <Box sx={{
                 paddingTop: 'env(safe-area-inset-top)',

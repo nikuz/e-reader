@@ -30,7 +30,7 @@ export function BookFrameSettings() {
             keepMounted
             anchor="right"
             content={(
-                <Box className="w-[50vw]">
+                <Box className="w-[50vw] min-w-sm">
                     <Typography
                         variant="h6"
                         marginLeft={2}
