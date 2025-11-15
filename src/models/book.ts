@@ -1,4 +1,9 @@
-import type { BookAttributes, BookChapter, BookHighlight } from 'src/types';
+import type {
+    BookAttributes,
+    BookChapter,
+    BookHighlight,
+    BookNavigationEpub2,
+} from 'src/types';
 
 export class BookModel implements BookAttributes {
     private attributes: BookAttributes;
@@ -12,11 +17,15 @@ export class BookModel implements BookAttributes {
     #cover: string | undefined;
     #spine: BookChapter[];
     #highlights: BookHighlight[][];
+    #navigationEpub2Src?: string;
+    #navigationEpub2?: BookNavigationEpub2;
+    #navigationEpub3Src?: string;
 
     constructor(attributes: BookAttributes) {
         this.attributes = structuredClone(attributes);
         this.#spine = structuredClone(attributes.spine);
         this.#highlights = structuredClone(attributes.highlights);
+        this.#navigationEpub2 = structuredClone(attributes.navigationEpub2);
         Object.assign(this, attributes);
     }
 
@@ -40,6 +49,27 @@ export class BookModel implements BookAttributes {
     get highlights(): BookHighlight[][] {
         return this.#highlights;
     }
+    
+    set navigationEpub2Src(src: string) {
+        this.#navigationEpub2Src = src;
+    }
+    get navigationEpub2Src(): string | undefined {
+        return this.#navigationEpub2Src;
+    }
+    
+    set navigationEpub2(navigation: BookNavigationEpub2) {
+        this.#navigationEpub2 = navigation;
+    }
+    get navigationEpub2(): BookNavigationEpub2 | undefined {
+        return this.#navigationEpub2;
+    }
+    
+    set navigationEpub3Src(src: string) {
+        this.#navigationEpub3Src = src;
+    }
+    get navigationEpub3Src(): string | undefined {
+        return this.#navigationEpub3Src;
+    }
 
     clone() {
         const newInstance = new BookModel(this.attributes);
@@ -48,6 +78,16 @@ export class BookModel implements BookAttributes {
         }
         newInstance.spine = this.spine;
         newInstance.highlights = this.highlights;
+
+        if (this.navigationEpub2Src) {
+            newInstance.navigationEpub2Src = this.navigationEpub2Src;
+        }
+        if (this.navigationEpub2) {
+            newInstance.navigationEpub2 = this.navigationEpub2;
+        }
+        if (this.navigationEpub3Src) {
+            newInstance.navigationEpub3Src = this.navigationEpub3Src;
+        }
 
         return newInstance;
     }
@@ -72,6 +112,9 @@ export class BookModel implements BookAttributes {
             ...this.toOriginal(),
             cover: this.cover,
             spine: this.spine,
+            navigationEpub2Src: this.navigationEpub2Src,
+            navigationEpub2: this.navigationEpub2,
+            navigationEpub3Src: this.navigationEpub3Src,
         };
     }
 }

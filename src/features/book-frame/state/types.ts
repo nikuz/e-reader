@@ -124,6 +124,10 @@ export interface DeleteHighlightEvent {
 
 export interface RequestWordAnalysisEvent { type: 'REQUEST_WORD_ANALYSIS' }
 
+export interface OpenNavigationEvent { type: 'NAVIGATION_OPEN' }
+
+export interface CloseNavigationEvent { type: 'NAVIGATION_CLOSE' }
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -146,4 +150,6 @@ export type BookFrameStateEvents =
     | StoreHighlightEvent
     | RestoreHighlightsEvent
     | DeleteHighlightEvent
-    | RequestWordAnalysisEvent;
+    | RequestWordAnalysisEvent
+    | OpenNavigationEvent
+    | CloseNavigationEvent;

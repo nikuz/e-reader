@@ -117,6 +117,7 @@ export const bookFrameStateMachine = setup({
                     target: 'ANALYZING_WORD',
                     actions: enqueueActions(clearTextSelectionAction),
                 },
+                NAVIGATION_OPEN: 'NAVIGATION_OPENED',
             },
         },
 
@@ -146,6 +147,12 @@ export const bookFrameStateMachine = setup({
                 FRAME_TOUCH_START: {
                     target: 'IDLE',
                 },
+            },
+        },
+
+        NAVIGATION_OPENED: {
+            on: {
+                NAVIGATION_CLOSE: 'IDLE',
             },
         },
     },

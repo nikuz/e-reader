@@ -15,7 +15,7 @@ import {
     screenOrientationStateMachineActor,
     useScreenOrientationStateSelect,
 } from 'src/features/screen-orientation/state';
-import { useBookFrameStateSelect } from '../../state';
+import { useBookFrameStateSelect, bookFrameStateMachineActor } from '../../state';
 import { useCallback } from 'react';
 
 export function BookFrameTabBar() {
@@ -24,6 +24,10 @@ export function BookFrameTabBar() {
 
     const changeHandler = useCallback((_: React.SyntheticEvent, value: string) => {
         switch (value) {
+            case 'navigation':
+                bookFrameStateMachineActor.send({ type: 'NAVIGATION_OPEN' });
+                break;
+            
             case 'rotate':
                 if (screenOrientation === 'landscape') {
                     screenOrientationStateMachineActor.send({ type: 'LOCK_PORTRAIT' });
