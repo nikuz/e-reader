@@ -1,10 +1,11 @@
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { fromPromise } from 'xstate';
 import { FileStorageController, FileStorageEncoding } from 'src/controllers';
 import { settingsStateMachineActor } from 'src/features/settings/state';
-import { fromPromise } from 'xstate';
 import { pathUtils } from 'src/utils';
 import type { BookModel } from 'src/models';
+import navigationCss from 'src/static-injections/style/navigation.css?raw';
 import {
     INJECTED_CSS_PLACEHOLDER,
     FONT_CSS_PLACEHOLDER,
@@ -46,7 +47,7 @@ export const bookLoaderActor = fromPromise(async (props: {
                     encoding: FileStorageEncoding.UTF8,
                 });
 
-                const originalContent = fileReadResponse.data as string;
+                const originalContent = fileReadResponse.data;
                 const modifiedContent = originalContent
                     .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
                     .replace(FONT_CSS_PLACEHOLDER, fontCSS)
@@ -63,10 +64,29 @@ export const bookLoaderActor = fromPromise(async (props: {
             })());
         }
 
+        if (book.navigationEpub3Src) {
+            jobs.push((async () => {
+                if (!book.navigationEpub3Src) {
+                    return;
+                }
+                const navigationFullPath = pathUtils.join([book.dirname, book.navigationEpub3Src]);
+                const navigationFileContent = await FileStorageController.readFile({
+                    path: navigationFullPath,
+                    encoding: FileStorageEncoding.UTF8,
+                });
+                const originalContent = navigationFileContent.data;
+                const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, navigationCss);
+                const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
+                const blobUrl = URL.createObjectURL(blob);
+                book.navigationEpub3Src = blobUrl;
+            })());
+        }
+
         await Promise.all(jobs);
     }
     // web platform requires reading every file and generating object URLs for linked static content
     else {
+        const globalFileMapping = new Map<string, { content: string, blobUrl?: string }>();
         for (const key in spine) {
             const chapter = spine[key];
             const chapterFullPath = pathUtils.join([book.dirname, chapter.filePath]);
@@ -75,12 +95,12 @@ export const bookLoaderActor = fromPromise(async (props: {
                 path: chapterFullPath,
                 encoding: FileStorageEncoding.UTF8,
             });
-            const xmlDoc = new DOMParser().parseFromString(fileContent.data, 'application/xhtml+xml');
             
-            await webRetrieveStaticContent({ xmlDoc });
-
-            const serializer = new XMLSerializer();
-            const originalContent = serializer.serializeToString(xmlDoc);
+            const originalContent = await webRetrieveStaticContent({ 
+                fileContent: fileContent.data,
+                book,
+                globalFileMapping,
+            });
             const modifiedContent = originalContent
                 .replace(INJECTED_CSS_PLACEHOLDER, injectedCSS)
                 .replace(FONT_CSS_PLACEHOLDER, fontCSS)
@@ -94,6 +114,22 @@ export const bookLoaderActor = fromPromise(async (props: {
                 url: blobUrl,
                 content: originalContent,
             };
+        }
+        if (book.navigationEpub3Src) {
+            const navigationFullPath = pathUtils.join([book.dirname, book.navigationEpub3Src]);
+            const navigationFileContent = await FileStorageController.readFile({
+                path: navigationFullPath,
+                encoding: FileStorageEncoding.UTF8,
+            });
+            const originalContent = await webRetrieveStaticContent({
+                fileContent: navigationFileContent.data,
+                book,
+                globalFileMapping,
+            });
+            const modifiedContent = originalContent.replace(INJECTED_CSS_PLACEHOLDER, navigationCss);
+            const blob = new Blob([modifiedContent], { type: 'application/xhtml+xml' });
+            const blobUrl = URL.createObjectURL(blob);
+            book.navigationEpub3Src = blobUrl;
         }
     }
 
