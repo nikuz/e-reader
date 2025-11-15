@@ -20,8 +20,10 @@ export async function firebaseGetPronunciation(props: Props): Promise<{
     data: string; // base64 string.
 } | undefined> {
     const { word, sourceLanguage } = props;
+    const isPhrase = word.split(' ').length > 1;
+    const wordType = isPhrase ? 'phrase' : 'word';
     
-    const prompt = `Say the following in ${sourceLanguage.name}: "${word}"`;
+    const prompt = `Pronounce this ${sourceLanguage.name} ${wordType} clearly and accurately: "${word}"`;
 
     if (import.meta.env.DEV) {
         console.log('Pronunciation prompt:', prompt);
