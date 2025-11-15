@@ -44,7 +44,6 @@ export const dictionaryStateMachine = setup({
 
     context: {
         storedWords: [],
-        storedWordsCounter: 0,
     },
 
     entry: assign(({ spawn }) => ({
@@ -211,7 +210,7 @@ export const dictionaryStateMachine = setup({
                         storedWords: context.storedWords.filter(
                             word => word.id !== event.output
                         ),
-                        storedWordsCounter: context.storedWordsCounter - 1,
+                        storedWordsCounter: (context.storedWordsCounter ?? 0) - 1,
                     })),
                 },
                 onError: {
@@ -258,7 +257,7 @@ export const dictionaryStateMachine = setup({
         CLEANUP: {
             actions: assign(() => ({
                 storedWords: [],
-                storedWordsCounter: 0,
+                storedWordsCounter: undefined,
                 searchWords: undefined,
                 searchWordsCounter: undefined,
             })),

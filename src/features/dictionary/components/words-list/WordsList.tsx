@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Box, List, Typography } from 'src/design-system/components';
 import { dictionaryStateMachineActor } from '../../state';
-import { useDictionaryStateSelect, useDictionaryStateMatch } from '../../state/hooks';
+import { useDictionaryStateSelect } from '../../state/hooks';
 import { DICTIONARY_LIST_ITEMS_PER_PAGE } from '../../constants';
 import { WordsListItem } from './WordsListItem';
 import type { DictionaryWord } from '../../types';
@@ -10,10 +10,11 @@ export function WordsList() {
     const storedWords = useDictionaryStateSelect('storedWords');
     const storedWordsCounter = useDictionaryStateSelect('storedWordsCounter');
     const searchWords = useDictionaryStateSelect('searchWords');
-    const isLoading = useDictionaryStateMatch(['LOADING_WORDS_LIST']);
     const initialListLoaded = useRef(false);
     
-    const displayWords = searchWords !== undefined ? searchWords : storedWords;
+    const displayWords = searchWords !== undefined
+        ? searchWords
+        : storedWords;
 
     const handleDeleteWord = (word: DictionaryWord) => {
         dictionaryStateMachineActor.send({
@@ -46,7 +47,7 @@ export function WordsList() {
     }
 
     // Show empty state when dictionary has no words
-    if (storedWordsCounter === 0 && !isLoading) {
+    if (storedWordsCounter === 0) {
         return (
             <Box className="h-full flex items-center">
                 <Box>
