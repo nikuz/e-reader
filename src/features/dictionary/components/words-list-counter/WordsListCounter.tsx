@@ -4,12 +4,16 @@ import { useDictionaryStateSelect } from '../../state/hooks';
 export function WordsListCounter() {
     const storedWordsCounter = useDictionaryStateSelect('storedWordsCounter');
     const searchWordsCounter = useDictionaryStateSelect('searchWordsCounter');
+    const searchWords = useDictionaryStateSelect('searchWords');
 
     const displayCounter = searchWordsCounter !== undefined
         ? searchWordsCounter
         : storedWordsCounter;
 
-    if (storedWordsCounter !== undefined && storedWordsCounter === 0) {
+    if (
+        (searchWords !== undefined && searchWords.length === 0)
+        || (storedWordsCounter !== undefined && storedWordsCounter === 0)
+    ) {
         return (
             <Box />
         );
