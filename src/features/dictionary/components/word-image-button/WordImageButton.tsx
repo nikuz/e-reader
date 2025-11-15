@@ -22,7 +22,7 @@ export function WordImageButton(props: Props) {
     const contextId = useMemo(() => converterUtils.stringToHash(highlight.context), [highlight]);
     const wordImageIsInQueue = useDictionaryStateQueueSelect(`${word.id}-image`);
     const wordContextAnalysisIsInQueue = useDictionaryStateQueueSelect(`${word.id}-${contextId}`);
-    const isLoading = wordImageIsInQueue || wordContextAnalysisIsInQueue;
+    const isLoading = wordImageIsInQueue || (!!word.image && wordContextAnalysisIsInQueue);
     const isImageRequested = useRef(false);
 
     const imageSrc = useMemo(() => {

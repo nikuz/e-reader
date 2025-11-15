@@ -71,6 +71,7 @@ export function WordsListItem(props: Props) {
             ref={containerRef}
             component="li"
             divider={divider}
+            disablePadding
             sx={{
                 position: 'relative',
                 overflow: 'hidden',

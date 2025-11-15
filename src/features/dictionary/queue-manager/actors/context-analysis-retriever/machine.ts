@@ -78,13 +78,23 @@ export const contextAnalysisRetrieverMachine = setup({
                     context: context.context,
                     contextExplanation: context.contextExplanation,
                 }),
-                onDone: {
-                    target: 'RETRIEVING_IMAGE',
-                    actions: sendParent(({ event }): QueueManagerContextAnalysisExplanationRequestSuccessEvent => ({
-                        type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS',
-                        word: event.output,
-                    })),
-                },
+                onDone: [
+                    {
+                        guard: ({ context }) => !!context.word.image,
+                        target: 'RETRIEVING_IMAGE',
+                        actions: sendParent(({ event }): QueueManagerContextAnalysisExplanationRequestSuccessEvent => ({
+                            type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS',
+                            word: event.output,
+                        })),
+                    },
+                    {
+                        actions: sendParent(({ context, event }): QueueManagerContextAnalysisRequestSuccessEvent => ({
+                            type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS',
+                            word: event.output,
+                            context: context.context,
+                        })),
+                    }
+                ],
                 onError: {
                     actions: [
                         xStateUtils.stateErrorTraceAction,
@@ -148,7 +158,7 @@ export const contextAnalysisRetrieverMachine = setup({
                             word: context.word,
                             context: context.context,
                             error: new Error('Can\'t update word context explanation in local DB'),
-                        }))
+                        })),
                     ],
                 },
             },
