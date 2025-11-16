@@ -20,6 +20,7 @@ import {
     restoreHighlightsAction,
     updateHighlightsCSSAction,
     clearTextSelectionAction,
+    navigateAction,
 } from './actions';
 import type {
     BookFrameStateContext,
@@ -92,6 +93,7 @@ export const bookFrameStateMachine = setup({
                 PAGE_TURN_PREV: {
                     actions: enqueueActions(pageTurnPrevAction),
                 },
+                SETTINGS_OPEN: 'SETTINGS_OPENED',
                 UPDATE_SETTINGS_CSS: {
                     actions: enqueueActions(updateSettingsCSSAction),
                 },
@@ -150,8 +152,17 @@ export const bookFrameStateMachine = setup({
             },
         },
 
+        SETTINGS_OPENED: {
+            on: {
+                SETTINGS_CLOSE: 'IDLE',
+            },
+        },
+
         NAVIGATION_OPENED: {
             on: {
+                NAVIGATE: {
+                    actions: enqueueActions(navigateAction),
+                },
                 NAVIGATION_CLOSE: 'IDLE',
             },
         },

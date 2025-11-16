@@ -54,9 +54,9 @@ export { default as Divider } from '@mui/material/Divider';
 export { default as Popper } from '@mui/material/Popper';
 export { default as Slide } from '@mui/material/Slide';
 export { default as Fade } from '@mui/material/Fade';
+export { default as SwipeableDrawer } from '@mui/material/SwipeableDrawer';
 
 export * from './toast';
 export * from './dropdown';
 export * from './page-loader';
 export * from './stepper';
-export * from './drawer';

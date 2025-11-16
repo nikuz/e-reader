@@ -90,6 +90,10 @@ export interface UpdateBookAttributesEvent {
     spine: BookChapter[],
 }
 
+export interface OpenSettingsEvent { type: 'SETTINGS_OPEN' }
+
+export interface CloseSettingsEvent { type: 'SETTINGS_CLOSE' }
+
 export interface UpdateSettingsCSSEvent {
     type: 'UPDATE_SETTINGS_CSS',
     settingsCSS: string,
@@ -126,6 +130,11 @@ export interface RequestWordAnalysisEvent { type: 'REQUEST_WORD_ANALYSIS' }
 
 export interface OpenNavigationEvent { type: 'NAVIGATION_OPEN' }
 
+export interface NavigateEvent {
+    type: 'NAVIGATE',
+    chapter: BookChapter,
+}
+
 export interface CloseNavigationEvent { type: 'NAVIGATION_CLOSE' }
 
 export type BookFrameStateEvents =
@@ -143,6 +152,8 @@ export type BookFrameStateEvents =
     | PageTurnPrevEvent
     | SaveReadProgressEvent
     | UpdateBookAttributesEvent
+    | OpenSettingsEvent
+    | CloseSettingsEvent
     | UpdateSettingsCSSEvent
     | UpdateFontCSSEvent
     | UpdateHighlightsCSSEvent
@@ -152,4 +163,5 @@ export type BookFrameStateEvents =
     | DeleteHighlightEvent
     | RequestWordAnalysisEvent
     | OpenNavigationEvent
+    | NavigateEvent
     | CloseNavigationEvent;

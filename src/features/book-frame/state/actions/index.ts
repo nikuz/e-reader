@@ -16,3 +16,4 @@ export * from './restore-highlights';
 export * from './delete-highlight';
 export * from './update-highlights-css';
 export * from './clear-text-selection';
+export * from './navigate';
