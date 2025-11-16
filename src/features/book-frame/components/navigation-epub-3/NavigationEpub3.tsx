@@ -8,6 +8,7 @@ import {
 
 export function BookFrameNavigationEpub3() {
     const book = useBookFrameStateSelect('book');
+    const readProgress = useBookFrameStateSelect('readProgress');
     const navigationOpened = useBookFrameStateMatch(['NAVIGATION_OPENED']);
 
     const frameContentLoadHandler = useCallback((event: SyntheticEvent<HTMLIFrameElement>) => {
@@ -65,6 +66,57 @@ export function BookFrameNavigationEpub3() {
             }
         });
 
+        // Highlight current chapter and scroll into view
+        if (readProgress?.chapter) {
+            const currentChapterPath = book.spine[readProgress.chapter].filePath;
+
+            // Find the link that matches the current chapter
+            const links = toc.querySelectorAll('a');
+            let currentLink: HTMLAnchorElement | null = null;
+
+            for (const link of Array.from(links)) {
+                const href = link.getAttribute('href');
+                if (href && currentChapterPath.endsWith(href)) {
+                    currentLink = link as HTMLAnchorElement;
+                    break;
+                }
+            }
+
+            if (currentLink) {
+                // Add a check indicator to mark as current
+                const indicator = iframeDocument.createElement('span');
+                indicator.className = 'current-chapter-indicator';
+                indicator.textContent = '✓ ';
+                indicator.style.marginRight = '4px';
+                indicator.style.color = '#4caf50';
+                currentLink.insertBefore(indicator, currentLink.firstChild);
+
+                // Mark the link as current
+                currentLink.classList.add('current-chapter');
+
+                // Expand all parent sections
+                let parentElement = currentLink.parentElement;
+                while (parentElement && parentElement !== toc) {
+                    if (parentElement.tagName.toLowerCase() === 'li' && parentElement.classList.contains('has-children')) {
+                        const nestedList = parentElement.querySelector('ol');
+                        const toggle = parentElement.querySelector('.toc-toggle');
+
+                        if (nestedList) {
+                            nestedList.style.display = 'block';
+                            parentElement.classList.remove('collapsed');
+                            parentElement.classList.add('expanded');
+                            toggle?.setAttribute('aria-expanded', 'true');
+                            toggle?.setAttribute('aria-label', 'Collapse section');
+                        }
+                    }
+                    parentElement = parentElement.parentElement;
+                }
+
+                // Scroll the current link into view
+                currentLink.scrollIntoView({ block: 'center' });
+            }
+        }
+
         // handle navigation links clicks
         toc.addEventListener('click', (event: MouseEvent) => {
             event.preventDefault();
@@ -90,7 +142,7 @@ export function BookFrameNavigationEpub3() {
                 }
             }
         });
-    }, [book]);
+    }, [book, readProgress]);
 
     const closeHandler = useCallback(() => {
         bookFrameStateMachineActor.send({ type: 'NAVIGATION_CLOSE' });

@@ -161,6 +161,7 @@ export const bookFrameStateMachine = setup({
         NAVIGATION_OPENED: {
             on: {
                 NAVIGATE: {
+                    target: 'IDLE',
                     actions: enqueueActions(navigateAction),
                 },
                 NAVIGATION_CLOSE: 'IDLE',

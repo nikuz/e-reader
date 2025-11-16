@@ -18,7 +18,6 @@ export function navigateAction(props: {
         return;
     }
     
-    const readProgress = props.context.readProgress;
     const contextUpdate: Partial<BookFrameStateContext> = {};
     const nextChapter = book.spine.findIndex(item => item === props.event.chapter);
 
@@ -27,7 +26,7 @@ export function navigateAction(props: {
         chapter: nextChapter,
     };
     contextUpdate.chapterUrl = book.spine[nextChapter].url;
-    contextUpdate.prevChapter = readProgress.chapter;
+    contextUpdate.prevChapter = undefined;
     contextUpdate.scrollPosition = 0;
 
     if (props.context.deferredRevokeChapterUrl) {
