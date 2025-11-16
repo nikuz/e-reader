@@ -17,6 +17,11 @@ export function findHighlightByCoordinates(props: {
         return;
     }
 
+    if (hit.tagName && ['img', 'hr', 'svg', 'video', 'audio', 'canvas', 'iframe'].includes(hit.tagName.toLowerCase())) {
+        // Click landed on non-text element – ignore
+        return;
+    }
+
     let textNode;
     let offset;
 
@@ -30,6 +35,11 @@ export function findHighlightByCoordinates(props: {
         const caretPosition = iframeDocument.caretRangeFromPoint(x, y);
         textNode = caretPosition?.startContainer;
         offset = caretPosition?.startOffset;
+    }
+
+    // After line 35, add node type verification
+    if (!textNode || offset === undefined || textNode.nodeType !== Node.TEXT_NODE) {
+        return undefined;
     }
 
     if (!textNode || offset === undefined) {

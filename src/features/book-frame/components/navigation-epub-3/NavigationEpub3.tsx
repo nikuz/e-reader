@@ -8,7 +8,6 @@ import {
 
 export function BookFrameNavigationEpub3() {
     const book = useBookFrameStateSelect('book');
-    const readProgress = useBookFrameStateSelect('readProgress');
     const navigationOpened = useBookFrameStateMatch(['NAVIGATION_OPENED']);
 
     const frameContentLoadHandler = useCallback((event: SyntheticEvent<HTMLIFrameElement>) => {
@@ -91,7 +90,7 @@ export function BookFrameNavigationEpub3() {
                 }
             }
         });
-    }, [book, readProgress]);
+    }, [book]);
 
     const closeHandler = useCallback(() => {
         bookFrameStateMachineActor.send({ type: 'NAVIGATION_CLOSE' });
