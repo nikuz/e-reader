@@ -10,7 +10,7 @@ import {
     BookFrameTabBar,
     BookFrameTextSelectionControls,
     TranslationPopper,
-    BookFrameNavigationEpub3,
+    BookFrameNavigation,
 } from './components';
 import { SettingsWatcher } from './settings-watcher';
 import {
@@ -68,7 +68,7 @@ export default function BookFrame() {
 
             <BookFrameTextSelectionControls />
             <TranslationPopper />
-            <BookFrameNavigationEpub3 />
+            <BookFrameNavigation />
 
             <BookFrameTabBar />
 

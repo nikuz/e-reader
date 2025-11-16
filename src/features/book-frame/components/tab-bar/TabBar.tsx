@@ -19,8 +19,10 @@ import { useBookFrameStateSelect, bookFrameStateMachineActor } from '../../state
 import { useCallback } from 'react';
 
 export function BookFrameTabBar() {
+    const book = useBookFrameStateSelect('book');
     const menuPanelsVisible = useBookFrameStateSelect('menuPanelsVisible');
     const screenOrientation = useScreenOrientationStateSelect('orientation');
+    const isNavigationDisabled = !book?.navigationEpub2Src && !book?.navigationEpub3Src;
 
     const changeHandler = useCallback((_: React.SyntheticEvent, value: string) => {
         switch (value) {
@@ -56,6 +58,8 @@ export function BookFrameTabBar() {
                         <BottomNavigationAction
                             icon={<FormatListBulletedIcon />}
                             value="navigation"
+                            disabled={isNavigationDisabled}
+                            sx={{ opacity: isNavigationDisabled ? 0.5 : 1 }}
                         />
 
                         <BottomNavigationAction

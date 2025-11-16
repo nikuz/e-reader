@@ -1,15 +1,9 @@
 import { useCallback, type SyntheticEvent } from 'react';
-import MUIDrawer from '@mui/material/SwipeableDrawer';
-import {
-    useBookFrameStateSelect,
-    useBookFrameStateMatch,
-    bookFrameStateMachineActor,
-} from '../../state';
+import { useBookFrameStateSelect, bookFrameStateMachineActor } from '../../state';
 
-export function BookFrameNavigationEpub3() {
+export default function BookFrameNavigationEpub3() {
     const book = useBookFrameStateSelect('book');
     const readProgress = useBookFrameStateSelect('readProgress');
-    const navigationOpened = useBookFrameStateMatch(['NAVIGATION_OPENED']);
 
     const frameContentLoadHandler = useCallback((event: SyntheticEvent<HTMLIFrameElement>) => {
         const iframeEl = event.currentTarget;
@@ -19,7 +13,7 @@ export function BookFrameNavigationEpub3() {
         if (!book || !iframeDocument || !toc) {
             return;
         }
-        
+
         // Find all list items that have nested <ol> elements
         toc.querySelectorAll('li').forEach(li => {
             const nestedList = li.querySelector('ol');
@@ -144,32 +138,16 @@ export function BookFrameNavigationEpub3() {
         });
     }, [book, readProgress]);
 
-    const closeHandler = useCallback(() => {
-        bookFrameStateMachineActor.send({ type: 'NAVIGATION_CLOSE' });
-    }, []);
-
     if (!book?.navigationEpub3Src) {
         return;
     }
 
     return (
-        <MUIDrawer
-            open={navigationOpened}
-            anchor="left"
-            ModalProps={{
-                keepMounted: false,
-            }}
-            disableDiscovery
-            disableSwipeToOpen
-            onClose={closeHandler}
-            onOpen={() => { }}
-        >
-            <iframe
-                src={book.navigationEpub3Src}
-                className="w-full h-full border-0 bg-black"
-                sandbox="allow-same-origin allow-scripts"
-                onLoad={frameContentLoadHandler}
-            />
-        </MUIDrawer>
+        <iframe
+            src={book.navigationEpub3Src}
+            className="w-full h-full border-0 bg-black"
+            sandbox="allow-same-origin allow-scripts"
+            onLoad={frameContentLoadHandler}
+        />
     );
 }
