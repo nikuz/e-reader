@@ -29,18 +29,17 @@ export async function retrieveNavigationEpub2(book: BookAttributes): Promise<Boo
         throw new Error('EPUB2 navigation file does not contain navMap');
     }
 
-    const navigationBasePath = book.navigationEpub2Src.slice(0, book.navigationEpub2Src.lastIndexOf('/'));
-    const navPoints = collectNavPoints(navMapNode, navigationBasePath);
+    const navPoints = collectNavPoints(navMapNode);
 
     return { navMap: navPoints };
 }
 
-function collectNavPoints(container: Element, basePath: string): BookNavigationEpub2NavPoint[] {
-    const navPointElements = container.querySelectorAll('navPoint');
+function collectNavPoints(container: Element): BookNavigationEpub2NavPoint[] {
+    const navPointElements = container.querySelectorAll(':scope > navPoint');
     const navPoints: BookNavigationEpub2NavPoint[] = [];
 
     for (const navPointElement of navPointElements) {
-        const navPoint = createNavPoint(navPointElement, basePath);
+        const navPoint = createNavPoint(navPointElement);
         if (navPoint) {
             navPoints.push(navPoint);
         }
@@ -49,10 +48,7 @@ function collectNavPoints(container: Element, basePath: string): BookNavigationE
     return navPoints;
 }
 
-function createNavPoint(
-    navPointElement: Element,
-    basePath: string,
-): BookNavigationEpub2NavPoint | undefined {
+function createNavPoint(navPointElement: Element): BookNavigationEpub2NavPoint | undefined {
     const text = navPointElement.querySelector('navLabel > text')?.textContent?.trim();
     const srcAttribute = navPointElement.querySelector('content')?.getAttribute('src');
 
@@ -60,12 +56,11 @@ function createNavPoint(
         return undefined;
     }
 
-    const resolvedSrc = pathUtils.join([basePath, srcAttribute]);
-    const children = collectNavPoints(navPointElement, basePath);
+    const children = collectNavPoints(navPointElement);
 
     return {
         text,
-        src: resolvedSrc,
+        src: srcAttribute,
         children,
     };
 }

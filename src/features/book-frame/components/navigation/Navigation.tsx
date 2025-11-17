@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import MUIDrawer from '@mui/material/SwipeableDrawer';
+import { SwipeableDrawer, Box } from 'src/design-system/components';
 import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
@@ -21,7 +21,7 @@ export function BookFrameNavigation() {
     }
 
     return (
-        <MUIDrawer
+        <SwipeableDrawer
             open={navigationOpened}
             anchor="left"
             ModalProps={{
@@ -32,12 +32,14 @@ export function BookFrameNavigation() {
             onClose={closeHandler}
             onOpen={() => { }}
         >
-            {book?.navigationEpub3Src && (
-                <BookFrameNavigationEpub3 />
-            )}
-            {book?.navigationEpub2Src && (
-                <BookFrameNavigationEpub2 />
-            )}
-        </MUIDrawer>
+            <Box className="w-[50vw] min-w-sm h-full">
+                {book?.navigationEpub3Src && (
+                    <BookFrameNavigationEpub3 />
+                )}
+                {book?.navigationEpub2Src && (
+                    <BookFrameNavigationEpub2 />
+                )}
+            </Box>
+        </SwipeableDrawer>
     );
 }
