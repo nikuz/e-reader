@@ -127,6 +127,7 @@ function NavigationItem({ navPoint, level, currentChapterPath }: NavigationItemP
                                 sx: {
                                     fontSize: '0.95rem',
                                     fontWeight: isCurrent ? 600 : 400,
+                                    fontFamily: 'Inter, Avenir, Helvetica, Arial, sans-serif',
                                 },
                             },
                         }}

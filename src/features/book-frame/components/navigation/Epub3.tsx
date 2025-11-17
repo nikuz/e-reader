@@ -78,12 +78,7 @@ export default function BookFrameNavigationEpub3() {
 
             if (currentLink) {
                 // Add a check indicator to mark as current
-                const indicator = iframeDocument.createElement('span');
-                indicator.className = 'current-chapter-indicator';
-                indicator.textContent = '✓ ';
-                indicator.style.marginRight = '4px';
-                indicator.style.color = '#4caf50';
-                currentLink.insertBefore(indicator, currentLink.firstChild);
+                currentLink.closest('li')?.classList.add('current-chapter');
 
                 // Mark the link as current
                 currentLink.classList.add('current-chapter');
@@ -117,11 +112,15 @@ export default function BookFrameNavigationEpub3() {
             event.stopPropagation();
 
             const target = event.target as HTMLElement;
-            if (target?.nodeName.toLocaleLowerCase() !== 'a') {
+            const targetNode = target?.nodeName.toLocaleLowerCase();
+            if (targetNode !== 'a' && targetNode !== 'li') {
                 return;
             }
 
-            const href = target.getAttribute('href');
+            let href: string | null | undefined = target.getAttribute('href');
+            if (targetNode === 'li') {
+                href = target.querySelector('a')?.getAttribute('href');
+            }
             if (!href) {
                 return;
             }
@@ -145,7 +144,7 @@ export default function BookFrameNavigationEpub3() {
     return (
         <iframe
             src={book.navigationEpub3Src}
-            className="w-full h-full border-0 bg-black"
+            className="w-full h-full border-0"
             sandbox="allow-same-origin allow-scripts"
             onLoad={frameContentLoadHandler}
         />
