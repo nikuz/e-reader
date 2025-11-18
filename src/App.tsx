@@ -4,6 +4,7 @@ import { Paper } from 'src/design-system/components';
 import { ThemeProvider, darkTheme } from 'src/design-system/styles';
 import { libraryStateMachineActor } from 'src/features/library/state';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
+import { screenStateMachineActor } from 'src/features/screen/state';
 import { RouterPath } from 'src/router/constants';
 import Debug from './features/debug';
 import { OrientationChangeWatcher } from './features/screen/daemons';
@@ -40,6 +41,12 @@ export default function App() {
 
     useEffect(() => {
         libraryStateMachineActor.send({ type: 'LOAD_LAST_SELECTED_BOOK' });
+    }, []);
+    
+    useEffect(() => {
+        screenStateMachineActor.send({ type: 'KEEP_AWAKE' });
+
+        () => screenStateMachineActor.send({ type: 'ALLOW_SLEEP' });
     }, []);
 
     return (

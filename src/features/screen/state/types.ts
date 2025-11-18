@@ -15,8 +15,14 @@ export interface SetCurrentOrientationEvent {
     orientation: OrientationLockType,
 }
 
+export interface KeepAwakeEvent { type: 'KEEP_AWAKE' }
+
+export interface AllowSleepEvent { type: 'ALLOW_SLEEP' }
+
 export type ScreenStateEvents =
     | LockPortraitEvent
     | LockLandscapeEvent
     | UnlockEvent
-    | SetCurrentOrientationEvent;
+    | SetCurrentOrientationEvent
+    | KeepAwakeEvent
+    | AllowSleepEvent;

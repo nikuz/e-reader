@@ -4,6 +4,8 @@ import {
     portraitLockerActor,
     landscapeLockerActor,
     unlockerActor,
+    awakeKeeperActor,
+    sleepAllowerActor,
 } from './actors';
 import type {
     ScreenStateContext,
@@ -15,6 +17,8 @@ export const screenStateMachine = setup({
         portraitLockerActor,
         landscapeLockerActor,
         unlockerActor,
+        awakeKeeperActor,
+        sleepAllowerActor,
     },
     types: {
         context: {} as ScreenStateContext,
@@ -39,7 +43,9 @@ export const screenStateMachine = setup({
                     actions: assign(({ event }) => ({
                         orientation: event.orientation,
                     })),
-                }
+                },
+                KEEP_AWAKE: 'KEEPING_AWAKE',
+                ALLOW_SLEEP: 'ALLOWING_SLEEP',
             },
         },
 
@@ -68,6 +74,28 @@ export const screenStateMachine = setup({
         UNLOCKING: {
             invoke: {
                 src: 'unlockerActor',
+                onDone: 'IDLE',
+                onError: {
+                    target: 'IDLE',
+                    actions: xStateUtils.stateErrorTraceAction,
+                },
+            }
+        },
+
+        KEEPING_AWAKE: {
+            invoke: {
+                src: 'awakeKeeperActor',
+                onDone: 'IDLE',
+                onError: {
+                    target: 'IDLE',
+                    actions: xStateUtils.stateErrorTraceAction,
+                },
+            }
+        },
+
+        ALLOWING_SLEEP: {
+            invoke: {
+                src: 'sleepAllowerActor',
                 onDone: 'IDLE',
                 onError: {
                     target: 'IDLE',
