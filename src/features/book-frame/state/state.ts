@@ -94,18 +94,6 @@ export const bookFrameStateMachine = setup({
                     actions: enqueueActions(pageTurnPrevAction),
                 },
                 SETTINGS_OPEN: 'SETTINGS_OPENED',
-                UPDATE_SETTINGS_CSS: {
-                    actions: enqueueActions(updateSettingsCSSAction),
-                },
-                UPDATE_FONT_CSS: {
-                    actions: enqueueActions(updateFontCSSAction),
-                },
-                UPDATE_HIGHLIGHTS_CSS: {
-                    actions: enqueueActions(updateHighlightsCSSAction),
-                },
-                UPDATE_BOOK_SPINE: {
-                    actions: enqueueActions(updateBookSpineAction),
-                },
                 STORE_HIGHLIGHT: {
                     actions: enqueueActions(storeHighlightAction),
                 },
@@ -155,6 +143,15 @@ export const bookFrameStateMachine = setup({
         SETTINGS_OPENED: {
             on: {
                 SETTINGS_CLOSE: 'IDLE',
+                UPDATE_SETTINGS_CSS: {
+                    actions: enqueueActions(updateSettingsCSSAction),
+                },
+                UPDATE_FONT_CSS: {
+                    actions: enqueueActions(updateFontCSSAction),
+                },
+                UPDATE_HIGHLIGHTS_CSS: {
+                    actions: enqueueActions(updateHighlightsCSSAction),
+                },
             },
         },
 
@@ -181,6 +178,9 @@ export const bookFrameStateMachine = setup({
         },
         HIDE_MENU_PANELS: {
             actions: assign(() => ({ menuPanelsVisible: false })),
+        },
+        UPDATE_BOOK_SPINE: {
+            actions: enqueueActions(updateBookSpineAction),
         },
     },
 });
