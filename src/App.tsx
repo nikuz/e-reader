@@ -18,6 +18,7 @@ export default function App() {
     useEffect(() => {
         const libraryStateChangeSubscription = libraryStateMachineActor.subscribe((snapshot) => {
             if (initialRedirectFinished.current || location.pathname === RouterPath.LIBRARY) {
+                initialRedirectFinished.current = true;
                 return;
             }
             if (snapshot.context.lastSelectedBook) {
