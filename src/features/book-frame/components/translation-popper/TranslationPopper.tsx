@@ -16,7 +16,7 @@ import TranslationPopperImage from './TranslationPopperImage';
 const POPPER_OFFSET = 8;
 const POPPER_BG_COLOR = '#262626';
 
-export function TranslationPopper() {
+export function BookFrameTranslationPopper() {
     const [arrowEl, setArrowEl] = useState<HTMLSpanElement | null>(null);
     const iframeEl = useBookFrameStateSelect('iframeEl');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');

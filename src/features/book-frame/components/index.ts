@@ -5,3 +5,4 @@ export * from './top-menu';
 export * from './text-selection-controls';
 export * from './translation-popper';
 export * from './navigation';
+export * from './stats';

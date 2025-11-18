@@ -9,8 +9,9 @@ import {
     BookFrameSettings,
     BookFrameTabBar,
     BookFrameTextSelectionControls,
-    TranslationPopper,
+    BookFrameTranslationPopper,
     BookFrameNavigation,
+    BookFrameStats,
 } from './components';
 import { SettingsWatcher } from './settings-watcher';
 import {
@@ -63,11 +64,14 @@ export default function BookFrame() {
             )}
 
             {!bookIsLoading && !bookLoadErrorMessage && chapterUrl && (
-                <BookFrameIFrame />
+                <Box className="grid grid-rows-[1fr_auto] h-full">
+                    <BookFrameIFrame />
+                    <BookFrameStats />
+                </Box>
             )}
 
             <BookFrameTextSelectionControls />
-            <TranslationPopper />
+            <BookFrameTranslationPopper />
             <BookFrameNavigation />
 
             <BookFrameTabBar />
