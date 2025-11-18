@@ -29,8 +29,12 @@ export const fileOpenerActor = fromPromise(async (props: {
         throw new Error('Book doesn\'t have .OPF file');
     }
 
+    const opfDirParts = opfFile.name.split('/');
+    opfDirParts.pop();
+    const opfDir = opfDirParts.join('/');
+
     const opfContent = await opfFile.async('text');
-    const bookAttributes = await retrieveBookAttributes(opfContent);
+    const bookAttributes = await retrieveBookAttributes(opfContent, opfDir);
 
     if (!bookAttributes.eisbn) {
         bookAttributes.eisbn = generateFakeIsbn(bookAttributes.author, bookAttributes.title);
@@ -58,9 +62,6 @@ export const fileOpenerActor = fromPromise(async (props: {
     } catch {
         await FileStorageController.mkdir({ path: bookRootDirectory });
     }
-
-    const fileNames = Object.keys(unwrappedContent.files);
-    fileNames.sort((a, b) => a.length - b.length);
     
     bookAttributes.dirname = bookRootDirectory;
 

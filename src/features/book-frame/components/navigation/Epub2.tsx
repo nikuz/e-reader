@@ -57,7 +57,7 @@ function NavigationItem({ navPoint, level, currentChapterPath }: NavigationItemP
     const [isExpanded, setIsExpanded] = useState(shouldAutoExpand);
 
     // Check if this navigation item is the current chapter
-    const isCurrent = currentChapterPath && navPoint.src.endsWith(currentChapterPath);
+    const isCurrent = currentChapterPath && currentChapterPath.endsWith(navPoint.src);
 
     const handleNavigate = useCallback(() => {
         if (!book) {
@@ -66,7 +66,7 @@ function NavigationItem({ navPoint, level, currentChapterPath }: NavigationItemP
 
         // Find the chapter that matches this navigation item
         for (const chapter of book.spine) {
-            if (navPoint.src.endsWith(chapter.filePath)) {
+            if (chapter.filePath.endsWith(navPoint.src)) {
                 bookFrameStateMachineActor.send({
                     type: 'NAVIGATE',
                     chapter,
@@ -153,7 +153,7 @@ function containsCurrentChapter(navPoint: BookNavigationEpub2NavPoint, currentCh
     }
 
     // Check if this navPoint is the current chapter
-    if (navPoint.src.endsWith(currentChapterPath)) {
+    if (currentChapterPath.endsWith(navPoint.src)) {
         return true;
     }
 

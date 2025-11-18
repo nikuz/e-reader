@@ -1,6 +1,6 @@
 import type { BookAttributes, BookChapter } from 'src/types';
 
-export async function retrieveBookAttributes(opfFileContent: string): Promise<BookAttributes> {
+export async function retrieveBookAttributes(opfFileContent: string, opfDir: string): Promise<BookAttributes> {
     const xmlDoc = new DOMParser().parseFromString(opfFileContent, 'application/xhtml+xml');
     const metadataNode = xmlDoc.querySelector('metadata');
     const manifestNode = xmlDoc.querySelector('manifest');
@@ -27,9 +27,9 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
     const navigationEPUB3 = manifestNode.querySelector('item[properties~="nav"]');
 
     if (navigationEPUB3) {
-        bookAttributes.navigationEpub3Src = navigationEPUB3.getAttribute('href') ?? '';
+        bookAttributes.navigationEpub3Src = prependBaseDir(navigationEPUB3.getAttribute('href'), opfDir);
     } else if (navigationEPUB2) {
-        bookAttributes.navigationEpub2Src = navigationEPUB2.getAttribute('href') ?? '';
+        bookAttributes.navigationEpub2Src = prependBaseDir(navigationEPUB2.getAttribute('href'), opfDir);
     }
 
     // spine
@@ -42,7 +42,9 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
         const value = manifestItem?.getAttribute('href');
 
         if (idRef && value) {
-            spine.push({ filePath: value });
+            spine.push({
+                filePath: prependBaseDir(value, opfDir),
+            });
         }
     });
     bookAttributes.spine = spine;
@@ -69,8 +71,18 @@ export async function retrieveBookAttributes(opfFileContent: string): Promise<Bo
     }
 
     if (coverHref) {
-        bookAttributes.cover = coverHref;
+        bookAttributes.cover = prependBaseDir(coverHref, opfDir);
     }
 
     return bookAttributes;
+}
+
+function prependBaseDir(value: string | null, opfDir: string): string {
+    if (!value) {
+        return '';
+    }
+
+    const baseDir = opfDir ? `${opfDir}/` : '';
+
+    return `${baseDir}${value}`;
 }
