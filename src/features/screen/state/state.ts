@@ -6,19 +6,19 @@ import {
     unlockerActor,
 } from './actors';
 import type {
-    ScreenOrientationStateContext,
-    ScreenOrientationStateEvents,
+    ScreenStateContext,
+    ScreenStateEvents,
 } from './types';
 
-export const screenOrientationStateMachine = setup({
+export const screenStateMachine = setup({
     actors: { 
         portraitLockerActor,
         landscapeLockerActor,
         unlockerActor,
     },
     types: {
-        context: {} as ScreenOrientationStateContext,
-        events: {} as ScreenOrientationStateEvents,
+        context: {} as ScreenStateContext,
+        events: {} as ScreenStateEvents,
     }
 }).createMachine({
     id: 'SCREEN_ORIENTATION',
@@ -78,4 +78,4 @@ export const screenOrientationStateMachine = setup({
     },
 });
 
-export const screenOrientationStateMachineActor = createActor(screenOrientationStateMachine).start();
+export const screenStateMachineActor = createActor(screenStateMachine).start();

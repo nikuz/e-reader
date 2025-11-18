@@ -12,16 +12,16 @@ import {
     ScreenLockPortraitIcon,
 } from 'src/design-system/icons';
 import {
-    screenOrientationStateMachineActor,
-    useScreenOrientationStateSelect,
-} from 'src/features/screen-orientation/state';
+    screenStateMachineActor,
+    useOrientationStateSelect,
+} from 'src/features/screen/state';
 import { useBookFrameStateSelect, bookFrameStateMachineActor } from '../../state';
 import { useCallback } from 'react';
 
 export function BookFrameTabBar() {
     const book = useBookFrameStateSelect('book');
     const menuPanelsVisible = useBookFrameStateSelect('menuPanelsVisible');
-    const screenOrientation = useScreenOrientationStateSelect('orientation');
+    const screenOrientation = useOrientationStateSelect('orientation');
     const isNavigationDisabled = !book?.navigationEpub2Src && !book?.navigationEpub3Src;
 
     const changeHandler = useCallback((_: React.SyntheticEvent, value: string) => {
@@ -32,9 +32,9 @@ export function BookFrameTabBar() {
             
             case 'rotate':
                 if (screenOrientation === 'landscape') {
-                    screenOrientationStateMachineActor.send({ type: 'LOCK_PORTRAIT' });
+                    screenStateMachineActor.send({ type: 'LOCK_PORTRAIT' });
                 } else {
-                    screenOrientationStateMachineActor.send({ type: 'LOCK_LANDSCAPE' });
+                    screenStateMachineActor.send({ type: 'LOCK_LANDSCAPE' });
                 }
                 break;
         }

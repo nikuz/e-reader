@@ -6,7 +6,7 @@ import { libraryStateMachineActor } from 'src/features/library/state';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { RouterPath } from 'src/router/constants';
 import Debug from './features/debug';
-import { OrientationChangeWatcher } from './features/screen-orientation/daemons';
+import { OrientationChangeWatcher } from './features/screen/daemons';
 import './App.css';
 
 export default function App() {

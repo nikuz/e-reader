@@ -4,7 +4,7 @@ import {
     type ScreenOrientationResult,
     type OrientationLockType,
 } from '@capacitor/screen-orientation';
-import { screenOrientationStateMachineActor } from '../../state';
+import { screenStateMachineActor } from '../../state';
 
 export function OrientationChangeWatcher() {
     const screenOrientationChangeHandler = useCallback((orientationResult: ScreenOrientationResult) => {
@@ -16,7 +16,7 @@ export function OrientationChangeWatcher() {
             orientation = 'portrait';
         }
 
-        screenOrientationStateMachineActor.send({
+        screenStateMachineActor.send({
             type: 'SET_CURRENT_ORIENTATION',
             orientation,
         });

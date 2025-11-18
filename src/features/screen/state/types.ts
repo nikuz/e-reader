@@ -1,6 +1,6 @@
 import type { OrientationLockType } from '@capacitor/screen-orientation';
 
-export interface ScreenOrientationStateContext {
+export interface ScreenStateContext {
     orientation: OrientationLockType,
 }
 
@@ -15,7 +15,7 @@ export interface SetCurrentOrientationEvent {
     orientation: OrientationLockType,
 }
 
-export type ScreenOrientationStateEvents =
+export type ScreenStateEvents =
     | LockPortraitEvent
     | LockLandscapeEvent
     | UnlockEvent
