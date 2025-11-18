@@ -62,14 +62,7 @@ export const fileOpenerActor = fromPromise(async (props: {
     const fileNames = Object.keys(unwrappedContent.files);
     fileNames.sort((a, b) => a.length - b.length);
     
-    // if archive has root folder, add it to the book dirname
-    if (unwrappedContent.files[fileNames[0]].dir) {
-        bookAttributes.dirname = pathUtils.join([bookRootDirectory, fileNames[0]]);
-    }
-    // otherwise use bookRootDirectory
-    else {
-        bookAttributes.dirname = bookRootDirectory;
-    }
+    bookAttributes.dirname = bookRootDirectory;
 
     await createBookFoldersFromArchive(unwrappedContent.files, bookRootDirectory);
 
@@ -79,10 +72,13 @@ export const fileOpenerActor = fromPromise(async (props: {
     }
     await Promise.all(saveFileJobs);
 
+    const staticMapping = new Map();
+
     if (bookAttributes.navigationEpub3Src) {
         await replaceStaticContentUrls({
             filePath: bookAttributes.navigationEpub3Src,
             bookDirectory: bookAttributes.dirname,
+            staticMapping,
         });
     } else if (bookAttributes.navigationEpub2Src) {
         bookAttributes.navigationEpub2 = await retrieveNavigationEpub2(bookAttributes);
@@ -92,6 +88,7 @@ export const fileOpenerActor = fromPromise(async (props: {
         await replaceStaticContentUrls({
             filePath: chapter.filePath,
             bookDirectory: bookAttributes.dirname,
+            staticMapping,
         });
     }
 

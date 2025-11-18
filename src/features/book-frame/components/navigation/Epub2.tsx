@@ -84,7 +84,7 @@ function NavigationItem({ navPoint, level, currentChapterPath }: NavigationItemP
     // Scroll current item into view
     useEffect(() => {
         if (isCurrent && itemRef.current) {
-            itemRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            itemRef.current.scrollIntoView({ block: 'center' });
         }
     }, [isCurrent]);
 

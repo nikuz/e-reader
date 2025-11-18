@@ -14,10 +14,12 @@ import { replaceImageUrls } from './images';
 export async function replaceStaticContentUrls(props: {
     filePath: string,
     bookDirectory: string,
+    staticMapping: Map<string, string>,
 }) {
     const {
         filePath,
         bookDirectory,
+        staticMapping,
     } = props;
     
     const fileFullPath = pathUtils.join([bookDirectory, filePath]);
@@ -28,7 +30,6 @@ export async function replaceStaticContentUrls(props: {
     let fileContent = fileReadResponse.data;
     
     const chapterDirname = fileFullPath.slice(0, fileFullPath.lastIndexOf('/'));
-    const staticMapping = new Map();
 
     let modifiedFileContent = await replaceStyleUrls({
         fileContent,
