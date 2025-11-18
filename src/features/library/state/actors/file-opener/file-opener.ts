@@ -46,18 +46,12 @@ export const fileOpenerActor = fromPromise(async (props: {
     try {
         const bookDirectoryStats = await FileStorageController.stat({ path: bookRootDirectory });
         if (bookDirectoryStats) {
-            // recreate directory in dev only
-            if (import.meta.env.DEV) {
-                await deleteBookFromDB(bookAttributes);
-                await FileStorageController.rmdir({
-                    path: bookRootDirectory,
-                    recursive: true,
-                });
-                await FileStorageController.mkdir({ path: bookRootDirectory });
-                console.log('Book directory recreated');
-            } else {
-                return;
-            }
+            await deleteBookFromDB(bookAttributes);
+            await FileStorageController.rmdir({
+                path: bookRootDirectory,
+                recursive: true,
+            });
+            await FileStorageController.mkdir({ path: bookRootDirectory });
         }
     } catch {
         await FileStorageController.mkdir({ path: bookRootDirectory });
