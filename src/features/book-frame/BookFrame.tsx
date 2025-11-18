@@ -1,7 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Toast, PageLoader } from 'src/design-system/components';
 import { DictionaryInvokeButton } from 'src/features/dictionary/components';
+import { statusBarStateMachineActor } from 'src/features/status-bar/state';
 import { RouterPath } from 'src/router/constants';
 import {
     BookFrameTopMenu,
@@ -31,8 +32,9 @@ export default function BookFrame() {
         navigate(RouterPath.LIBRARY);
     }, [navigate]);
     
-    const hideMenuHandler = useCallback(() => {
+    useEffect(() => {
         bookFrameStateMachineActor.send({ type: 'HIDE_MENU_PANELS' });
+        statusBarStateMachineActor.send({ type: 'HIDE' });
     }, []);
 
     return (
@@ -43,7 +45,7 @@ export default function BookFrame() {
             }}
         >
             <BookFrameTopMenu>
-                <DictionaryInvokeButton onClick={hideMenuHandler} />
+                <DictionaryInvokeButton />
                 <BookFrameSettings />
             </BookFrameTopMenu>
 

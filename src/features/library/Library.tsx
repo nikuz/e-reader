@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Box, AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
 import { DictionaryInvokeButton } from 'src/features/dictionary/components';
+import { statusBarStateMachineActor } from 'src/features/status-bar/state';
 import { BookCard, AddBookButton } from './components';
 import { StateSupplier } from './daemons';
 import {
@@ -30,6 +31,10 @@ export default function Library() {
         booksRequested.current = true;
         libraryStateMachineActor.send({ type: 'LOAD_BOOKS' });
     }, [isInitiating, isLoadingLastBook]);
+
+    useEffect(() => {
+        statusBarStateMachineActor.send({ type: 'SHOW' });
+    }, []);
 
     return (
         <Box

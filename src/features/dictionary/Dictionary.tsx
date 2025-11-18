@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, AppBar, Toolbar, IconButton, Typography } from 'src/design-system/components';
 import { ArrowBackIosNewIcon, SettingsIcon } from 'src/design-system/icons';
+import { statusBarStateMachineActor } from 'src/features/status-bar/state';
 import { WordsList, WordsListCounter, SearchField } from './components';
 import { dictionaryStateMachineActor } from './state';
 
@@ -10,6 +11,7 @@ export default function Dictionary() {
 
     useEffect(() => {
         dictionaryStateMachineActor.send({ type: 'INITIALIZE' });
+        statusBarStateMachineActor.send({ type: 'SHOW' });
 
         return () => {
             dictionaryStateMachineActor.send({ type: 'CLEANUP' });
