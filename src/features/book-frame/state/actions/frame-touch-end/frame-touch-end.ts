@@ -73,12 +73,6 @@ export function frameTouchEndAction(props: {
         contextUpdate.textSelection = undefined;
         contextUpdate.textSelectionCreateEndTime = undefined;
     }
-    // new text selection just finished
-    else if (!selectedHighlight && hasSelectedText) {
-        // store new highlight
-        // among other, it will create new highlight and set the state selectedHighlight property
-        props.enqueue.raise({ type: 'STORE_HIGHLIGHT' });
-    }
     
     const menuPanelsVisible = props.context.menuPanelsVisible;
     

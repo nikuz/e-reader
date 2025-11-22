@@ -124,7 +124,7 @@ export function WordImageButton(props: Props) {
             </IconButton>
             {isLoading && (
                 <CircularProgress
-                    size={24}
+                    size={28}
                     sx={{
                         position: 'absolute',
                         left: '20%',

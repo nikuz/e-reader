@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo, useEffect } from 'react';
 import {
     Popper,
     Paper,
@@ -18,6 +18,7 @@ export function BookFrameTextSelectionControls() {
     const selectionUpdatedAt = useBookFrameStateSelect('textSelectionCreateEndTime');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const iframeEl = useBookFrameStateSelect('iframeEl');
+    const storeHighlightRequested = useRef(false);
 
     const virtualElement = useMemo<PopperVirtualElement | null>(() => {
         if (!textSelection || !iframeEl || textSelection.rangeCount === 0) {
@@ -82,9 +83,16 @@ export function BookFrameTextSelectionControls() {
     }, [selectedHighlight]);
     
     const translateHandler = useCallback(() => {
-        if (!book || !selectedHighlight) {
+        storeHighlightRequested.current = true;
+        bookFrameStateMachineActor.send({ type: 'STORE_HIGHLIGHT' });
+    }, []);
+
+    useEffect(() => {
+        if (!book || !selectedHighlight || !storeHighlightRequested.current) {
             return;
         }
+
+        storeHighlightRequested.current = false;
         dictionaryStateMachineActor.send({
             type: 'REQUEST_WORD_ANALYSIS',
             bookId: book.eisbn,
