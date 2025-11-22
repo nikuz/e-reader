@@ -138,8 +138,8 @@ export function DictionaryWordPronunciationButton(props: Props) {
                 sx={{ opacity: isLoading ? 0.5 : 1 }}
                 onClick={playHandler}
             >
-                {isPlaying && <StopCircleIcon />}
-                {!isPlaying && <PlayCircleIcon />}
+                {isPlaying && <StopCircleIcon sx={{ fontSize: '30px' }} />}
+                {!isPlaying && <PlayCircleIcon sx={{ fontSize: '30px' }} />}
             </IconButton>
             {isLoading && (
                 <CircularProgress

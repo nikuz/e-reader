@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Box, Button } from 'src/design-system/components';
+import { AddIcon } from 'src/design-system/icons';
 import {
     useDictionaryStateSelect,
     dictionaryStateMachineActor,
@@ -52,11 +53,17 @@ export default function TranslationPopperExplanation() {
                 <Button
                     size="small"
                     variant="outlined"
-                    sx={{ mt: 1.5 }}
                     loading={isContextLoading}
+                    startIcon={<AddIcon />}
+                    sx={{
+                        mt: 1.5,
+                        '& .MuiButton-icon': {
+                            mr: '5px',
+                        }
+                    }}
                     onClick={explainInContextHandler}
                 >
-                    + context
+                    context
                 </Button>
             )}
         </Box>

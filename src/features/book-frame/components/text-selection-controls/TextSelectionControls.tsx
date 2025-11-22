@@ -138,36 +138,15 @@ export function BookFrameTextSelectionControls() {
                 }}
             >
                 {selectedHighlight && (
-                    <IconButton
-                        size="small"
-                        sx={{
-                            color: 'inherit',
-                            padding: '6px',
-                        }}
-                        onClick={removeHighlightHandler}
-                    >
-                        <DeleteIcon fontSize="small" />
+                    <IconButton onClick={removeHighlightHandler}>
+                        <DeleteIcon />
                     </IconButton>
                 )}
-                <IconButton
-                    size="small"
-                    sx={{
-                        color: 'inherit',
-                        padding: '6px',
-                    }}
-                    onClick={copyHandler}
-                >
-                    <ContentCopyIcon fontSize="small" />
+                <IconButton onClick={copyHandler}>
+                    <ContentCopyIcon />
                 </IconButton>
-                <IconButton
-                    size="small"
-                    sx={{
-                        color: 'inherit',
-                        padding: '6px',
-                    }}
-                    onClick={translateHandler}
-                >
-                    <TranslateIcon fontSize="small" />
+                <IconButton onClick={translateHandler}>
+                    <TranslateIcon />
                 </IconButton>
             </Paper>
         </Popper>

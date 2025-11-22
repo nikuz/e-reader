@@ -119,7 +119,8 @@ export function WordImageButton(props: Props) {
                 disabled={isLoading}
                 onClick={clickHandler}
             >
-                {imageSrc ? <ImageIcon /> : <AddPhotoAlternateIcon />}
+                {imageSrc && <ImageIcon sx={{ fontSize: '30px' }} />}
+                {!imageSrc && <AddPhotoAlternateIcon sx={{ fontSize: '30px' }} />}
             </IconButton>
             {isLoading && (
                 <CircularProgress
