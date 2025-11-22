@@ -14,7 +14,7 @@ import TranslationPopperPronunciation from './TranslationPopperPronunciation';
 import TranslationPopperImage from './TranslationPopperImage';
 
 const POPPER_OFFSET = 8;
-const POPPER_BG_COLOR = '#262626';
+const POPPER_BG_COLOR = '#2F2F2F';
 
 export function BookFrameTranslationPopper() {
     const [arrowEl, setArrowEl] = useState<HTMLSpanElement | null>(null);
@@ -117,6 +117,7 @@ export function BookFrameTranslationPopper() {
                     position: 'relative',
                     padding: 8,
                     backgroundColor: POPPER_BG_COLOR,
+                    boxShadow: '0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12)',
                 }}
             >
                 <Box
