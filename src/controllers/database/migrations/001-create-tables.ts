@@ -34,7 +34,8 @@ export const createTables: DatabaseMigration = {
             sourceLanguage VARCHAR NOT NULL,
             targetLanguage VARCHAR NOT NULL,
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-            updatedAt TEXT
+            updatedAt TEXT,
+            UNIQUE(text, sourceLanguage, targetLanguage)
         );`,
         `
         CREATE INDEX IF NOT EXISTS "words_text_translation_idx"

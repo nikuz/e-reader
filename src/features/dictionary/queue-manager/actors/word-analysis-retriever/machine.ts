@@ -14,7 +14,7 @@ import type {
     QueueManagerWordAnalysisRequestErrorEvent,
 } from '../../types';
 import { dbRetrieverActor } from './db-retriever-actor';
-import { dbSaverActor } from './db-saver-actor';
+import { dbUpsertActor } from './db-upsert-actor';
 import { translationActor } from './translation-actor';
 import { explanationActor } from './explanation-actor';
 import { pronunciationActor } from './pronunciation-actor';
@@ -30,7 +30,7 @@ interface InputParameters {
 export const wordAnalysisRetrieverMachine = setup({
     actors: {
         dbRetrieverActor,
-        dbSaverActor,
+        dbUpsertActor,
         translationActor,
         explanationActor,
         pronunciationActor,
@@ -104,7 +104,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                 src: 'translationActor',
                                 input: ({ context }) => ({ word: context.word }),
                                 onDone: {
-                                    target: 'SUCCESS',
+                                    target: 'SAVING_TO_DB',
                                     actions: [
                                         assign(({ event }) => ({
                                             translation: event.output,
@@ -134,6 +134,27 @@ export const wordAnalysisRetrieverMachine = setup({
                                 [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
                             },
                         },
+                        SAVING_TO_DB: {
+                            invoke: {
+                                src: 'dbUpsertActor',
+                                input: ({ context }) => ({
+                                    bookId: context.bookId,
+                                    highlight: context.highlight,
+                                    translation: context.translation,
+                                    explanation: context.explanation,
+                                    pronunciation: context.pronunciation,
+                                    sourceLanguage: context.sourceLanguage,
+                                    targetLanguage: context.targetLanguage,
+                                }),
+                                onDone: {
+                                    target: 'SUCCESS',
+                                },
+                                onError: {
+                                    target: 'SUCCESS',
+                                    actions: xStateUtils.stateErrorTraceAction,
+                                },
+                            },
+                        },
                         SUCCESS: { type: 'final' },
                         ERROR: { type: 'final' }
                     }
@@ -147,7 +168,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                 src: 'explanationActor',
                                 input: ({ context }) => ({ word: context.word }),
                                 onDone: {
-                                    target: 'SUCCESS',
+                                    target: 'SAVING_TO_DB',
                                     actions: [
                                         assign(({ event }) => ({
                                             explanation: event.output,
@@ -177,6 +198,27 @@ export const wordAnalysisRetrieverMachine = setup({
                                 [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
                             },
                         },
+                        SAVING_TO_DB: {
+                            invoke: {
+                                src: 'dbUpsertActor',
+                                input: ({ context }) => ({
+                                    bookId: context.bookId,
+                                    highlight: context.highlight,
+                                    translation: context.translation,
+                                    explanation: context.explanation,
+                                    pronunciation: context.pronunciation,
+                                    sourceLanguage: context.sourceLanguage,
+                                    targetLanguage: context.targetLanguage,
+                                }),
+                                onDone: {
+                                    target: 'SUCCESS',
+                                },
+                                onError: {
+                                    target: 'SUCCESS',
+                                    actions: xStateUtils.stateErrorTraceAction,
+                                },
+                            },
+                        },
                         SUCCESS: { type: 'final' },
                         ERROR: { type: 'final' }
                     }
@@ -190,7 +232,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                 src: 'pronunciationActor',
                                 input: ({ context }) => ({ word: context.word }),
                                 onDone: {
-                                    target: 'SUCCESS',
+                                    target: 'SAVING_TO_DB',
                                     actions: [
                                         assign(({ event }) => ({
                                             pronunciation: event.output,
@@ -220,6 +262,27 @@ export const wordAnalysisRetrieverMachine = setup({
                                 [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
                             },
                         },
+                        SAVING_TO_DB: {
+                            invoke: {
+                                src: 'dbUpsertActor',
+                                input: ({ context }) => ({
+                                    bookId: context.bookId,
+                                    highlight: context.highlight,
+                                    translation: context.translation,
+                                    explanation: context.explanation,
+                                    pronunciation: context.pronunciation,
+                                    sourceLanguage: context.sourceLanguage,
+                                    targetLanguage: context.targetLanguage,
+                                }),
+                                onDone: {
+                                    target: 'SUCCESS',
+                                },
+                                onError: {
+                                    target: 'SUCCESS',
+                                    actions: xStateUtils.stateErrorTraceAction,
+                                },
+                            },
+                        },
                         SUCCESS: { type: 'final' },
                         ERROR: { type: 'final' }
                     }
@@ -228,8 +291,8 @@ export const wordAnalysisRetrieverMachine = setup({
 
             onDone: [
                 {
-                    guard: ({ context }) => context.translation !== undefined && context.explanation !== undefined,
-                    target: '#DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER.SAVING_TO_DB',
+                    guard: ({ context }) => context.translation !== undefined || context.explanation !== undefined,
+                    target: '#DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER.RETRIEVING_FINAL_WORD',
                 },
                 {
                     actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
@@ -241,32 +304,36 @@ export const wordAnalysisRetrieverMachine = setup({
             ],
         },
 
-        SAVING_TO_DB: {
+        RETRIEVING_FINAL_WORD: {
             invoke: {
-                src: 'dbSaverActor',
+                src: 'dbRetrieverActor',
                 input: ({ context }) => ({
-                    bookId: context.bookId,
-                    highlight: context.highlight,
-                    translation: context.translation,
-                    explanation: context.explanation,
-                    pronunciation: context.pronunciation,
-                    sourceLanguage: context.sourceLanguage,
-                    targetLanguage: context.targetLanguage,
+                    word: context.word,
                 }),
-                onDone: {
-                    actions: sendParent(({ event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
-                        type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
-                        word: event.output,
-                    })),
-                },
+                onDone: [
+                    {
+                        guard: ({ event }) => event.output !== undefined,
+                        actions: sendParent(({ event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                            type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
+                            word: event.output!,
+                        })),
+                    },
+                    {
+                        actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
+                            type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
+                            word: context.word,
+                            error: new Error('Can\'t retrieve final word from local DB'),
+                        })),
+                    }
+                ],
                 onError: {
                     actions: [
                         xStateUtils.stateErrorTraceAction,
                         sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
-                            error: new Error('Can\'t save word to local DB'),
-                        }))
+                            error: new Error('Can\'t retrieve final word from local DB'),
+                        })),
                     ],
                 },
             },

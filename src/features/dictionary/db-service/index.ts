@@ -3,6 +3,7 @@ export * from './get-word';
 export * from './get-word-by-id';
 export * from './search';
 export * from './create-word';
+export * from './upsert-word';
 export * from './update-word-image';
 export * from './update-word-pronunciation';
 export * from './add-word-context';
