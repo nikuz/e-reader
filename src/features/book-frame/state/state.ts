@@ -21,6 +21,8 @@ import {
     updateHighlightsCSSAction,
     clearTextSelectionAction,
     navigateAction,
+    suspendBookViewAction,
+    resumeBookViewAction,
 } from './actions';
 import type {
     BookFrameStateContext,
@@ -108,6 +110,12 @@ export const bookFrameStateMachine = setup({
                     actions: enqueueActions(clearTextSelectionAction),
                 },
                 NAVIGATION_OPEN: 'NAVIGATION_OPENED',
+                SUSPEND_BOOK_VIEW: {
+                    actions: enqueueActions(suspendBookViewAction),
+                },
+                RESUME_BOOK_VIEW: {
+                    actions: enqueueActions(resumeBookViewAction),
+                }
             },
         },
 

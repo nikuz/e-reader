@@ -137,6 +137,10 @@ export interface NavigateEvent {
 
 export interface CloseNavigationEvent { type: 'NAVIGATION_CLOSE' }
 
+export interface SuspendBookViewEvent { type: 'SUSPEND_BOOK_VIEW' }
+
+export interface ResumeBookViewEvent { type: 'RESUME_BOOK_VIEW' }
+
 export type BookFrameStateEvents =
     | LoadBookEvent
     | BookLoadSuccessEvent
@@ -164,4 +168,6 @@ export type BookFrameStateEvents =
     | RequestWordAnalysisEvent
     | OpenNavigationEvent
     | NavigateEvent
-    | CloseNavigationEvent;
+    | CloseNavigationEvent
+    | SuspendBookViewEvent
+    | ResumeBookViewEvent;

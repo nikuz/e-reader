@@ -17,3 +17,5 @@ export * from './delete-highlight';
 export * from './update-highlights-css';
 export * from './clear-text-selection';
 export * from './navigate';
+export * from './suspend-book-view';
+export * from './resume-book-view';

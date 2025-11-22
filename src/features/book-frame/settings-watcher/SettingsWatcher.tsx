@@ -29,10 +29,13 @@ export function SettingsWatcher() {
     }, []);
     
     useEffect(() => {
-        if (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS && highlightsCSS === lastHighlightsCSS) {
+        if (
+            (lastSettingsCSS === undefined && lastFontCSS === undefined && lastFontCSS === undefined)
+            || (settingsCSS === lastSettingsCSS && fontCSS === lastFontCSS && highlightsCSS === lastHighlightsCSS)
+        ) {
             return;
         }
-        
+
         if (settingsCSS !== lastSettingsCSS) {
             bookFrameStateMachineActor.send({
                 type: 'UPDATE_SETTINGS_CSS',

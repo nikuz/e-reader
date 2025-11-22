@@ -37,6 +37,16 @@ export default function BookFrame() {
         statusBarStateMachineActor.send({ type: 'HIDE' });
     }, []);
 
+    useEffect(() => {
+        if (bookIsLoading) {
+            return;
+        }
+        bookFrameStateMachineActor.send({ type: 'RESUME_BOOK_VIEW' });
+        return () => {
+            bookFrameStateMachineActor.send({ type: 'SUSPEND_BOOK_VIEW' });
+        };
+    }, [bookIsLoading]);
+
     return (
         <Box
             className="h-full bg-black"
