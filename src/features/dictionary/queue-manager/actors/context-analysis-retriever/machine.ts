@@ -1,5 +1,9 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
+import {
+    DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
+    DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+} from '../../../constants';
 import type {
     DictionaryWord,
     DictionaryWordContext,
@@ -33,14 +37,20 @@ export const contextAnalysisRetrieverMachine = setup({
         context: {} as InputParameters & {
             context: DictionaryWordContext,
             contextExplanation?: DictionaryWordContextExplanation,
+            explanationRetrieveAttempt: number,
             contextImage?: DictionaryWordContextImage,
+            imageRetrieveAttempt: number,
         },
         input: {} as InputParameters,
     }
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER_CONTEXT_ANALYSIS_RETRIEVER',
 
-    context: ({ input }) => input,
+    context: ({ input }) => ({
+        ...input,
+        explanationRetrieveAttempt: 0,
+        imageRetrieveAttempt: 0,
+    }),
 
     initial: 'RETRIEVING_EXPLANATION',
 
@@ -56,17 +66,30 @@ export const contextAnalysisRetrieverMachine = setup({
                     target: 'SAVING_EXPLANATION',
                     actions: assign(({ event }) => ({ contextExplanation: event.output })),
                 },
-                onError: {
-                    actions: [
-                        xStateUtils.stateErrorTraceAction,
-                        sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
-                            type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
-                            word: context.word,
-                            context: context.context,
-                            error: new Error('Can\'t retrieve word context analysis'),
-                        })),
-                    ],
-                },
+                onError: [
+                    {
+                        guard: ({ context }) => context.explanationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                        target: 'RETRIEVING_EXPLANATION_RETRY',
+                        actions: assign(({ context }) => ({ explanationRetrieveAttempt: context.explanationRetrieveAttempt + 1 })),
+                    },
+                    {
+                        actions: [
+                            sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
+                                type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
+                                word: context.word,
+                                context: context.context,
+                                error: new Error('Can\'t retrieve word context analysis'),
+                            })),
+                            xStateUtils.stateErrorTraceAction,
+                        ],
+                    }
+                ],
+            },
+        },
+
+        RETRIEVING_EXPLANATION_RETRY: {
+            after: {
+                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'RETRIEVING_EXPLANATION',
             },
         },
 
@@ -122,17 +145,30 @@ export const contextAnalysisRetrieverMachine = setup({
                     target: 'SAVING_IMAGE',
                     actions: assign(({ event }) => ({ contextImage: event.output })),
                 },
-                onError: {
-                    actions: [
-                        xStateUtils.stateErrorTraceAction,
-                        sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
-                            type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
-                            word: context.word,
-                            context: context.context,
-                            error: new Error('Can\'t retrieve word context image'),
-                        })),
-                    ],
-                },
+                onError: [
+                    {
+                        guard: ({ context }) => context.imageRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                        target: 'RETRIEVING_IMAGE_RETRY',
+                        actions: assign(({ context }) => ({ imageRetrieveAttempt: context.imageRetrieveAttempt + 1 })),
+                    },
+                    {
+                        actions: [
+                            sendParent(({ context }): QueueManagerContextAnalysisRequestErrorEvent => ({
+                                type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
+                                word: context.word,
+                                context: context.context,
+                                error: new Error('Can\'t retrieve word context image'),
+                            })),
+                            xStateUtils.stateErrorTraceAction,
+                        ],
+                    }
+                ],
+            },
+        },
+
+        RETRIEVING_IMAGE_RETRY: {
+            after: {
+                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'RETRIEVING_IMAGE',
             },
         },
 

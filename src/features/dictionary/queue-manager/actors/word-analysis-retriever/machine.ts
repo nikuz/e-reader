@@ -1,6 +1,10 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
 import type { BookHighlight } from 'src/types';
+import {
+    DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
+    DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+} from '../../../constants';
 import type { DictionaryWord, Language } from '../../../types';
 import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
@@ -34,15 +38,23 @@ export const wordAnalysisRetrieverMachine = setup({
     types: {
         context: {} as InputParameters & {
             translation?: string,
+            translationRetrieveAttempt: number,
             explanation?: string,
+            explanationRetrieveAttempt: number,
             pronunciation?: string,
+            pronunciationRetrieveAttempt: number,
         },
         input: {} as InputParameters,
     }
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER',
 
-    context: ({ input }) => input,
+    context: ({ input }) => ({
+        ...input,
+        translationRetrieveAttempt: 0,
+        explanationRetrieveAttempt: 0,
+        pronunciationRetrieveAttempt: 0,
+    }),
 
     initial: 'RETRIEVING_FROM_DB',
 
@@ -104,12 +116,22 @@ export const wordAnalysisRetrieverMachine = setup({
                                         })),
                                     ],
                                 },
-                                onError: {
-                                    target: 'ERROR',
-                                    actions: [
-                                        xStateUtils.stateErrorTraceAction,
-                                    ],
-                                },
+                                onError: [
+                                    {
+                                        guard: ({ context }) => context.translationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                                        target: 'RETRYING',
+                                        actions: assign(({ context }) => ({ translationRetrieveAttempt: context.translationRetrieveAttempt + 1 })),
+                                    },
+                                    {
+                                        target: 'ERROR',
+                                        actions: xStateUtils.stateErrorTraceAction,
+                                    }
+                                ],
+                            },
+                        },
+                        RETRYING: {
+                            after: {
+                                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
                             },
                         },
                         SUCCESS: { type: 'final' },
@@ -137,12 +159,22 @@ export const wordAnalysisRetrieverMachine = setup({
                                         })),
                                     ],
                                 },
-                                onError: {
-                                    target: 'ERROR',
-                                    actions: [
-                                        xStateUtils.stateErrorTraceAction,
-                                    ],
-                                },
+                                onError: [
+                                    {
+                                        guard: ({ context }) => context.explanationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                                        target: 'RETRYING',
+                                        actions: assign(({ context }) => ({ explanationRetrieveAttempt: context.explanationRetrieveAttempt + 1 })),
+                                    },
+                                    {
+                                        target: 'ERROR',
+                                        actions: xStateUtils.stateErrorTraceAction,
+                                    }
+                                ],
+                            },
+                        },
+                        RETRYING: {
+                            after: {
+                                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
                             },
                         },
                         SUCCESS: { type: 'final' },
@@ -170,12 +202,22 @@ export const wordAnalysisRetrieverMachine = setup({
                                         })),
                                     ],
                                 },
-                                onError: {
-                                    target: 'ERROR',
-                                    actions: [
-                                        xStateUtils.stateErrorTraceAction,
-                                    ],
-                                },
+                                onError: [
+                                    {
+                                        guard: ({ context }) => context.pronunciationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                                        target: 'RETRYING',
+                                        actions: assign(({ context }) => ({ pronunciationRetrieveAttempt: context.pronunciationRetrieveAttempt + 1 })),
+                                    },
+                                    {
+                                        target: 'ERROR',
+                                        actions: xStateUtils.stateErrorTraceAction,
+                                    }
+                                ],
+                            },
+                        },
+                        RETRYING: {
+                            after: {
+                                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
                             },
                         },
                         SUCCESS: { type: 'final' },

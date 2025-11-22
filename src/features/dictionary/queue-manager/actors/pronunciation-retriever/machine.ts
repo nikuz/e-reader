@@ -1,5 +1,9 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
+import {
+    DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
+    DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+} from '../../../constants';
 import type { DictionaryWord } from '../../../types';
 import type {
     QueueManagerPronunciationRequestSuccessEvent,
@@ -21,13 +25,17 @@ export const pronunciationRetrieverMachine = setup({
     types: {
         context: {} as InputParameters & {
             pronunciation?: string,
+            pronunciationRetrieveAttempt: number,
         },
         input: {} as InputParameters,
     }
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER_PRONUNCIATION_RETRIEVER',
 
-    context: ({ input }) => input,
+    context: ({ input }) => ({
+        ...input,
+        pronunciationRetrieveAttempt: 0,
+    }),
 
     initial: 'RETRIEVING',
 
@@ -40,16 +48,29 @@ export const pronunciationRetrieverMachine = setup({
                     target: 'SAVING_TO_DB',
                     actions: assign(({ event }) => ({ pronunciation: event.output })),
                 },
-                onError: {
-                    actions: [
-                        sendParent(({ context, event }): QueueManagerPronunciationRequestErrorEvent => ({
-                            type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR',
-                            word: context.word,
-                            error: event.error,
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
-                },
+                onError: [
+                    {
+                        guard: ({ context }) => context.pronunciationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                        target: 'RETRYING',
+                        actions: assign(({ context }) => ({ pronunciationRetrieveAttempt: context.pronunciationRetrieveAttempt + 1 })),
+                    },
+                    {
+                        actions: [
+                            sendParent(({ context, event }): QueueManagerPronunciationRequestErrorEvent => ({
+                                type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR',
+                                word: context.word,
+                                error: event.error,
+                            })),
+                            xStateUtils.stateErrorTraceAction,
+                        ],
+                    }
+                ],
+            },
+        },
+
+        RETRYING: {
+            after: {
+                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'RETRIEVING',
             },
         },
 

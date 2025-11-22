@@ -1,5 +1,9 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
+import {
+    DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
+    DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+} from '../../../constants';
 import type { DictionaryWord } from '../../../types';
 import type {
     QueueManagerImageRequestSuccessEvent,
@@ -21,13 +25,17 @@ export const imageRetrieverMachine = setup({
     types: {
         context: {} as InputParameters & {
             image?: string,
+            imageRetrieveAttempt: number,
         },
         input: {} as InputParameters,
     }
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER_IMAGE_RETRIEVER',
 
-    context: ({ input }) => input,
+    context: ({ input }) => ({
+        ...input,
+        imageRetrieveAttempt: 0,
+    }),
 
     initial: 'RETRIEVING',
 
@@ -43,16 +51,29 @@ export const imageRetrieverMachine = setup({
                     target: 'SAVING_TO_DB',
                     actions: assign(({ event }) => ({ image: event.output })),
                 },
-                onError: {
-                    actions: [
-                        sendParent(({ context, event }): QueueManagerImageRequestErrorEvent => ({
-                            type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
-                            word: context.word,
-                            error: event.error,
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
-                },
+                onError: [
+                    {
+                        guard: ({ context }) => context.imageRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                        target: 'RETRYING',
+                        actions: assign(({ context }) => ({ imageRetrieveAttempt: context.imageRetrieveAttempt + 1 })),
+                    },
+                    {
+                        actions: [
+                            sendParent(({ context, event }): QueueManagerImageRequestErrorEvent => ({
+                                type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
+                                word: context.word,
+                                error: event.error,
+                            })),
+                            xStateUtils.stateErrorTraceAction,
+                        ],
+                    }
+                ],
+            },
+        },
+
+        RETRYING: {
+            after: {
+                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'RETRIEVING',
             },
         },
 
