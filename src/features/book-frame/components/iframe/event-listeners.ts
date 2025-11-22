@@ -37,6 +37,9 @@ export class FrameEventObserver {
         // disable default text selection contextual menu
         this.window.addEventListener('contextmenu', this.contextMenuHandler);
 
+        // disable native text selection
+        this.window.addEventListener('selectstart', this.selectStartEventHandler);
+
         // disable default text drag behavior
         this.window.addEventListener('dragstart', this.dragStartEventHandler);
 
@@ -73,6 +76,7 @@ export class FrameEventObserver {
         }
 
         this.window.removeEventListener('contextmenu', this.contextMenuHandler);
+        this.window.removeEventListener('selectstart', this.selectStartEventHandler);
         this.window.removeEventListener('dragstart', this.dragStartEventHandler);
         this.window.removeEventListener('resize', this.resizeHandler);
 
@@ -156,6 +160,11 @@ export class FrameEventObserver {
     };
 
     contextMenuHandler = (event: MouseEvent) => {
+        event.preventDefault();
+    };
+
+    selectStartEventHandler = (event: Event) => {
+        // Prevent native text selection from starting
         event.preventDefault();
     };
 
