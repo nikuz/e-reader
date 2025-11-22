@@ -100,6 +100,9 @@ export const libraryStateMachine = setup({
         LOADING_BOOKS: {
             invoke: {
                 src: 'booksLoaderActor',
+                input: ({ context }) => ({
+                    lastSelectedBook: context.lastSelectedBook,
+                }),
                 onDone: {
                     target: 'IDLE',
                     actions: assign(({ event }) => ({
