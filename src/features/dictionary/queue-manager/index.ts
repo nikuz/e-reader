@@ -1,2 +1,2 @@
-export * from './queue-manager';
+export * from './state';
 export type * from './types';
