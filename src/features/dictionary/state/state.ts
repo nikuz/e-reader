@@ -17,7 +17,6 @@ import {
 import {
     updateTranslatingWordAction,
     clearWordSelectionAction,
-    updateSelectedWordAction,
 } from './actions';
 import type {
     DictionaryStateContext,
@@ -61,6 +60,7 @@ export const dictionaryStateMachine = setup({
                 REQUEST_WORD_ANALYSIS: {
                     actions: [
                         assign(({ event }) => ({
+                            translatingHighlight: event.highlight,
                             translatingWord: getNewDictionaryWord({
                                 bookId: event.bookId,
                                 highlight: event.highlight,
@@ -87,11 +87,11 @@ export const dictionaryStateMachine = setup({
                 QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED: {
                     actions: enqueueActions(updateTranslatingWordAction),
                 },
+                QUEUE_MANAGER_WORD_ANALYSIS_UPDATE: {
+                    actions: enqueueActions(updateTranslatingWordAction),
+                },
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
-                    actions: assign(({ event }) => ({
-                        translatingWord: undefined,
-                        selectedWord: event.word,
-                    })),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
@@ -102,7 +102,7 @@ export const dictionaryStateMachine = setup({
                     actions: sendTo('queue-manager', ({ event }): QueueManagerRequestImageEvent => event),
                 },
                 QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
-                    actions: enqueueActions(updateSelectedWordAction),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
@@ -113,7 +113,7 @@ export const dictionaryStateMachine = setup({
                     actions: sendTo('queue-manager', ({ event }): QueueManagerRequestPronunciationEvent => event),
                 },
                 QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS: {
-                    actions: enqueueActions(updateSelectedWordAction),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
@@ -124,10 +124,10 @@ export const dictionaryStateMachine = setup({
                     actions: sendTo('queue-manager', ({ event }): QueueManagerRequestContextAnalysisEvent => event),
                 },
                 QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS: {
-                    actions: enqueueActions(updateSelectedWordAction),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {
-                    actions: enqueueActions(updateSelectedWordAction),
+                    actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR: {
                     actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),

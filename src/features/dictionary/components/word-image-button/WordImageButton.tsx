@@ -20,8 +20,9 @@ export function WordImageButton(props: Props) {
     const [blobSrc, setBlobSrc] = useState<string>();
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const contextId = useMemo(() => converterUtils.stringToHash(highlight.context), [highlight]);
-    const wordImageIsInQueue = useDictionaryStateQueueSelect(`${word.id}-image`);
-    const wordContextAnalysisIsInQueue = useDictionaryStateQueueSelect(`${word.id}-${contextId}`);
+    const isContextLoading = useDictionaryStateQueueSelect(`${highlight.id}-${contextId}`);
+    const wordImageIsInQueue = useDictionaryStateQueueSelect(`${highlight.id}-image`);
+    const wordContextAnalysisIsInQueue = useDictionaryStateQueueSelect(`${highlight.id}-${contextId}`);
     const isLoading = wordImageIsInQueue || (!!word.image && wordContextAnalysisIsInQueue);
     const isImageRequested = useRef(false);
 
@@ -51,9 +52,10 @@ export function WordImageButton(props: Props) {
             dictionaryStateMachineActor.send({
                 type: 'REQUEST_IMAGE',
                 word,
+                highlight,
             });
         }
-    }, [word, imageSrc]);
+    }, [word, imageSrc, highlight]);
 
     const closePreviewHandler = useCallback(() => {
         setIsPreviewOpen(false);
@@ -116,7 +118,7 @@ export function WordImageButton(props: Props) {
             ...props.sx,
         }}>
             <IconButton
-                disabled={isLoading}
+                disabled={isContextLoading || isLoading}
                 onClick={clickHandler}
             >
                 {imageSrc && <ImageIcon sx={{ fontSize: '30px' }} />}

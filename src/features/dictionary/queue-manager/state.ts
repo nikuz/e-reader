@@ -1,4 +1,4 @@
-import { setup, assign, enqueueActions, sendParent } from 'xstate';
+import { setup, enqueueActions, sendParent } from 'xstate';
 import {
     wordAnalysisRetrieverMachine,
     imageRetrieverMachine,
@@ -29,140 +29,167 @@ export const queueManagerStateMachine = setup({
         requests: {},
     },
 
-    initial: 'IDLE',
-
-    states: {
-        IDLE: {
-            on: {
-                REQUEST_WORD_ANALYSIS: {
-                    actions: assign(({ event, context, spawn }) => ({
-                        requests: {
-                            ...context.requests,
-                            [event.word.id]: spawn('wordAnalysisRetrieverMachine', {
-                                input: {
-                                    bookId: event.bookId,
-                                    highlight: event.highlight,
-                                    word: event.word,
-                                    sourceLanguage: event.sourceLanguage,
-                                    targetLanguage: event.targetLanguage,
-                                },
-                            }),
-                        },
-                    })),
-                },
-
-                QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED: {
-                    actions: sendParent(({ event }) => event),
-                },
-
-                QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED: {
-                    actions: sendParent(({ event }) => event),
-                },
-
-                QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED: {
-                    actions: sendParent(({ event }) => event),
-                },
-
-                QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
+    on: {
+        REQUEST_WORD_ANALYSIS: {
+            actions: enqueueActions(({ event, context, enqueue }) => {
+                const key = event.highlight.id;
+                const existingActor = context.requests[key];
                 
-                QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
-
-                REQUEST_IMAGE: {
-                    actions: assign(({ event, context, spawn }) => ({
+                if (existingActor) {
+                    enqueue.sendTo(existingActor, { type: 'PROVIDE_UPDATE' });
+                } else {
+                    enqueue.assign({
                         requests: {
                             ...context.requests,
-                            [`${event.word.id}-image`]: spawn('imageRetrieverMachine', {
-                                input: {
-                                    word: event.word,
-                                },
-                            }),
+                            [key]: key,
                         },
-                    })),
-                },
-
-                QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
-
-                QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
-
-                REQUEST_PRONUNCIATION: {
-                    actions: assign(({ event, context, spawn }) => ({
-                        requests: {
-                            ...context.requests,
-                            [`${event.word.id}-pronunciation`]: spawn('pronunciationRetrieverMachine', {
-                                input: {
-                                    word: event.word,
-                                },
-                            }),
+                    });
+                    enqueue.spawnChild('wordAnalysisRetrieverMachine', {
+                        id: key,
+                        input: {
+                            bookId: event.bookId,
+                            highlight: event.highlight,
+                            word: event.word,
+                            sourceLanguage: event.sourceLanguage,
+                            targetLanguage: event.targetLanguage,
                         },
-                    })),
-                },
+                    });
+                }
+            }),
+        },
 
-                QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
+        QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED: {
+            actions: sendParent(({ event }) => event),
+        },
 
-                QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
+        QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED: {
+            actions: sendParent(({ event }) => event),
+        },
 
-                REQUEST_CONTEXT_ANALYSIS: {
-                    actions: assign(({ event, context, spawn }) => ({
-                        requests: {
-                            ...context.requests,
-                            [`${event.word.id}-${event.context.id}`]: spawn('contextAnalysisRetrieverMachine', {
-                                input: {
-                                    word: event.word,
-                                    context: event.context,
-                                },
-                            }),
-                        },
-                    })),
-                },
+        QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED: {
+            actions: sendParent(({ event }) => event),
+        },
 
-                QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS: {
-                    actions: sendParent(({ event }) => event),
-                },
+        QUEUE_MANAGER_WORD_ANALYSIS_UPDATE: {
+            actions: sendParent(({ event }) => event),
+        },
 
-                QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
-                
-                QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR: {
-                    actions: [
-                        enqueueActions(deleteRequestAction),
-                        sendParent(({ event }) => event),
-                    ],
-                },
-            }
+        QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        REQUEST_IMAGE: {
+            actions: enqueueActions(({ event, context, enqueue }) => {
+                const key = `${event.highlight.id}-image`;
+                enqueue.assign({
+                    requests: {
+                        ...context.requests,
+                        [key]: key,
+                    },
+                });
+                enqueue.spawnChild('imageRetrieverMachine', {
+                    id: key,
+                    input: {
+                        word: event.word,
+                        highlight: event.highlight,
+                    },
+                });
+            }),
+        },
+
+        QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        QUEUE_MANAGER_IMAGE_REQUEST_ERROR: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        REQUEST_PRONUNCIATION: {
+            actions: enqueueActions(({ event, context, enqueue }) => {
+                const key = `${event.highlight.id}-pronunciation`;
+                enqueue.assign({
+                    requests: {
+                        ...context.requests,
+                        [key]: key,
+                    },
+                });
+                enqueue.spawnChild('pronunciationRetrieverMachine', {
+                    id: key,
+                    input: {
+                        word: event.word,
+                        highlight: event.highlight,
+                    },
+                });
+            }),
+        },
+
+        QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        REQUEST_CONTEXT_ANALYSIS: {
+            actions: enqueueActions(({ event, context, enqueue }) => {
+                const key = `${event.highlight.id}-${event.context.id}`;
+                enqueue.assign({
+                    requests: {
+                        ...context.requests,
+                        [key]: key,
+                    },
+                });
+                enqueue.spawnChild('contextAnalysisRetrieverMachine', {
+                    id: key,
+                    input: {
+                        word: event.word,
+                        highlight: event.highlight,
+                        context: event.context,
+                    },
+                });
+            }),
+        },
+
+        QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS: {
+            actions: sendParent(({ event }) => event),
+        },
+
+        QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
+        },
+
+        QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR: {
+            actions: [
+                enqueueActions(deleteRequestAction),
+                sendParent(({ event }) => event),
+            ],
         },
     },
 });

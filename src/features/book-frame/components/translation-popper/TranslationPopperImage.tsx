@@ -3,16 +3,16 @@ import { WordImageButton } from 'src/features/dictionary/components';
 import { useBookFrameStateSelect } from '../../state';
 
 export default function TranslationPopperImage() {
-    const selectedWord = useDictionaryStateSelect('selectedWord');
+    const translatingWord = useDictionaryStateSelect('translatingWord');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
 
-    if (!selectedWord || !selectedHighlight) {
+    if (!translatingWord || !translatingWord.explanation || !selectedHighlight) {
         return null;
     }
 
     return (
         <WordImageButton
-            word={selectedWord}
+            word={translatingWord}
             highlight={selectedHighlight}
             sx={{ display: 'block' }}
         />

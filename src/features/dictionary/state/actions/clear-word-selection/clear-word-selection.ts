@@ -6,6 +6,5 @@ export function clearWordSelectionAction(props: {
 }) {
     props.enqueue.assign({
         translatingWord: undefined,
-        selectedWord: undefined,
     });
 }

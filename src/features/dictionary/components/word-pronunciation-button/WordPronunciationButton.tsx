@@ -5,21 +5,23 @@ import { PlayCircleIcon, StopCircleIcon } from 'src/design-system/icons';
 import type { SxProps } from 'src/design-system/styles';
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 import { converterUtils } from 'src/utils';
+import type { BookHighlight } from 'src/types';
 import { dictionaryStateMachineActor, useDictionaryStateQueueSelect } from '../../state';
 import type { DictionaryWord } from '../../types';
 
 interface Props {
     word: DictionaryWord,
+    highlight?: BookHighlight,
     sx?: SxProps,
 }
 
 export function DictionaryWordPronunciationButton(props: Props) {
-    const { word } = props;
+    const { word, highlight } = props;
     const [blobSrc, setBlobSrc] = useState<string>();
     const [isPlaying, setIsPlaying] = useState(false);
-    const wordIsInQueue = useDictionaryStateQueueSelect(word.id);
-    const wordPronunciationIsInQueue = useDictionaryStateQueueSelect(`${word.id}-pronunciation`);
-    const isLoading = wordIsInQueue || wordPronunciationIsInQueue;
+    const highlightIsInQueue = useDictionaryStateQueueSelect(highlight?.id);
+    const highlightPronunciationIsInQueue = useDictionaryStateQueueSelect(`${highlight?.id}-pronunciation`);
+    const isLoading = highlightIsInQueue || highlightPronunciationIsInQueue;
     const audioRef = useRef<HTMLAudioElement>(null);
     const isPronunciationRequested = useRef(false);   
 
@@ -35,10 +37,14 @@ export function DictionaryWordPronunciationButton(props: Props) {
 
     const playHandler = useCallback(() => {
         if (!src) {
+            if (!highlight) {
+                return alert('No "src" and no "highlight: for this word');
+            }
             isPronunciationRequested.current = true;
             dictionaryStateMachineActor.send({
                 type: 'REQUEST_PRONUNCIATION',
                 word,
+                highlight,
             });
             return;
         }
@@ -55,7 +61,7 @@ export function DictionaryWordPronunciationButton(props: Props) {
             audioElement.currentTime = 0;
             setIsPlaying(false);
         }
-    }, [src, word]);
+    }, [src, word, highlight]);
 
     useEffect(() => {
         if (isPronunciationRequested.current && src) {

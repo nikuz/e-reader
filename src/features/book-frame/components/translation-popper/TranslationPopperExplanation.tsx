@@ -1,46 +1,50 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { Box, Button } from 'src/design-system/components';
 import { AddIcon } from 'src/design-system/icons';
 import {
     useDictionaryStateSelect,
     dictionaryStateMachineActor,
+    useDictionaryStateQueueSelect,
 } from 'src/features/dictionary/state';
 import WordExplanation from 'src/features/dictionary/components/word-explanation';
 import { converterUtils } from 'src/utils';
 import { useBookFrameStateSelect } from '../../state';
 
 export default function TranslationPopperExplanation() {
-    const [isContextLoading, setIsContextLoading] = useState(false);
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const translatingWord = useDictionaryStateSelect('translatingWord');
-    const selectedWord = useDictionaryStateSelect('selectedWord');
+    const contextId = useMemo(() => (
+        selectedHighlight ? converterUtils.stringToHash(selectedHighlight.context) : ''
+    ), [selectedHighlight]);
+    const isContextLoading = useDictionaryStateQueueSelect(`${selectedHighlight?.id}-${contextId}`);
+    const wordImageIsInQueue = useDictionaryStateQueueSelect(`${selectedHighlight?.id}-image`);
 
     const contextExplanation = useMemo(() => {
-        if (!selectedHighlight || !selectedWord || !selectedWord.contextExplanations.length) {
+        if (!selectedHighlight || !translatingWord || !translatingWord.contextExplanations.length) {
             return undefined;
         }
 
         const highlightContextId = converterUtils.stringToHash(selectedHighlight.context);
 
-        return selectedWord.contextExplanations.find(item => item.contextId === highlightContextId)?.text;
-    }, [selectedWord, selectedHighlight]);
+        return translatingWord.contextExplanations.find(item => item.contextId === highlightContextId)?.text;
+    }, [translatingWord, selectedHighlight]);
 
     const explainInContextHandler = useCallback(() => {
-        if (!selectedWord || !selectedHighlight) {
+        if (!translatingWord || !selectedHighlight) {
             return;
         }
-        setIsContextLoading(true);
         dictionaryStateMachineActor.send({
             type: 'REQUEST_CONTEXT_ANALYSIS',
-            word: selectedWord,
+            word: translatingWord,
             context: {
-                id: converterUtils.stringToHash(selectedHighlight.context),
+                id: contextId,
                 text: selectedHighlight.context,
             },
+            highlight: selectedHighlight,
         });
-    }, [selectedWord, selectedHighlight]);
+    }, [translatingWord, selectedHighlight, contextId]);
 
-    const explanation = contextExplanation ?? translatingWord?.explanation ?? selectedWord?.explanation;
+    const explanation = contextExplanation ?? translatingWord?.explanation;
 
     if (!explanation) {
         return null;
@@ -55,6 +59,7 @@ export default function TranslationPopperExplanation() {
                     variant="outlined"
                     loading={isContextLoading}
                     startIcon={<AddIcon />}
+                    disabled={isContextLoading || wordImageIsInQueue}
                     sx={{
                         mt: 1.5,
                         '& .MuiButton-icon': {

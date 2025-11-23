@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo, useEffect } from 'react';
+import { useRef, useCallback, useMemo, useEffect, useEffectEvent } from 'react';
 import {
     Popper,
     Paper,
@@ -83,16 +83,28 @@ export function BookFrameTextSelectionControls() {
     }, [selectedHighlight]);
     
     const translateHandler = useCallback(() => {
-        storeHighlightRequested.current = true;
-        bookFrameStateMachineActor.send({ type: 'STORE_HIGHLIGHT' });
-    }, []);
-
-    useEffect(() => {
-        if (!book || !selectedHighlight || !storeHighlightRequested.current) {
+        if (!book) {
             return;
         }
+        if (selectedHighlight) {
+            dictionaryStateMachineActor.send({
+                type: 'REQUEST_WORD_ANALYSIS',
+                bookId: book.eisbn,
+                highlight: selectedHighlight,
+                sourceLanguage: Languages.ENGLISH,
+                targetLanguage: Languages.RUSSIAN,
+            });
+            bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
+        } else {
+            storeHighlightRequested.current = true;
+            bookFrameStateMachineActor.send({ type: 'STORE_HIGHLIGHT' });
+        }
+    }, [book, selectedHighlight]);
 
-        storeHighlightRequested.current = false;
+    const requestWordAnalysis = useEffectEvent(() => {
+        if (!book || !selectedHighlight) {
+            return;
+        }
         dictionaryStateMachineActor.send({
             type: 'REQUEST_WORD_ANALYSIS',
             bookId: book.eisbn,
@@ -101,7 +113,14 @@ export function BookFrameTextSelectionControls() {
             targetLanguage: Languages.RUSSIAN,
         });
         bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
-    }, [book, selectedHighlight]);
+    });
+    
+    useEffect(() => {
+        if (selectedHighlight && storeHighlightRequested.current) {
+            storeHighlightRequested.current = false;
+            requestWordAnalysis();
+        }
+    }, [selectedHighlight]);
 
     if (!virtualElement) {
         return null;

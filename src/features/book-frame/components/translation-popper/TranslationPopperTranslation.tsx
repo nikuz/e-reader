@@ -3,17 +3,14 @@ import { useDictionaryStateSelect } from 'src/features/dictionary/state';
 
 export default function TranslationPopperTranslation() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
-    const selectedWord = useDictionaryStateSelect('selectedWord');
-    const translation = translatingWord?.translation ?? selectedWord?.translation;
-    const explanation = translatingWord?.explanation ?? selectedWord?.explanation;
 
     // If AI explanation is already available, hide the simple translation.
     // Since the explanation contains its own translation.
-    if (explanation) {
+    if (translatingWord?.explanation) {
         return null;
     }
 
-    if (!translation) {
+    if (!translatingWord?.translation) {
         return (
             <Typography className="loading-text">
                 Translating...
@@ -23,7 +20,7 @@ export default function TranslationPopperTranslation() {
 
     return (
         <Typography>
-            {translation}
+            {translatingWord.translation}
         </Typography>
     );
 }

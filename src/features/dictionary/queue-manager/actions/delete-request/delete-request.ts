@@ -27,8 +27,8 @@ export function deleteRequestAction(props: {
     enqueue: { assign: (context: Partial<QueueManagerStateContext>) => void },
 }) {
     const requests = { ...props.context.requests };
-    const word = props.event.word;
-    let requestId = word.id.toString();
+    const highlight = props.event.highlight;
+    let requestId = highlight.id.toString();
 
     switch (props.event.type) {
         case 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS':

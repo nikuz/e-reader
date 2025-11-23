@@ -8,6 +8,7 @@ import {
     type QueueManagerWordAnalysisTranslationRetrievedEvent,
     type QueueManagerWordAnalysisExplanationRetrievedEvent,
     type QueueManagerWordAnalysisPronunciationRetrievedEvent,
+    type QueueManagerWordAnalysisUpdateEvent,
     type QueueManagerRequestImageEvent,
     type QueueManagerImageRequestSuccessEvent,
     type QueueManagerImageRequestErrorEvent,
@@ -31,7 +32,7 @@ export interface DictionaryStateContext {
     searchWordsCounter?: number,
 
     translatingWord?: DictionaryWord,
-    selectedWord?: DictionaryWord,
+    translatingHighlight?: BookHighlight,
 
     errorMessage?: string,
 
@@ -80,6 +81,7 @@ export type DictionaryStateEvents =
     | QueueManagerWordAnalysisTranslationRetrievedEvent
     | QueueManagerWordAnalysisExplanationRetrievedEvent
     | QueueManagerWordAnalysisPronunciationRetrievedEvent
+    | QueueManagerWordAnalysisUpdateEvent
     | QueueManagerRequestImageEvent
     | QueueManagerImageRequestSuccessEvent
     | QueueManagerImageRequestErrorEvent

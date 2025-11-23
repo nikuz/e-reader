@@ -10,6 +10,7 @@ import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
     QueueManagerWordAnalysisExplanationRetrievedEvent,
     QueueManagerWordAnalysisPronunciationRetrievedEvent,
+    QueueManagerWordAnalysisUpdateEvent,
     QueueManagerWordAnalysisRequestSuccessEvent,
     QueueManagerWordAnalysisRequestErrorEvent,
 } from '../../types';
@@ -45,6 +46,7 @@ export const wordAnalysisRetrieverMachine = setup({
             pronunciationRetrieveAttempt: number,
         },
         input: {} as InputParameters,
+        events: {} as { type: 'PROVIDE_UPDATE' }
     }
 }).createMachine({
     id: 'DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER',
@@ -69,9 +71,10 @@ export const wordAnalysisRetrieverMachine = setup({
                     {
                         guard: ({ event }) => !!event.output,
                         actions: [
-                            sendParent(({ event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                            sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
                                 type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
                                 word: event.output!,
+                                highlight: context.highlight,
                             })),
                         ],
                     },
@@ -85,6 +88,7 @@ export const wordAnalysisRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
+                            highlight: context.highlight,
                             error: new Error('Can\'t retrieve word from local DB'),
                         }))
                     ],
@@ -112,6 +116,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                         sendParent(({ context, event }): QueueManagerWordAnalysisTranslationRetrievedEvent => ({
                                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED',
                                             word: context.word,
+                                            highlight: context.highlight,
                                             translation: event.output,
                                         })),
                                     ],
@@ -176,6 +181,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                         sendParent(({ context, event }): QueueManagerWordAnalysisExplanationRetrievedEvent => ({
                                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED',
                                             word: context.word,
+                                            highlight: context.highlight,
                                             explanation: event.output,
                                         })),
                                     ],
@@ -240,6 +246,7 @@ export const wordAnalysisRetrieverMachine = setup({
                                         sendParent(({ context, event }): QueueManagerWordAnalysisPronunciationRetrievedEvent => ({
                                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED',
                                             word: context.word,
+                                            highlight: context.highlight,
                                             pronunciation: event.output,
                                         })),
                                     ],
@@ -298,6 +305,7 @@ export const wordAnalysisRetrieverMachine = setup({
                     actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                         type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
                         word: context.word,
+                        highlight: context.highlight,
                         error: new Error('Can\'t retrieve word analysis'),
                     })),
                 },
@@ -313,15 +321,17 @@ export const wordAnalysisRetrieverMachine = setup({
                 onDone: [
                     {
                         guard: ({ event }) => event.output !== undefined,
-                        actions: sendParent(({ event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
+                        actions: sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
                             word: event.output!,
+                            highlight: context.highlight,
                         })),
                     },
                     {
                         actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
+                            highlight: context.highlight,
                             error: new Error('Can\'t retrieve final word from local DB'),
                         })),
                     }
@@ -332,11 +342,25 @@ export const wordAnalysisRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
+                            highlight: context.highlight,
                             error: new Error('Can\'t retrieve final word from local DB'),
                         })),
                     ],
                 },
             },
-        }
+        },
     },
+
+    on: {
+        PROVIDE_UPDATE: {
+            actions: sendParent(({ context }): QueueManagerWordAnalysisUpdateEvent => ({
+                type: 'QUEUE_MANAGER_WORD_ANALYSIS_UPDATE',
+                word: context.word,
+                highlight: context.highlight,
+                translation: context.translation,
+                explanation: context.explanation,
+                pronunciation: context.pronunciation,
+            })),
+        },
+    }
 });

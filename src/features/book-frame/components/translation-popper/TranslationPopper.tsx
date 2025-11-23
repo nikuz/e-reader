@@ -23,7 +23,6 @@ export function BookFrameTranslationPopper() {
     const isAnalyzingWord = useBookFrameStateMatch(['ANALYZING_WORD']);
     const lastIsAnalyzingWord = useLast(isAnalyzingWord);
     const translatingWord = useDictionaryStateSelect('translatingWord');
-    const selectedWord = useDictionaryStateSelect('selectedWord');
     const dictionaryErrorMessage = useDictionaryStateSelect('errorMessage');
     const popperRef = useRef<PopperInstance | null>(null);
 
@@ -60,11 +59,11 @@ export function BookFrameTranslationPopper() {
     }, []);
 
     useEffect(() => {
-        if (!translatingWord && !selectedWord) {
+        if (!translatingWord) {
             return;
         }
         popperRef.current?.forceUpdate();
-    }, [translatingWord, selectedWord]);
+    }, [translatingWord]);
 
     useEffect(() => {
         if (!isAnalyzingWord && lastIsAnalyzingWord) {

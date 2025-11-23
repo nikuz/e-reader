@@ -1,5 +1,6 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
+import type { BookHighlight } from 'src/types';
 import {
     DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
     DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
@@ -14,6 +15,7 @@ import { dbSaverActor } from './db-saver-actor';
 
 interface InputParameters {
     word: DictionaryWord,
+    highlight: BookHighlight,
     style?: string,
 }
 
@@ -59,6 +61,7 @@ export const pronunciationRetrieverMachine = setup({
                             sendParent(({ context, event }): QueueManagerPronunciationRequestErrorEvent => ({
                                 type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR',
                                 word: context.word,
+                                highlight: context.highlight,
                                 error: event.error,
                             })),
                             xStateUtils.stateErrorTraceAction,
@@ -82,9 +85,10 @@ export const pronunciationRetrieverMachine = setup({
                     pronunciation: context.pronunciation,
                 }),
                 onDone: {
-                    actions: sendParent(({ event }): QueueManagerPronunciationRequestSuccessEvent => ({
+                    actions: sendParent(({ context, event }): QueueManagerPronunciationRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS',
                         word: event.output,
+                        highlight: context.highlight,
                     })),
                 },
                 onError: {
@@ -93,6 +97,7 @@ export const pronunciationRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerPronunciationRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_ERROR',
                             word: context.word,
+                            highlight: context.highlight,
                             error: new Error('Can\'t update word pronunciation in local DB'),
                         }))
                     ],

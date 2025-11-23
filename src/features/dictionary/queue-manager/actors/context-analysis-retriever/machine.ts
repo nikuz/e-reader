@@ -1,5 +1,6 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
+import type { BookHighlight } from 'src/types';
 import {
     DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
     DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
@@ -22,6 +23,7 @@ import { imageSaverActor } from './image-saver-actor';
 
 interface InputParameters {
     word: DictionaryWord,
+    highlight: BookHighlight,
     context: DictionaryWordContext,
     style?: string,
 }
@@ -78,6 +80,7 @@ export const contextAnalysisRetrieverMachine = setup({
                                 type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                                 word: context.word,
                                 context: context.context,
+                                highlight: context.highlight,
                                 error: new Error('Can\'t retrieve word context analysis'),
                             })),
                             xStateUtils.stateErrorTraceAction,
@@ -105,9 +108,10 @@ export const contextAnalysisRetrieverMachine = setup({
                     {
                         guard: ({ context }) => !!context.word.image,
                         target: 'RETRIEVING_IMAGE',
-                        actions: sendParent(({ event }): QueueManagerContextAnalysisExplanationRequestSuccessEvent => ({
+                        actions: sendParent(({ context, event }): QueueManagerContextAnalysisExplanationRequestSuccessEvent => ({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_EXPLANATION_REQUEST_SUCCESS',
                             word: event.output,
+                            highlight: context.highlight,
                         })),
                     },
                     {
@@ -115,6 +119,7 @@ export const contextAnalysisRetrieverMachine = setup({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS',
                             word: event.output,
                             context: context.context,
+                            highlight: context.highlight,
                         })),
                     }
                 ],
@@ -125,6 +130,7 @@ export const contextAnalysisRetrieverMachine = setup({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
                             context: context.context,
+                            highlight: context.highlight,
                             error: new Error('Can\'t retrieve word context analysis'),
                         })),
                     ],
@@ -157,6 +163,7 @@ export const contextAnalysisRetrieverMachine = setup({
                                 type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                                 word: context.word,
                                 context: context.context,
+                                highlight: context.highlight,
                                 error: new Error('Can\'t retrieve word context image'),
                             })),
                             xStateUtils.stateErrorTraceAction,
@@ -184,6 +191,7 @@ export const contextAnalysisRetrieverMachine = setup({
                         type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_SUCCESS',
                         word: event.output,
                         context: context.context,
+                        highlight: context.highlight,
                     })),
                 },
                 onError: {
@@ -193,6 +201,7 @@ export const contextAnalysisRetrieverMachine = setup({
                             type: 'QUEUE_MANAGER_CONTEXT_ANALYSIS_REQUEST_ERROR',
                             word: context.word,
                             context: context.context,
+                            highlight: context.highlight,
                             error: new Error('Can\'t update word context explanation in local DB'),
                         })),
                     ],

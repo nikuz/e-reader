@@ -1,5 +1,6 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
+import type { BookHighlight } from 'src/types';
 import {
     DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
     DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
@@ -14,6 +15,7 @@ import { dbSaverActor } from './db-saver-actor';
 
 interface InputParameters {
     word: DictionaryWord,
+    highlight: BookHighlight,
     style?: string,
 }
 
@@ -62,6 +64,7 @@ export const imageRetrieverMachine = setup({
                             sendParent(({ context, event }): QueueManagerImageRequestErrorEvent => ({
                                 type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
                                 word: context.word,
+                                highlight: context.highlight,
                                 error: event.error,
                             })),
                             xStateUtils.stateErrorTraceAction,
@@ -85,9 +88,10 @@ export const imageRetrieverMachine = setup({
                     image: context.image,
                 }),
                 onDone: {
-                    actions: sendParent(({ event }): QueueManagerImageRequestSuccessEvent => ({
+                    actions: sendParent(({ context, event }): QueueManagerImageRequestSuccessEvent => ({
                         type: 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS',
                         word: event.output,
+                        highlight: context.highlight,
                     })),
                 },
                 onError: {
@@ -96,6 +100,7 @@ export const imageRetrieverMachine = setup({
                         sendParent(({ context }): QueueManagerImageRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_IMAGE_REQUEST_ERROR',
                             word: context.word,
+                            highlight: context.highlight,
                             error: new Error('Can\'t update word image in local DB'),
                         }))
                     ],
