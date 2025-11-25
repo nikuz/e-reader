@@ -40,20 +40,27 @@ export function DictionaryWordPronunciationButton(props: Props) {
     const src = Capacitor.isNativePlatform() ? nativeSrc : blobSrc;
 
     const playHandler = useCallback(async () => {
-        if (!highlight) {
-            return;
-        }
-        if (highlight && !dictionarySettings.useAIVoice) {
-            await TextToSpeech.stop();
-            try {
-                await TextToSpeech.speak({
-                    text: highlight?.text,
-                    lang: Languages.ENGLISH.code,
-                    queueStrategy: 1,
-                    voice: dictionarySettings.voice,
-                });
-            } catch (err) {
-                console.log(err);
+        if (!dictionarySettings.useAIVoice) {
+            if (isPlaying) {
+                try {
+                    await TextToSpeech.stop();
+                } catch {
+                    //
+                }
+                setIsPlaying(false);
+            } else {
+                setIsPlaying(true);
+                try {
+                    await TextToSpeech.speak({
+                        text: word.text,
+                        lang: Languages.ENGLISH.code,
+                        queueStrategy: 1,
+                        voice: dictionarySettings.voice,
+                    });
+                } catch {
+                    //
+                }
+                setIsPlaying(false);
             }
         } else {
             if (!src) {
@@ -82,7 +89,7 @@ export function DictionaryWordPronunciationButton(props: Props) {
                 setIsPlaying(false);
             }
         }
-    }, [word, highlight, src, dictionarySettings]);
+    }, [word, highlight, src, isPlaying, dictionarySettings]);
 
     useEffect(() => {
         if (isPronunciationRequested.current && src) {
@@ -148,6 +155,18 @@ export function DictionaryWordPronunciationButton(props: Props) {
             audioElement.removeEventListener('ended', handleEnded);
         };
     }, []);
+
+    useEffect(() => {
+        return () => {
+            if (!dictionarySettings.useAIVoice) {
+                try {
+                    TextToSpeech.stop();
+                } catch {
+                    //
+                }
+            }
+        };
+    }, [dictionarySettings]);
 
     return (
         <Box sx={{
