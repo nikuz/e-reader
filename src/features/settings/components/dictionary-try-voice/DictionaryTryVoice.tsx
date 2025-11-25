@@ -9,6 +9,7 @@ import {
 import { PlayCircleIcon, StopCircleIcon } from 'src/design-system/icons';
 import { firebaseGetPronunciation } from 'src/services';
 import { audioUtils } from 'src/utils';
+import { useLast } from 'src/hooks';
 import { Languages } from 'src/types';
 import { useSettingsStateSelect } from '../../state';
 
@@ -19,6 +20,7 @@ export function DictionaryTryVoice() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [aiPronunciationSrc, setAiPronunciationSrc] = useState<string>();
     const dictionarySettings = useSettingsStateSelect('dictionary');
+    const lastDictionarySettings = useLast(dictionarySettings);
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const playHandler = useCallback(async () => {
@@ -101,6 +103,24 @@ export function DictionaryTryVoice() {
             }
         };
     }, [dictionarySettings]);
+
+    useEffect(() => {
+        if (dictionarySettings !== lastDictionarySettings && isPlaying) {
+            const audioElement = audioRef.current;
+            if (!dictionarySettings.useAIVoice) {
+                try {
+                    TextToSpeech.stop();
+                } catch {
+                    //
+                }
+            } else if (audioElement) {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+            }
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsPlaying(false);
+        }
+    }, [dictionarySettings, lastDictionarySettings, isPlaying]);
 
     return (
         <Box className="flex flex-1 items-center">
