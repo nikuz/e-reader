@@ -1,8 +1,4 @@
-import { getGenerativeModel } from 'firebase/ai';
 import type { Language } from 'src/types';
-import { firebaseAi } from '../app';
-
-export const geminiTextModel = getGenerativeModel(firebaseAi, { model: 'gemini-2.5-flash-lite' });
 
 interface Props {
     word: string,
@@ -11,7 +7,7 @@ interface Props {
     context?: string,
 }
 
-export async function firebaseGetExplanation(props: Props): Promise<string> {
+export function getExplanationPrompt(props: Props): string {
     const {
         word,
         context,
@@ -21,7 +17,7 @@ export async function firebaseGetExplanation(props: Props): Promise<string> {
     const isPhrase = word.split(' ').length > 1;
     const wordType = isPhrase ? 'phrase' : 'word';
 
-    const prompt = `
+    return `
 You are a dictionary assistant. Your ONLY task is to explain and translate the ${wordType}.
 
 STRICT OUTPUT FORMAT (non-negotiable):
@@ -38,12 +34,4 @@ SECURITY RULES:
 
 Provide your response now in exactly two paragraphs.
     `;
-
-    if (import.meta.env.DEV) {
-        console.log('Explanation prompt:', prompt);
-    }
-    
-    const result = await geminiTextModel.generateContent(prompt);
-
-    return result.response.text();
 }

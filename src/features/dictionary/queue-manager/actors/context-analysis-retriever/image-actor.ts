@@ -1,7 +1,8 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
+import { firebaseGetImage } from 'src/services';
 import { converterUtils } from 'src/utils';
-import { firebaseGetImage } from '../../../firebase-service';
+import { getImagePrompt } from '../../../utils';
 import { DICTIONARY_IMAGES_DIRECTORY } from '../../../constants';
 import type {
     DictionaryWord,
@@ -29,10 +30,11 @@ export const imageActor = fromPromise(async (props: {
         throw new Error('"contextExplanation" should be provided to generate a context image');
     }
 
-    const image = await firebaseGetImage({
+    const prompt = getImagePrompt({
         textExplanation: contextExplanation.text,
         style,
     });
+    const image = await firebaseGetImage(prompt);
     
     if (!image) {
         throw new Error('Can\'t retrieve image');

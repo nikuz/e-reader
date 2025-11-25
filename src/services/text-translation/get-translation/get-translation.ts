@@ -6,7 +6,7 @@ interface Props {
     targetLanguage: Language,
 }
 
-export async function getTranslation(props: Props): Promise<string> {
+export async function getTextTranslation(props: Props): Promise<string> {
     const { word, sourceLanguage, targetLanguage } = props;
 
     const response = await fetch(`https://translate.googleapis.com/translate_a/single?q=${word}&sl=${sourceLanguage.code}&tl=${targetLanguage.code}&client=gtx&dt=t&ie=UTF-8&oe=UTF-8`);

@@ -1,5 +1,6 @@
 import { fromPromise } from 'xstate';
-import { firebaseGetExplanation } from '../../../firebase-service';
+import { firebaseGetExplanation } from 'src/services';
+import { getExplanationPrompt } from '../../../utils';
 import type {
     DictionaryWord,
     DictionaryWordContext,
@@ -14,12 +15,13 @@ export const explanationActor = fromPromise(async (props: {
 }): Promise<DictionaryWordContextExplanation> => {
     const { word, context } = props.input;
 
-    const explanation = await firebaseGetExplanation({
+    const prompt = getExplanationPrompt({
         word: word.text,
         sourceLanguage: word.sourceLanguage,
         targetLanguage: word.targetLanguage,
         context: context.text,
     });
+    const explanation = await firebaseGetExplanation(prompt);
 
     return {
         contextId: context.id,

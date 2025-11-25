@@ -1,7 +1,8 @@
 import { fromPromise } from 'xstate';
 import { FileStorageController } from 'src/controllers';
+import { firebaseGetPronunciation } from 'src/services';
 import { audioUtils, converterUtils } from 'src/utils';
-import { firebaseGetPronunciation } from '../../../firebase-service';
+import { getPronunciationPrompt } from '../../../utils';
 import { DICTIONARY_PRONUNCIATIONS_DIRECTORY } from '../../../constants';
 import type { DictionaryWord } from '../../../types';
 
@@ -10,10 +11,11 @@ export const pronunciationActor = fromPromise(async (props: {
 }): Promise<string> => {
     const { word } = props.input;
 
-    const pronunciation = await firebaseGetPronunciation({
+    const prompt = getPronunciationPrompt({
         word: word.text,
         sourceLanguage: word.sourceLanguage,
     });
+    const pronunciation = await firebaseGetPronunciation(prompt);
 
     if (!pronunciation) {
         throw new Error('Can\'t retrieve pronunciation');

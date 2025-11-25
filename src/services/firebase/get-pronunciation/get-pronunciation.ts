@@ -1,5 +1,4 @@
 import { getGenerativeModel, ResponseModality } from 'firebase/ai';
-import type { Language } from 'src/types';
 import { firebaseAi } from '../app';
 
 export const geminiTTSModel = getGenerativeModel(firebaseAi, {
@@ -10,21 +9,10 @@ export const geminiTTSModel = getGenerativeModel(firebaseAi, {
     },
 });
 
-interface Props {
-    word: string,
-    sourceLanguage: Language,
-}
-
-export async function firebaseGetPronunciation(props: Props): Promise<{
+export async function firebaseGetPronunciation(prompt: string): Promise<{
     mimeType: string;
     data: string; // base64 string.
 } | undefined> {
-    const { word, sourceLanguage } = props;
-    const isPhrase = word.split(' ').length > 1;
-    const wordType = isPhrase ? 'phrase' : 'word';
-    
-    const prompt = `Pronounce this ${sourceLanguage.name} ${wordType} clearly and accurately: "${word}"`;
-
     if (import.meta.env.DEV) {
         console.log('Pronunciation prompt:', prompt);
     }
