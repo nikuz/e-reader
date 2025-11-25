@@ -1,4 +1,4 @@
-import { Languages } from './constants';
+import type { Language } from 'src/types';
 
 export interface DictionaryWord {
     id: number,
@@ -34,7 +34,3 @@ export interface DictionaryWordContextImage {
     contextId?: string,
     src: string,
 }
-
-export type LanguageKey = keyof typeof Languages;
-export type Language = typeof Languages[LanguageKey];
-export type LanguageCode = (typeof Languages)[keyof typeof Languages]['code'];

@@ -1,10 +1,9 @@
 import { db } from 'src/controllers';
+import type { Language, LanguageCode } from 'src/types';
 import { getLanguageByCode } from '../utils';
 import type {
     DictionaryWord,
-    Language,
     DictionaryWordDBInstance,
-    LanguageCode,
 } from '../types';
 
 export async function getWordFromDB(props: {

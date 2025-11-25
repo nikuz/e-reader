@@ -7,9 +7,8 @@ import type { SxProps } from 'src/design-system/styles';
 import { useSettingsStateSelect } from 'src/features/settings/state';
 import { FileStorageController, FILE_STORAGE_DEFAULT_DIRECTORY } from 'src/controllers';
 import { converterUtils } from 'src/utils';
-import type { BookHighlight } from 'src/types';
+import { Languages, type BookHighlight } from 'src/types';
 import { dictionaryStateMachineActor, useDictionaryStateQueueSelect } from '../../state';
-import { Languages } from '../../constants';
 import type { DictionaryWord } from '../../types';
 
 interface Props {

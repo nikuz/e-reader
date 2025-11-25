@@ -1,5 +1,5 @@
 import { getGenerativeModel, ResponseModality } from 'firebase/ai';
-import type { Language } from '../../types';
+import type { Language } from 'src/types';
 import { firebaseAi } from '../app';
 
 export const geminiTTSModel = getGenerativeModel(firebaseAi, {

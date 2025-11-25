@@ -1,11 +1,11 @@
 import { setup, sendParent, assign } from 'xstate';
 import { xStateUtils } from 'src/utils';
-import type { BookHighlight } from 'src/types';
+import type { BookHighlight, Language } from 'src/types';
 import {
     DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
     DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
 } from '../../../constants';
-import type { DictionaryWord, Language } from '../../../types';
+import type { DictionaryWord } from '../../../types';
 import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
     QueueManagerWordAnalysisExplanationRetrievedEvent,

@@ -1,5 +1,5 @@
 import { getGenerativeModel } from 'firebase/ai';
-import type { Language } from '../../types';
+import type { Language } from 'src/types';
 import { firebaseAi } from '../app';
 
 export const geminiTextModel = getGenerativeModel(firebaseAi, { model: 'gemini-2.5-flash-lite' });

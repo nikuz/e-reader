@@ -7,7 +7,7 @@ import {
 import { ContentCopyIcon, DeleteIcon, TranslateIcon } from 'src/design-system/icons';
 import type { PopperVirtualElement } from 'src/design-system/types';
 import { dictionaryStateMachineActor } from 'src/features/dictionary/state';
-import { Languages } from 'src/features/dictionary/constants';
+import { Languages } from 'src/types';
 import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../../state';
 
 const POPPER_OFFSET = 8;

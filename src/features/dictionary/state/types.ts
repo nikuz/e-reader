@@ -1,6 +1,6 @@
 import type { ActorRefFrom } from 'xstate';
 import type { NavigateFunction } from 'react-router-dom';
-import type { BookHighlight } from 'src/types';
+import type { BookHighlight, Language } from 'src/types';
 import {
     queueManagerStateMachine,
     type QueueManagerWordAnalysisRequestSuccessEvent,
@@ -20,7 +20,7 @@ import {
     type QueueManagerContextAnalysisExplanationRequestSuccessEvent,
     type QueueManagerContextAnalysisRequestErrorEvent,
 } from '../queue-manager';
-import type { DictionaryWord, Language } from '../types';
+import type { DictionaryWord } from '../types';
 
 export interface DictionaryStateContext {
     navigator?: NavigateFunction,

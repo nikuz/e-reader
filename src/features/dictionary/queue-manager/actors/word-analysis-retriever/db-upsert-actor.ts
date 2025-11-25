@@ -1,8 +1,7 @@
 import { fromPromise } from 'xstate';
-import type { BookHighlight } from 'src/types';
+import type { BookHighlight, Language } from 'src/types';
 import { upsertWordInDB } from '../../../db-service';
 import { getNewDictionaryWord } from '../../../utils';
-import type { Language } from '../../../types';
 
 export const dbUpsertActor = fromPromise(async (props: {
     input: {

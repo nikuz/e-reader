@@ -12,7 +12,7 @@ import {
     OutlinedInput,
 } from 'src/design-system/components';
 import { CloudQueueIcon } from 'src/design-system/icons';
-import { Languages } from 'src/features/dictionary/constants';
+import { Languages } from 'src/types';
 import {
     useSettingsStateSelect,
     settingsStateMachineActor,

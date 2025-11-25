@@ -12,8 +12,3 @@ export const DICTIONARY_DB_CONFIG: DatabaseConfig = {
     indexName: 'dictionary',
     version: 1,
 };
-
-export const Languages = {
-    ENGLISH: { code: 'en', name: 'English' },
-    RUSSIAN: { code: 'ru', name: 'Russian' },
-} as const;

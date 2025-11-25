@@ -1,9 +1,9 @@
 import { db } from 'src/controllers';
+import type { LanguageCode } from 'src/types';
 import { getLanguageByCode } from '../utils';
 import type {
     DictionaryWord,
     DictionaryWordDBInstance,
-    LanguageCode,
 } from '../types';
 
 export async function searchInDB(props: {

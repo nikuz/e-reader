@@ -1,5 +1,5 @@
-import type { BookHighlight } from 'src/types';
-import type { DictionaryWord, Language } from '../../types';
+import type { BookHighlight, Language } from 'src/types';
+import type { DictionaryWord } from '../../types';
 import { converterUtils } from 'src/utils';
 
 export function getNewDictionaryWord(props: {

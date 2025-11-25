@@ -1,4 +1,4 @@
-import type { Language } from '../../types';
+import type { Language } from 'src/types';
 
 interface Props {
     word: string,

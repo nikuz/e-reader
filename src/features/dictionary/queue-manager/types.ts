@@ -1,5 +1,5 @@
-import type { BookHighlight } from 'src/types';
-import type { DictionaryWord, DictionaryWordContext, Language } from '../types';
+import type { BookHighlight, Language } from 'src/types';
+import type { DictionaryWord, DictionaryWordContext } from '../types';
 
 export interface QueueManagerStateContext {
     requests: Record<string, string>,
