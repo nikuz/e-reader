@@ -1,6 +1,9 @@
 export abstract class SettingsGroup<T extends Record<string, string | boolean | number | undefined>> {
     abstract toObject(): T;
-    abstract toString(): string;
+
+    toString() {
+        return JSON.stringify(this.toObject());
+    }
     
     getCssProps(properties: Record<string, string | boolean | number>): string {
         let result = '';
@@ -15,5 +18,7 @@ export abstract class SettingsGroup<T extends Record<string, string | boolean | 
         return result;
     }
 
-    abstract toCss(): string;
+    toCss(): string {
+        return '';
+    }
 }

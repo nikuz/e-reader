@@ -94,6 +94,11 @@ export interface SetDictionaryVoiceEvent {
     value: number,
 }
 
+export interface SetUseAIVoiceEvent {
+    type: 'SET_USE_AI_VOICE',
+    value: boolean,
+}
+
 export type SettingsStateFontEvents = SetFontSizeEvent
     | SetFontOverrideBookFonts
     | SetFontFamilyEvent
@@ -111,7 +116,8 @@ export type SettingsStateLayoutEvents = SetLayoutParagraphMarginEvent
 export type SettingsStateHighlightEvents = SetHighlightTypeEvent
     | SetHighlightColorEvent;
 
-export type SettingsStateDictionaryEvents = SetDictionaryVoiceEvent;
+export type SettingsStateDictionaryEvents = SetDictionaryVoiceEvent
+    | SetUseAIVoiceEvent;
 
 export type SettingsStateEvents = 
     | SettingsStateFontEvents

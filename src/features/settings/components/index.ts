@@ -10,3 +10,4 @@ export * from './layout-margin';
 export * from './highlight-type';
 export * from './highlight-color';
 export * from './dictionary-voice';
+export * from './dictionary-ai-voice';

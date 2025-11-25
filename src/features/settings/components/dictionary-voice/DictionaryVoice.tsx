@@ -80,6 +80,7 @@ export function DictionaryVoice() {
                     renderValue={(value: number) => (
                         <Typography>{availableVoices.find(item => item.index === value)?.name}</Typography>
                     )}
+                    disabled={dictionarySettings.useAIVoice}
                     onChange={changeHandler}
                 >
                     {availableVoices.map((voice) => {

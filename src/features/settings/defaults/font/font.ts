@@ -45,10 +45,6 @@ export class DefaultFontSettings extends SettingsGroup<FontProps> implements Fon
         };
     }
 
-    toString() {
-        return JSON.stringify(this.toObject());
-    }
-
     toCss(): string {
         const bodyCss = this.getCssProps({
             fontSize: this.fontSize,

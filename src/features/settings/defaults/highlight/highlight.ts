@@ -40,10 +40,6 @@ export class DefaultHighlightSettings extends SettingsGroup<HighlightProps> impl
         };
     }
 
-    toString() {
-        return JSON.stringify(this.toObject());
-    }
-
     getHighlightCssValue(type: HighlightType): string {
         let cssValue = '';
 

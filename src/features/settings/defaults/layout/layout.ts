@@ -36,10 +36,6 @@ export class DefaultLayoutSettings extends SettingsGroup<LayoutProps> implements
         };
     }
 
-    toString() {
-        return JSON.stringify(this.toObject());
-    }
-
     toCss(): string {
         const bodyCss = this.getCssProps({
             padding: `${this.marginTop} 0 ${this.marginBottom}`,

@@ -2,6 +2,7 @@ import { SettingsGroup } from '../types';
 
 const defaultDictionaryProps = {
     voice: undefined as number | undefined,
+    useAIVoice: false,
 };
 
 type DictionaryProps = typeof defaultDictionaryProps;
@@ -13,6 +14,7 @@ export class DefaultDictionarySettings extends SettingsGroup<DictionaryProps> im
     static id = 'voice';
     
     declare voice: number | undefined;
+    declare useAIVoice: boolean;
     
     constructor(overrides?: Partial<DictionarySettings>) {
         super();
@@ -22,14 +24,7 @@ export class DefaultDictionarySettings extends SettingsGroup<DictionaryProps> im
     toObject(): DictionaryProps {
         return {
             voice: this.voice,
+            useAIVoice: this.useAIVoice,
         };
-    }
-
-    toString() {
-        return JSON.stringify(this.toObject());
-    }
-
-    toCss(): string {
-        return '';
     }
 }
