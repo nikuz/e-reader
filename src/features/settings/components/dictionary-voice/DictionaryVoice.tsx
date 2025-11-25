@@ -71,7 +71,7 @@ export function DictionaryVoice() {
     return (
         <Box className="flex flex-1 items-center">
             <Typography className="flex-1">
-                Voice
+                Local Voice
             </Typography>
             <FormControl sx={{ m: 1, minWidth: 160 }} size="small">
                 <Select<number>

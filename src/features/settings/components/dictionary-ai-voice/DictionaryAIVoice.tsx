@@ -22,7 +22,7 @@ export function DictionaryAIVoice() {
     return (
         <Box className="flex flex-1 items-center">
             <Typography className="flex-1">
-                Use AI Voice
+                Use Cloud AI Voice
             </Typography>
             <Switch
                 checked={dictionarySettings.useAIVoice}

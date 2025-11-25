@@ -23,6 +23,7 @@ import {
     HighlightColor,
     DictionaryVoice,
     DictionaryAIVoice,
+    DictionaryTryVoice,
 } from 'src/features/settings/components';
 import {
     useBookFrameStateMatch,
@@ -148,6 +149,9 @@ export function BookFrameSettings() {
                     </ListItem>
                     <ListItem>
                         <DictionaryVoice />
+                    </ListItem>
+                    <ListItem>
+                        <DictionaryTryVoice />
                     </ListItem>
                 </List>
             </Box>
