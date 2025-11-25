@@ -1,11 +1,10 @@
-import { debugStateMachineActor, useDebugStateMatch } from '../../state';
-import './style.css';
+import { IconButton } from 'src/design-system/components';
+import { debugStateMachineActor } from '../../state';
 
-export default function InvokeButton() {
+export function DebugInvokeButton() {
     const isDebugEnabled = localStorage.getItem('debug') === 'true';
-    const isOverlayVisible = useDebugStateMatch(['VISIBLE']);
 
-    if (!isDebugEnabled || isOverlayVisible) {
+    if (!isDebugEnabled) {
         return null;
     }
 
@@ -14,8 +13,8 @@ export default function InvokeButton() {
     };
 
     return (
-        <button className="debug-invoke-button z-99999" onClick={handleClick}>
+        <IconButton onClick={handleClick}>
             🐛
-        </button>
+        </IconButton>
     );
 }

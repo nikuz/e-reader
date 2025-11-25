@@ -1,1 +1,1 @@
-export { default as InvokeButton } from './InvokeButton';
+export * from './InvokeButton';

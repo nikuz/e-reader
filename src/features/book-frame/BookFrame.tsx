@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Toast, PageLoader } from 'src/design-system/components';
 import { DictionaryInvokeButton } from 'src/features/dictionary/components';
 import { statusBarStateMachineActor } from 'src/features/status-bar/state';
+import { DebugInvokeButton } from 'src/features/debug/components';
 import { RouterPath } from 'src/router/constants';
 import {
     BookFrameTopMenu,
@@ -55,6 +56,7 @@ export default function BookFrame() {
             }}
         >
             <BookFrameTopMenu>
+                <DebugInvokeButton />
                 <DictionaryInvokeButton />
                 <BookFrameSettings />
             </BookFrameTopMenu>

@@ -1,4 +1,4 @@
-import { Overlay, InvokeButton } from './components';
+import { Overlay } from './components';
 import { useDebugStateSelect } from './state';
 
 export default function Debug() {
@@ -8,10 +8,5 @@ export default function Debug() {
         return null;
     }
 
-    return (
-        <>
-            <InvokeButton />
-            <Overlay />
-        </>
-    );
+    return <Overlay />;
 }
