@@ -1,4 +1,4 @@
-export abstract class SettingsGroup<T extends Record<string, string | boolean | number>> {
+export abstract class SettingsGroup<T extends Record<string, string | boolean | number | undefined>> {
     abstract toObject(): T;
     abstract toString(): string;
     

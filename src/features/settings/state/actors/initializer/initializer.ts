@@ -1,6 +1,11 @@
 import { fromPromise } from 'xstate';
 import { Preferences } from '@capacitor/preferences';
-import { DefaultFontSettings, DefaultLayoutSettings, DefaultHighlightSettings } from '../../../defaults';
+import {
+    DefaultFontSettings,
+    DefaultLayoutSettings,
+    DefaultHighlightSettings,
+    DefaultDictionarySettings,
+} from '../../../defaults';
 import type { SettingsStateContext } from '../../types';
 
 export const initializerActor = fromPromise(async (): Promise<Partial<SettingsStateContext>> => {
@@ -19,6 +24,11 @@ export const initializerActor = fromPromise(async (): Promise<Partial<SettingsSt
     const storedHighlightSettings = await Preferences.get({ key: DefaultHighlightSettings.id });
     if (storedHighlightSettings.value) {
         contextUpdate.highlight = new DefaultHighlightSettings(JSON.parse(storedHighlightSettings.value));
+    }
+    
+    const storedDictionarySettings = await Preferences.get({ key: DefaultDictionarySettings.id });
+    if (storedDictionarySettings.value) {
+        contextUpdate.dictionary = new DefaultDictionarySettings(JSON.parse(storedDictionarySettings.value));
     }
     
     return contextUpdate;

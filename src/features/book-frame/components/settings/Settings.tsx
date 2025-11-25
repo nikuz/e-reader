@@ -21,6 +21,7 @@ import {
     LayoutMargin,
     HighlightType,
     HighlightColor,
+    DictionaryVoice,
 } from 'src/features/settings/components';
 import {
     useBookFrameStateMatch,
@@ -129,6 +130,21 @@ export function BookFrameSettings() {
                             <LayoutMargin side={side} />
                         </ListItem>
                     ))}
+                </List>
+                
+                <Divider />
+                
+                <Typography
+                    variant="h6"
+                    marginLeft={2}
+                    marginTop={2}
+                >
+                    Dictionary
+                </Typography>
+                <List>
+                    <ListItem>
+                        <DictionaryVoice />
+                    </ListItem>
                 </List>
             </Box>
         </SwipeableDrawer>

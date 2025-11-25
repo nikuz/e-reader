@@ -1,11 +1,17 @@
 import { setup, createActor, assign, enqueueActions } from 'xstate';
 import { xStateUtils } from 'src/utils';
-import { DefaultFontSettings, DefaultLayoutSettings, DefaultHighlightSettings } from '../defaults';
+import {
+    DefaultFontSettings,
+    DefaultLayoutSettings,
+    DefaultHighlightSettings,
+    DefaultDictionarySettings,
+} from '../defaults';
 import {
     initializerActor,
-    saveFontSettingsActor,
-    saveLayoutSettingsActor,
-    saveHighlightSettingsActor,
+    fontSettingsSaverActor,
+    layoutSettingsSaverActor,
+    highlightSettingsSaverActor,
+    dictionarySettingsSaverActor,
 } from './actors';
 import { generateSettingsCSSAction } from './actions';
 import type {
@@ -14,14 +20,16 @@ import type {
     SettingsStateFontEvents,
     SettingsStateLayoutEvents,
     SettingsStateHighlightEvents,
+    SettingsStateDictionaryEvents,
 } from './types';
 
 export const settingsStateMachine = setup({
     actors: {
         initializerActor,
-        saveFontSettingsActor,
-        saveLayoutSettingsActor,
-        saveHighlightSettingsActor,
+        fontSettingsSaverActor,
+        layoutSettingsSaverActor,
+        highlightSettingsSaverActor,
+        dictionarySettingsSaverActor,
     },
     types: {
         context: {} as SettingsStateContext,
@@ -34,6 +42,7 @@ export const settingsStateMachine = setup({
         font: new DefaultFontSettings(),
         layout: new DefaultLayoutSettings(),
         highlight: new DefaultHighlightSettings(),
+        dictionary: new DefaultDictionarySettings(),
         settingsCSS: '',
         fontCSS: '',
         highlightsCSS: '',
@@ -44,22 +53,24 @@ export const settingsStateMachine = setup({
     states: {
         IDLE: {
             on: {
-                SET_FONT_SIZE: 'SAVE_FONT_SETTINGS',
-                SET_FONT_OVERRIDE_BOOK_FONTS: 'SAVE_FONT_SETTINGS',
-                SET_FONT_FAMILY: 'SAVE_FONT_SETTINGS',
-                SET_FONT_COLOR: 'SAVE_FONT_SETTINGS',
-                SET_FONT_LINE_HEIGHT: 'SAVE_FONT_SETTINGS',
-                SET_FONT_WORD_SPACING: 'SAVE_FONT_SETTINGS',
-                SET_FONT_LETTER_SPACING: 'SAVE_FONT_SETTINGS',
+                SET_FONT_SIZE: 'SAVING_FONT_SETTINGS',
+                SET_FONT_OVERRIDE_BOOK_FONTS: 'SAVING_FONT_SETTINGS',
+                SET_FONT_FAMILY: 'SAVING_FONT_SETTINGS',
+                SET_FONT_COLOR: 'SAVING_FONT_SETTINGS',
+                SET_FONT_LINE_HEIGHT: 'SAVING_FONT_SETTINGS',
+                SET_FONT_WORD_SPACING: 'SAVING_FONT_SETTINGS',
+                SET_FONT_LETTER_SPACING: 'SAVING_FONT_SETTINGS',
 
-                SET_LAYOUT_PARAGRAPH_MARGIN: 'SAVE_LAYOUT_SETTINGS',
-                SET_LAYOUT_MARGIN_LEFT: 'SAVE_LAYOUT_SETTINGS',
-                SET_LAYOUT_MARGIN_RIGHT: 'SAVE_LAYOUT_SETTINGS',
-                SET_LAYOUT_MARGIN_TOP: 'SAVE_LAYOUT_SETTINGS',
-                SET_LAYOUT_MARGIN_BOTTOM: 'SAVE_LAYOUT_SETTINGS',
+                SET_LAYOUT_PARAGRAPH_MARGIN: 'SAVING_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_LEFT: 'SAVING_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_RIGHT: 'SAVING_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_TOP: 'SAVING_LAYOUT_SETTINGS',
+                SET_LAYOUT_MARGIN_BOTTOM: 'SAVING_LAYOUT_SETTINGS',
 
-                SET_HIGHLIGHT_TYPE: 'SAVE_HIGHLIGHT_SETTINGS',
-                SET_HIGHLIGHT_COLOR: 'SAVE_HIGHLIGHT_SETTINGS',
+                SET_HIGHLIGHT_TYPE: 'SAVING_HIGHLIGHT_SETTINGS',
+                SET_HIGHLIGHT_COLOR: 'SAVING_HIGHLIGHT_SETTINGS',
+
+                SET_DICTIONARY_VOICE: 'SAVING_DICTIONARY_SETTINGS',
             },
         },
 
@@ -87,9 +98,9 @@ export const settingsStateMachine = setup({
             },
         },
 
-        SAVE_FONT_SETTINGS: {
+        SAVING_FONT_SETTINGS: {
             invoke: {
-                src: 'saveFontSettingsActor',
+                src: 'fontSettingsSaverActor',
                 input: ({ event, context }) => ({
                     event: event as SettingsStateFontEvents,
                     fontSettings: context.font,
@@ -115,9 +126,9 @@ export const settingsStateMachine = setup({
             },
         },
         
-        SAVE_LAYOUT_SETTINGS: {
+        SAVING_LAYOUT_SETTINGS: {
             invoke: {
-                src: 'saveLayoutSettingsActor',
+                src: 'layoutSettingsSaverActor',
                 input: ({ event, context }) => ({
                     event: event as SettingsStateLayoutEvents,
                     layoutSettings: context.layout,
@@ -143,9 +154,9 @@ export const settingsStateMachine = setup({
             },
         },
 
-        SAVE_HIGHLIGHT_SETTINGS: {
+        SAVING_HIGHLIGHT_SETTINGS: {
             invoke: {
-                src: 'saveHighlightSettingsActor',
+                src: 'highlightSettingsSaverActor',
                 input: ({ event, context }) => ({
                     event: event as SettingsStateHighlightEvents,
                     highlightSettings: context.highlight,
@@ -158,6 +169,31 @@ export const settingsStateMachine = setup({
                         })),
                         enqueueActions(generateSettingsCSSAction),
                     ],
+                },
+                onError: {
+                    target: 'IDLE',
+                    actions: [
+                        assign(({ event }) => ({
+                            errorMessage: event.error?.toString(),
+                        })),
+                        xStateUtils.stateErrorTraceAction,
+                    ],
+                },
+            },
+        },
+
+        SAVING_DICTIONARY_SETTINGS: {
+            invoke: {
+                src: 'dictionarySettingsSaverActor',
+                input: ({ event, context }) => ({
+                    event: event as SettingsStateDictionaryEvents,
+                    dictionarySettings: context.dictionary,
+                }),
+                onDone: {
+                    target: 'IDLE',
+                    actions: assign(({ event }) => ({
+                        dictionary: event.output,
+                    })),
                 },
                 onError: {
                     target: 'IDLE',

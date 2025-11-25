@@ -3,12 +3,14 @@ import type {
     LayoutSettings,
     HighlightSettings,
     HighlightType,
+    DictionarySettings,
 } from '../defaults';
 
 export interface SettingsStateContext {
     font: FontSettings,
     layout: LayoutSettings,
     highlight: HighlightSettings,
+    dictionary: DictionarySettings,
 
     settingsCSS: string,
     fontCSS: string,
@@ -87,6 +89,11 @@ export interface SetHighlightColorEvent {
     value: string,
 }
 
+export interface SetDictionaryVoiceEvent {
+    type: 'SET_DICTIONARY_VOICE',
+    value: number,
+}
+
 export type SettingsStateFontEvents = SetFontSizeEvent
     | SetFontOverrideBookFonts
     | SetFontFamilyEvent
@@ -104,7 +111,10 @@ export type SettingsStateLayoutEvents = SetLayoutParagraphMarginEvent
 export type SettingsStateHighlightEvents = SetHighlightTypeEvent
     | SetHighlightColorEvent;
 
+export type SettingsStateDictionaryEvents = SetDictionaryVoiceEvent;
+
 export type SettingsStateEvents = 
     | SettingsStateFontEvents
     | SettingsStateLayoutEvents
-    | SettingsStateHighlightEvents;
+    | SettingsStateHighlightEvents
+    | SettingsStateDictionaryEvents;

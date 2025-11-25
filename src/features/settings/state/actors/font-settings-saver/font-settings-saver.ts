@@ -3,7 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 import { DefaultFontSettings, type FontSettings } from '../../../defaults';
 import type { SettingsStateFontEvents } from '../../types';
 
-export const saveFontSettingsActor = fromPromise(async (props: {
+export const fontSettingsSaverActor = fromPromise(async (props: {
     input: {
         event: SettingsStateFontEvents,
         fontSettings: FontSettings,

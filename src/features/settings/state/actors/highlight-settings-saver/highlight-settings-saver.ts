@@ -3,7 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 import { DefaultHighlightSettings, type HighlightSettings } from '../../../defaults';
 import type { SettingsStateHighlightEvents } from '../../types';
 
-export const saveHighlightSettingsActor = fromPromise(async (props: {
+export const highlightSettingsSaverActor = fromPromise(async (props: {
     input: {
         event: SettingsStateHighlightEvents,
         highlightSettings: HighlightSettings,

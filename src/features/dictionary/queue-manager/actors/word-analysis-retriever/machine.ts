@@ -9,7 +9,7 @@ import type { DictionaryWord, Language } from '../../../types';
 import type {
     QueueManagerWordAnalysisTranslationRetrievedEvent,
     QueueManagerWordAnalysisExplanationRetrievedEvent,
-    QueueManagerWordAnalysisPronunciationRetrievedEvent,
+    // QueueManagerWordAnalysisPronunciationRetrievedEvent,
     QueueManagerWordAnalysisUpdateEvent,
     QueueManagerWordAnalysisRequestSuccessEvent,
     QueueManagerWordAnalysisRequestErrorEvent,
@@ -230,70 +230,70 @@ export const wordAnalysisRetrieverMachine = setup({
                     }
                 },
 
-                RETRIEVING_PRONUNCIATION: {
-                    initial: 'LOADING',
-                    states: {
-                        LOADING: {
-                            invoke: {
-                                src: 'pronunciationActor',
-                                input: ({ context }) => ({ word: context.word }),
-                                onDone: {
-                                    target: 'SAVING_TO_DB',
-                                    actions: [
-                                        assign(({ event }) => ({
-                                            pronunciation: event.output,
-                                        })),
-                                        sendParent(({ context, event }): QueueManagerWordAnalysisPronunciationRetrievedEvent => ({
-                                            type: 'QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED',
-                                            word: context.word,
-                                            highlight: context.highlight,
-                                            pronunciation: event.output,
-                                        })),
-                                    ],
-                                },
-                                onError: [
-                                    {
-                                        guard: ({ context }) => context.pronunciationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
-                                        target: 'RETRYING',
-                                        actions: assign(({ context }) => ({ pronunciationRetrieveAttempt: context.pronunciationRetrieveAttempt + 1 })),
-                                    },
-                                    {
-                                        target: 'ERROR',
-                                        actions: xStateUtils.stateErrorTraceAction,
-                                    }
-                                ],
-                            },
-                        },
-                        RETRYING: {
-                            after: {
-                                [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
-                            },
-                        },
-                        SAVING_TO_DB: {
-                            invoke: {
-                                src: 'dbUpsertActor',
-                                input: ({ context }) => ({
-                                    bookId: context.bookId,
-                                    highlight: context.highlight,
-                                    translation: context.translation,
-                                    explanation: context.explanation,
-                                    pronunciation: context.pronunciation,
-                                    sourceLanguage: context.sourceLanguage,
-                                    targetLanguage: context.targetLanguage,
-                                }),
-                                onDone: {
-                                    target: 'SUCCESS',
-                                },
-                                onError: {
-                                    target: 'SUCCESS',
-                                    actions: xStateUtils.stateErrorTraceAction,
-                                },
-                            },
-                        },
-                        SUCCESS: { type: 'final' },
-                        ERROR: { type: 'final' }
-                    }
-                },
+                // RETRIEVING_PRONUNCIATION: {
+                //     initial: 'LOADING',
+                //     states: {
+                //         LOADING: {
+                //             invoke: {
+                //                 src: 'pronunciationActor',
+                //                 input: ({ context }) => ({ word: context.word }),
+                //                 onDone: {
+                //                     target: 'SAVING_TO_DB',
+                //                     actions: [
+                //                         assign(({ event }) => ({
+                //                             pronunciation: event.output,
+                //                         })),
+                //                         sendParent(({ context, event }): QueueManagerWordAnalysisPronunciationRetrievedEvent => ({
+                //                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED',
+                //                             word: context.word,
+                //                             highlight: context.highlight,
+                //                             pronunciation: event.output,
+                //                         })),
+                //                     ],
+                //                 },
+                //                 onError: [
+                //                     {
+                //                         guard: ({ context }) => context.pronunciationRetrieveAttempt < DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+                //                         target: 'RETRYING',
+                //                         actions: assign(({ context }) => ({ pronunciationRetrieveAttempt: context.pronunciationRetrieveAttempt + 1 })),
+                //                     },
+                //                     {
+                //                         target: 'ERROR',
+                //                         actions: xStateUtils.stateErrorTraceAction,
+                //                     }
+                //                 ],
+                //             },
+                //         },
+                //         RETRYING: {
+                //             after: {
+                //                 [DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT]: 'LOADING',
+                //             },
+                //         },
+                //         SAVING_TO_DB: {
+                //             invoke: {
+                //                 src: 'dbUpsertActor',
+                //                 input: ({ context }) => ({
+                //                     bookId: context.bookId,
+                //                     highlight: context.highlight,
+                //                     translation: context.translation,
+                //                     explanation: context.explanation,
+                //                     pronunciation: context.pronunciation,
+                //                     sourceLanguage: context.sourceLanguage,
+                //                     targetLanguage: context.targetLanguage,
+                //                 }),
+                //                 onDone: {
+                //                     target: 'SUCCESS',
+                //                 },
+                //                 onError: {
+                //                     target: 'SUCCESS',
+                //                     actions: xStateUtils.stateErrorTraceAction,
+                //                 },
+                //             },
+                //         },
+                //         SUCCESS: { type: 'final' },
+                //         ERROR: { type: 'final' }
+                //     }
+                // },
             },
 
             onDone: [

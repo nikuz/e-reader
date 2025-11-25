@@ -3,7 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 import { DefaultLayoutSettings, type LayoutSettings } from '../../../defaults';
 import type { SettingsStateLayoutEvents } from '../../types';
 
-export const saveLayoutSettingsActor = fromPromise(async (props: {
+export const layoutSettingsSaverActor = fromPromise(async (props: {
     input: {
         event: SettingsStateLayoutEvents,
         layoutSettings: LayoutSettings,

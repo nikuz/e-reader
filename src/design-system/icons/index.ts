@@ -20,3 +20,5 @@ export { default as AddPhotoAlternateIcon } from '@mui/icons-material/AddPhotoAl
 export { default as ImageIcon } from '@mui/icons-material/Image';
 export { default as ScreenLockLandscapeIcon } from '@mui/icons-material/ScreenLockLandscape';
 export { default as ScreenLockPortraitIcon } from '@mui/icons-material/ScreenLockPortrait';
+export { default as CloudOffIcon } from '@mui/icons-material/CloudOff';
+export { default as CloudQueueIcon } from '@mui/icons-material/CloudQueue';
