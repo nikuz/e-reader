@@ -7,6 +7,7 @@ import {
 import { ContentCopyIcon, DeleteIcon, TranslateIcon } from 'src/design-system/icons';
 import type { PopperVirtualElement } from 'src/design-system/types';
 import { dictionaryStateMachineActor } from 'src/features/dictionary/state';
+import { useSettingsStateSelect } from 'src/features/settings/state';
 import { Languages } from 'src/types';
 import { bookFrameStateMachineActor, useBookFrameStateSelect } from '../../state';
 
@@ -18,6 +19,7 @@ export function BookFrameTextSelectionControls() {
     const selectionUpdatedAt = useBookFrameStateSelect('textSelectionCreateEndTime');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const iframeEl = useBookFrameStateSelect('iframeEl');
+    const dictionarySettings = useSettingsStateSelect('dictionary');
     const storeHighlightRequested = useRef(false);
 
     const virtualElement = useMemo<PopperVirtualElement | null>(() => {
@@ -93,13 +95,14 @@ export function BookFrameTextSelectionControls() {
                 highlight: selectedHighlight,
                 sourceLanguage: Languages.ENGLISH,
                 targetLanguage: Languages.RUSSIAN,
+                useAIVoice: dictionarySettings.useAIVoice,
             });
             bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
         } else {
             storeHighlightRequested.current = true;
             bookFrameStateMachineActor.send({ type: 'STORE_HIGHLIGHT' });
         }
-    }, [book, selectedHighlight]);
+    }, [book, selectedHighlight, dictionarySettings]);
 
     const requestWordAnalysis = useEffectEvent(() => {
         if (!book || !selectedHighlight) {
@@ -111,6 +114,7 @@ export function BookFrameTextSelectionControls() {
             highlight: selectedHighlight,
             sourceLanguage: Languages.ENGLISH,
             targetLanguage: Languages.RUSSIAN,
+            useAIVoice: dictionarySettings.useAIVoice,
         });
         bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
     });

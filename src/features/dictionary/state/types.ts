@@ -47,6 +47,7 @@ export interface RequestWordAnalysisEvent {
     highlight: BookHighlight,
     sourceLanguage: Language,
     targetLanguage: Language,
+    useAIVoice: boolean,
 }
 
 export interface ClearWordSelectionEvent { type: 'CLEAR_WORD_SELECTION' }

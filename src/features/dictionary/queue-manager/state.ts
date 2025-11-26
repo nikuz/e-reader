@@ -52,6 +52,7 @@ export const queueManagerStateMachine = setup({
                             word: event.word,
                             sourceLanguage: event.sourceLanguage,
                             targetLanguage: event.targetLanguage,
+                            useAIVoice: event.useAIVoice,
                         },
                     });
                 }

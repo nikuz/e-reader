@@ -75,6 +75,7 @@ export const dictionaryStateMachine = setup({
                             word: context.translatingWord!,
                             sourceLanguage: event.sourceLanguage,
                             targetLanguage: event.targetLanguage,
+                            useAIVoice: event.useAIVoice,
                         })),
                     ],
                 },

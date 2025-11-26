@@ -12,6 +12,7 @@ export interface QueueManagerRequestWordAnalysisEvent {
     word: DictionaryWord,
     sourceLanguage: Language,
     targetLanguage: Language,
+    useAIVoice: boolean,
 }
 
 export interface QueueManagerWordAnalysisRequestSuccessEvent {
