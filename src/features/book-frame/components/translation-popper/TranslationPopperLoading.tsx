@@ -2,19 +2,17 @@ import { Typography } from 'src/design-system/components';
 import { useDictionaryStateSelect } from 'src/features/dictionary/state';
 import { useSettingsStateSelect } from 'src/features/settings/state';
 
-export default function TranslationPopperTranslation() {
+export default function TranslationPopperLoading() {
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const dictionarySettings = useSettingsStateSelect('dictionary');
 
-    // If AI explanation is already available, hide the simple translation.
-    // Since the explanation contains its own translation.
-    if (translatingWord?.explanation || !dictionarySettings.showTranslation) {
+    if (translatingWord?.explanation || (dictionarySettings.showTranslation && translatingWord?.translation)) {
         return null;
     }
 
     return (
-        <Typography>
-            {translatingWord?.translation}
+        <Typography className="loading-text">
+            Analyzing...
         </Typography>
     );
 }

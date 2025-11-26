@@ -24,6 +24,7 @@ import {
     DictionaryVoice,
     DictionaryAIVoice,
     DictionaryTryVoice,
+    DictionaryShowTranslation,
 } from 'src/features/settings/components';
 import {
     useBookFrameStateMatch,
@@ -152,6 +153,9 @@ export function BookFrameSettings() {
                     </ListItem>
                     <ListItem>
                         <DictionaryTryVoice />
+                    </ListItem>
+                    <ListItem>
+                        <DictionaryShowTranslation />
                     </ListItem>
                 </List>
             </Box>

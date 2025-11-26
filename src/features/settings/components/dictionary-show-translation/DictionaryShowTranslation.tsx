@@ -9,12 +9,12 @@ import {
     settingsStateMachineActor,
 } from '../../state';
 
-export function DictionaryAIVoice() {
+export function DictionaryShowTranslation() {
     const dictionarySettings = useSettingsStateSelect('dictionary');
 
     const changeHandler = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         settingsStateMachineActor.send({
-            type: 'SET_DICTIONARY_USE_AI_VOICE',
+            type: 'SET_DICTIONARY_SHOW_TRANSLATION',
             value: event.target.checked,
         });
     }, []);
@@ -22,10 +22,10 @@ export function DictionaryAIVoice() {
     return (
         <Box className="flex flex-1 items-center">
             <Typography className="flex-1">
-                Use Cloud AI Voice
+                Show word translation
             </Typography>
             <Switch
-                checked={dictionarySettings.useAIVoice}
+                checked={dictionarySettings.showTranslation}
                 onChange={changeHandler}
             />
         </Box>

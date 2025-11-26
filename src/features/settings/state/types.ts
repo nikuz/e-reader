@@ -94,8 +94,13 @@ export interface SetDictionaryVoiceEvent {
     value: number,
 }
 
-export interface SetUseAIVoiceEvent {
-    type: 'SET_USE_AI_VOICE',
+export interface SetDictionaryUseAIVoiceEvent {
+    type: 'SET_DICTIONARY_USE_AI_VOICE',
+    value: boolean,
+}
+
+export interface SetDictionaryShowTranslationEvent {
+    type: 'SET_DICTIONARY_SHOW_TRANSLATION',
     value: boolean,
 }
 
@@ -117,7 +122,8 @@ export type SettingsStateHighlightEvents = SetHighlightTypeEvent
     | SetHighlightColorEvent;
 
 export type SettingsStateDictionaryEvents = SetDictionaryVoiceEvent
-    | SetUseAIVoiceEvent;
+    | SetDictionaryUseAIVoiceEvent
+    | SetDictionaryShowTranslationEvent;
 
 export type SettingsStateEvents = 
     | SettingsStateFontEvents

@@ -12,3 +12,4 @@ export * from './highlight-color';
 export * from './dictionary-voice';
 export * from './dictionary-ai-voice';
 export * from './dictionary-try-voice';
+export * from './dictionary-show-translation';

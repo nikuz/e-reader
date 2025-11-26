@@ -17,8 +17,12 @@ export const dictionarySettingsSaverActor = fromPromise(async (props: {
             currentDictionarySettings.voice = event.value;
             break;
         
-        case 'SET_USE_AI_VOICE':
+        case 'SET_DICTIONARY_USE_AI_VOICE':
             currentDictionarySettings.useAIVoice = event.value;
+            break;
+        
+        case 'SET_DICTIONARY_SHOW_TRANSLATION':
+            currentDictionarySettings.showTranslation = event.value;
             break;
     }
 

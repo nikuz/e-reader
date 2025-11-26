@@ -8,6 +8,7 @@ import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
 } from '../../state';
+import TranslationPopperLoading from './TranslationPopperLoading';
 import TranslationPopperTranslation from './TranslationPopperTranslation';
 import TranslationPopperExplanation from './TranslationPopperExplanation';
 import TranslationPopperPronunciation from './TranslationPopperPronunciation';
@@ -144,6 +145,7 @@ export function BookFrameTranslationPopper() {
                         <TranslationPopperImage />
                     </Box>
                     <Box className="flex-1">
+                        <TranslationPopperLoading />
                         <TranslationPopperTranslation />
                         <TranslationPopperExplanation />
                     </Box>
