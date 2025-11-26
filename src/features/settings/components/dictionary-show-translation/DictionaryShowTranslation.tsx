@@ -21,9 +21,14 @@ export function DictionaryShowTranslation() {
 
     return (
         <Box className="flex flex-1 items-center">
-            <Typography className="flex-1">
-                Show word translation
-            </Typography>
+            <Box className="flex-1">
+                <Typography>
+                    Show word translation
+                </Typography>
+                <Typography fontSize="12px" color="textDisabled">
+                    * for short selections only
+                </Typography>
+            </Box>
             <Switch
                 checked={dictionarySettings.showTranslation}
                 onChange={changeHandler}
