@@ -6,6 +6,7 @@ export const DICTIONARY_PRONUNCIATIONS_DIRECTORY = 'dictionary/pronunciations';
 export const DICTIONARY_LIST_ITEMS_PER_PAGE = 20;
 export const DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT = 3;
 export const DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT = 100;
+export const DICTIONARY_MAX_PHRASE_LENGTH = 3; // words
 
 export const DICTIONARY_DB_CONFIG: DatabaseConfig = {
     name: 'dictionary-db',

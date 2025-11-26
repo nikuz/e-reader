@@ -4,6 +4,7 @@ import type { BookHighlight, Language } from 'src/types';
 import {
     DICTIONARY_QUEUE_MANAGER_RETRY_TIMEOUT,
     DICTIONARY_QUEUE_MANAGER_RETRY_ATTEMPT,
+    DICTIONARY_MAX_PHRASE_LENGTH,
 } from '../../../constants';
 import type { DictionaryWord } from '../../../types';
 import type {
@@ -167,8 +168,20 @@ export const wordAnalysisRetrieverMachine = setup({
                 },
 
                 RETRIEVING_EXPLANATION: {
-                    initial: 'LOADING',
+                    initial: 'IDLE',
                     states: {
+                        IDLE: {
+                            always: [
+                                {
+                                    // don't retrieve explanation for long text selections
+                                    guard: ({ context }) => context.highlight.text.split(' ').length > DICTIONARY_MAX_PHRASE_LENGTH,
+                                    target: 'SUCCESS',
+                                },
+                                {
+                                    target: 'LOADING',
+                                }
+                            ],
+                        },
                         LOADING: {
                             invoke: {
                                 src: 'explanationActor',
@@ -237,11 +250,12 @@ export const wordAnalysisRetrieverMachine = setup({
                         IDLE: {
                             always: [
                                 {
-                                    guard: ({ context }) => context.useAIVoice,
-                                    target: 'LOADING',
+                                    // don't retrieve pronunciation for long text selections and when AI voice is disabled
+                                    guard: ({ context }) => context.highlight.text.split(' ').length > DICTIONARY_MAX_PHRASE_LENGTH || !context.useAIVoice,
+                                    target: 'SUCCESS',
                                 },
                                 {
-                                    target: 'SUCCESS',
+                                    target: 'LOADING',
                                 }
                             ],
                         },
