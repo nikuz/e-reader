@@ -13,6 +13,6 @@ export const explanationActor = fromPromise(async (props: {
         sourceLanguage: word.sourceLanguage,
         targetLanguage: word.targetLanguage,
     });
-    
+
     return await firebaseGetExplanation(prompt);
 });

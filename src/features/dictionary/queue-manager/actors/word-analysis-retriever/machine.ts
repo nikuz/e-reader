@@ -28,6 +28,7 @@ interface InputParameters {
     sourceLanguage: Language,
     targetLanguage: Language,
     useAIVoice: boolean,
+    showTranslation: boolean,
 }
 
 export const wordAnalysisRetrieverMachine = setup({
@@ -322,20 +323,7 @@ export const wordAnalysisRetrieverMachine = setup({
                 },
             },
 
-            onDone: [
-                {
-                    guard: ({ context }) => context.translation !== undefined || context.explanation !== undefined,
-                    target: '#DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER.RETRIEVING_FINAL_WORD',
-                },
-                {
-                    actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
-                        type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
-                        word: context.word,
-                        highlight: context.highlight,
-                        error: new Error('Can\'t retrieve word analysis'),
-                    })),
-                },
-            ],
+            onDone: '#DICTIONARY_QUEUE_MANAGER_WORD_ANALYSIS_RETRIEVER.RETRIEVING_FINAL_WORD',
         },
 
         RETRIEVING_FINAL_WORD: {
@@ -346,7 +334,13 @@ export const wordAnalysisRetrieverMachine = setup({
                 }),
                 onDone: [
                     {
-                        guard: ({ event }) => event.output !== undefined,
+                        guard: ({ context, event }) => (
+                            event.output !== undefined
+                            && (
+                                !!event.output.explanation
+                                || (context.showTranslation && !!event.output.translation)
+                            )
+                        ),
                         actions: sendParent(({ context, event }): QueueManagerWordAnalysisRequestSuccessEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS',
                             word: event.output!,
@@ -354,11 +348,11 @@ export const wordAnalysisRetrieverMachine = setup({
                         })),
                     },
                     {
-                        actions: sendParent(({ context }): QueueManagerWordAnalysisRequestErrorEvent => ({
+                        actions: sendParent(({ context, event }): QueueManagerWordAnalysisRequestErrorEvent => ({
                             type: 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR',
-                            word: context.word,
+                            word: event.output ?? context.word,
                             highlight: context.highlight,
-                            error: new Error('Can\'t retrieve final word from local DB'),
+                            error: new Error('Can\'t retrieve word analysis'),
                         })),
                     }
                 ],

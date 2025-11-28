@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { Box, Button } from 'src/design-system/components';
+import { Box, Skeleton, Button } from 'src/design-system/components';
 import { AddIcon } from 'src/design-system/icons';
 import {
     useDictionaryStateSelect,
@@ -46,14 +46,15 @@ export default function TranslationPopperExplanation() {
 
     const explanation = contextExplanation ?? translatingWord?.explanation;
 
-    if (!explanation) {
-        return null;
-    }
-
     return (
         <Box>
-            <WordExplanation text={explanation} />
-            {!contextExplanation && (
+            {!explanation && <>
+                <Skeleton variant="text" animation="wave" height={20} />
+                <Skeleton variant="text" animation="wave" height={20} />
+                <Skeleton variant="text" animation="wave" height={20} />
+            </>}
+            {explanation && <WordExplanation text={explanation} />}
+            {explanation && !contextExplanation && (
                 <Button
                     size="small"
                     variant="outlined"

@@ -48,6 +48,7 @@ export interface RequestWordAnalysisEvent {
     sourceLanguage: Language,
     targetLanguage: Language,
     useAIVoice: boolean,
+    showTranslation: boolean,
 }
 
 export interface ClearWordSelectionEvent { type: 'CLEAR_WORD_SELECTION' }

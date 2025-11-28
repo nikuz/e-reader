@@ -1,9 +1,12 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { Popper, Paper, Box, Toast } from 'src/design-system/components';
+import { Popper, Paper, Box, Typography, Button } from 'src/design-system/components';
+import { CloudOffIcon } from 'src/design-system/icons';
 import { styled } from 'src/design-system/styles';
 import type { PopperVirtualElement, PopperInstance } from 'src/design-system/types';
-import { useDictionaryStateSelect, dictionaryStateMachineActor } from 'src/features/dictionary/state';
+import { dictionaryStateMachineActor, useDictionaryStateSelect } from 'src/features/dictionary/state';
+import { useSettingsStateSelect } from 'src/features/settings/state';
 import { useLast } from 'src/hooks';
+import { Languages } from 'src/types';
 import {
     useBookFrameStateSelect,
     useBookFrameStateMatch,
@@ -19,12 +22,14 @@ const POPPER_BG_COLOR = '#2F2F2F';
 
 export function BookFrameTranslationPopper() {
     const [arrowEl, setArrowEl] = useState<HTMLSpanElement | null>(null);
+    const book = useBookFrameStateSelect('book');
     const iframeEl = useBookFrameStateSelect('iframeEl');
     const selectedHighlight = useBookFrameStateSelect('selectedHighlight');
     const isAnalyzingWord = useBookFrameStateMatch(['ANALYZING_WORD']);
     const lastIsAnalyzingWord = useLast(isAnalyzingWord);
     const translatingWord = useDictionaryStateSelect('translatingWord');
     const dictionaryErrorMessage = useDictionaryStateSelect('errorMessage');
+    const dictionarySettings = useSettingsStateSelect('dictionary');
     const popperRef = useRef<PopperInstance | null>(null);
 
     const virtualElement = useMemo<PopperVirtualElement | null>(() => {
@@ -55,9 +60,21 @@ export function BookFrameTranslationPopper() {
         };
     }, [iframeEl, selectedHighlight]);
 
-    const closeDictionaryErrorHandler = useCallback(() => {
+    const retryAnalysisHandler = useCallback(() => {
+        if (!book || !selectedHighlight || !translatingWord) {
+            return;
+        }
         dictionaryStateMachineActor.send({ type: 'CLEAR_ERROR_MESSAGE' });
-    }, []);
+        dictionaryStateMachineActor.send({
+            type: 'REQUEST_WORD_ANALYSIS',
+            bookId: book.eisbn,
+            highlight: selectedHighlight,
+            sourceLanguage: Languages.ENGLISH,
+            targetLanguage: Languages.RUSSIAN,
+            useAIVoice: dictionarySettings.useAIVoice,
+            showTranslation: dictionarySettings.showTranslation,
+        });
+    }, [book, selectedHighlight, translatingWord, dictionarySettings]);
 
     useEffect(() => {
         if (!translatingWord) {
@@ -71,6 +88,12 @@ export function BookFrameTranslationPopper() {
             dictionaryStateMachineActor.send({ type: 'CLEAR_WORD_SELECTION' });
         }
     }, [isAnalyzingWord, lastIsAnalyzingWord]);
+
+    useEffect(() => {
+        if (dictionaryErrorMessage && !isAnalyzingWord) {
+            dictionaryStateMachineActor.send({ type: 'CLEAR_ERROR_MESSAGE' });
+        }
+    }, [isAnalyzingWord, dictionaryErrorMessage]);
 
     if (!isAnalyzingWord || !selectedHighlight || !virtualElement) {
         return null;
@@ -139,28 +162,35 @@ export function BookFrameTranslationPopper() {
                         },
                     }}
                 />
-                <Box sx={{ overflow: 'hidden' }}>
-                    <Box sx={{ float: 'right', ml: 1, mt: -0.5 }}>
-                        <TranslationPopperPronunciation />
-                        <TranslationPopperImage />
+                {dictionaryErrorMessage && (
+                    <Box className="text-center">
+                        <CloudOffIcon fontSize="large" color="error" />
+                        <Typography marginTop="5px" marginBottom="10px">
+                            {dictionaryErrorMessage}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            onClick={retryAnalysisHandler}
+                        >
+                            Retry
+                        </Button>
                     </Box>
-                    <Box className="flex-1">
-                        <TranslationPopperLoading />
-                        <TranslationPopperTranslation />
-                        <TranslationPopperExplanation />
+                )}
+                {!dictionaryErrorMessage && (
+                    <Box sx={{ overflow: 'hidden' }}>
+                        <Box sx={{ float: 'right', ml: 1, mt: -0.5 }}>
+                            <TranslationPopperPronunciation />
+                            <TranslationPopperImage />
+                        </Box>
+                        <Box className="flex-1">
+                            <TranslationPopperLoading />
+                            <TranslationPopperTranslation />
+                            <TranslationPopperExplanation />
+                        </Box>
                     </Box>
-                </Box>
+                )}
             </Paper>
         </StyledPopper>
-        {dictionaryErrorMessage && (
-            <Toast
-                color="error"
-                withToolbar
-                onClose={closeDictionaryErrorHandler}
-            >
-                {dictionaryErrorMessage}
-            </Toast>
-        )}
     </>;
 }
 
@@ -168,8 +198,6 @@ const StyledPopper = styled(Popper)(() => ({
     zIndex: 1,
     width: '50%',
     maxWidth: '375px',
-    // maxHeight: '300px',
-    // overflow: 'auto',
     '&[data-popper-placement*="bottom"] .arrow': {
         top: 0,
         left: 0,

@@ -47,6 +47,7 @@ export function deleteRequestAction(props: {
             break;
     }
 
+    console.log('child machine stopped:', requestId);
     stopChild(requestId);
     delete requests[requestId];
 

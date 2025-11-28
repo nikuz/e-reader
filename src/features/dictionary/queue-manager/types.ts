@@ -13,6 +13,7 @@ export interface QueueManagerRequestWordAnalysisEvent {
     sourceLanguage: Language,
     targetLanguage: Language,
     useAIVoice: boolean,
+    showTranslation: boolean,
 }
 
 export interface QueueManagerWordAnalysisRequestSuccessEvent {
@@ -124,7 +125,7 @@ export interface QueueManagerContextAnalysisRequestErrorEvent {
     error: unknown,
 }
 
-export type QueueManagerStateEvents = 
+export type QueueManagerStateEvents =
     | QueueManagerRequestWordAnalysisEvent
     | QueueManagerWordAnalysisTranslationRetrievedEvent
     | QueueManagerWordAnalysisExplanationRetrievedEvent

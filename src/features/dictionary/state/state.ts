@@ -1,4 +1,4 @@
-import { setup, createActor, assign, sendTo, enqueueActions } from 'xstate';
+import { setup, createActor, assign, sendTo, enqueueActions, raise } from 'xstate';
 import { xStateUtils } from 'src/utils';
 import {
     queueManagerStateMachine,
@@ -76,6 +76,7 @@ export const dictionaryStateMachine = setup({
                             sourceLanguage: event.sourceLanguage,
                             targetLanguage: event.targetLanguage,
                             useAIVoice: event.useAIVoice,
+                            showTranslation: event.showTranslation,
                         })),
                     ],
                 },
@@ -95,7 +96,13 @@ export const dictionaryStateMachine = setup({
                     actions: enqueueActions(updateTranslatingWordAction),
                 },
                 QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_ERROR: {
-                    actions: assign(({ event }) => ({ errorMessage: event.error?.toString() })),
+                    actions: [
+                        assign(({ event }) => ({ errorMessage: event.error?.toString() })),
+                        raise(({ event }) => ({
+                            type: 'DELETE_WORD',
+                            wordId: event.word.id,
+                        })),
+                    ],
                 },
 
                 // image

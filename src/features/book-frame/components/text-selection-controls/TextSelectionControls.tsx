@@ -96,6 +96,7 @@ export function BookFrameTextSelectionControls() {
                 sourceLanguage: Languages.ENGLISH,
                 targetLanguage: Languages.RUSSIAN,
                 useAIVoice: dictionarySettings.useAIVoice,
+                showTranslation: dictionarySettings.showTranslation,
             });
             bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
         } else {
@@ -115,6 +116,7 @@ export function BookFrameTextSelectionControls() {
             sourceLanguage: Languages.ENGLISH,
             targetLanguage: Languages.RUSSIAN,
             useAIVoice: dictionarySettings.useAIVoice,
+            showTranslation: dictionarySettings.showTranslation,
         });
         bookFrameStateMachineActor.send({ type: 'REQUEST_WORD_ANALYSIS' });
     });

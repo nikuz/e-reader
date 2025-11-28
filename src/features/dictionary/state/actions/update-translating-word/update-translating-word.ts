@@ -33,29 +33,29 @@ export function updateTranslatingWordAction(props: {
     if (!props.context.translatingWord || currentTranslatingHighlight?.id !== highlight.id) {
         return;
     }
-    
+
     let currentTranslatingWord = { ...props.context.translatingWord };
 
     switch (props.event.type) {
         case 'QUEUE_MANAGER_WORD_ANALYSIS_TRANSLATION_RETRIEVED':
             currentTranslatingWord.translation = props.event.translation;
             break;
-        
-        case 'QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED': 
+
+        case 'QUEUE_MANAGER_WORD_ANALYSIS_EXPLANATION_RETRIEVED':
             currentTranslatingWord.explanation = props.event.explanation;
             break;
-        
+
         case 'QUEUE_MANAGER_WORD_ANALYSIS_PRONUNCIATION_RETRIEVED':
             currentTranslatingWord.pronunciation = props.event.pronunciation;
             break;
-        
+
         case 'QUEUE_MANAGER_WORD_ANALYSIS_UPDATE':
             console.log('update:', props.event);
             currentTranslatingWord.translation = props.event.translation;
             currentTranslatingWord.explanation = props.event.explanation;
             currentTranslatingWord.pronunciation = props.event.pronunciation;
             break;
-        
+
         case 'QUEUE_MANAGER_WORD_ANALYSIS_REQUEST_SUCCESS':
         case 'QUEUE_MANAGER_IMAGE_REQUEST_SUCCESS':
         case 'QUEUE_MANAGER_PRONUNCIATION_REQUEST_SUCCESS':

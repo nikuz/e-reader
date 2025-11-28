@@ -55,6 +55,7 @@ export { default as Popper } from '@mui/material/Popper';
 export { default as Slide } from '@mui/material/Slide';
 export { default as Fade } from '@mui/material/Fade';
 export { default as SwipeableDrawer } from '@mui/material/SwipeableDrawer';
+export { default as Skeleton } from '@mui/material/Skeleton';
 
 export * from './toast';
 export * from './dropdown';

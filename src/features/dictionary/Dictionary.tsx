@@ -1,13 +1,21 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, AppBar, Toolbar, IconButton, Typography } from 'src/design-system/components';
+import {
+    Box,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Typography,
+    Toast,
+} from 'src/design-system/components';
 import { ArrowBackIosNewIcon, SettingsIcon } from 'src/design-system/icons';
 import { statusBarStateMachineActor } from 'src/features/status-bar/state';
 import { WordsList, WordsListCounter, SearchField } from './components';
-import { dictionaryStateMachineActor } from './state';
+import { dictionaryStateMachineActor, useDictionaryStateSelect } from './state';
 
 export default function Dictionary() {
     const navigate = useNavigate();
+    const errorMessage = useDictionaryStateSelect('errorMessage');
 
     useEffect(() => {
         dictionaryStateMachineActor.send({ type: 'INITIALIZE' });
@@ -21,6 +29,10 @@ export default function Dictionary() {
     const navigateToLibraryHandler = () => {
         navigate(-1);
     };
+
+    const closeErrorHandler = useCallback(() => {
+        dictionaryStateMachineActor.send({ type: 'CLEAR_ERROR_MESSAGE' });
+    }, []);
 
     return (
         <Box
@@ -61,6 +73,16 @@ export default function Dictionary() {
                 <WordsListCounter />
                 <WordsList />
             </Box>
+
+            {errorMessage && (
+                <Toast
+                    color="error"
+                    withToolbar
+                    onClose={closeErrorHandler}
+                >
+                    {errorMessage}
+                </Toast>
+            )}
         </Box>
     );
 }
