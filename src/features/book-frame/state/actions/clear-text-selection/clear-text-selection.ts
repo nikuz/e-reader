@@ -9,7 +9,6 @@ export function clearTextSelectionAction(props: {
     textSelection?.removeAllRanges();
 
     props.enqueue.assign({
-        menuPanelsVisible: false,
         textSelection: undefined,
         textSelectionCreateEndTime: undefined,
     });
