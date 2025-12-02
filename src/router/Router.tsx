@@ -10,10 +10,7 @@ export default function AppRouter() {
         <BrowserRouter>
             <Routes>
                 <Route path={RouterPath.HOME} element={<App />}>
-                    <Route
-                        index
-                        element={<Navigate to={RouterPath.LIBRARY} replace />}
-                    />
+                    <Route element={<Navigate to={RouterPath.LIBRARY} />} />
                     <Route path={RouterPath.LIBRARY} element={<Library />} />
                     <Route path={RouterPath.BOOK} element={<BookFrame />} />
                     <Route path={RouterPath.DICTIONARY} element={<Dictionary />} />

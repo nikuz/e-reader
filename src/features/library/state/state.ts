@@ -43,29 +43,21 @@ export const libraryStateMachine = setup({
         storedBooks: [],
     },
 
-    initial: 'INITIALIZING',
+    initial: 'WAITING_FOR_DATABASE_INIT',
 
     states: {
-        IDLE: {
+        WAITING_FOR_DATABASE_INIT: {
             on: {
-                LOAD_LAST_SELECTED_BOOK: 'LOADING_LAST_SELECTED_BOOK',
-                LOAD_BOOKS: 'LOADING_BOOKS',
-                OPEN_FILE: 'OPENING_FILE',
-                REMOVE_BOOK: 'REMOVING_BOOK',
-                CLOSE_ERROR_TOAST: {
-                    actions: assign(() => ({ errorMessage: undefined })),
-                },
-                SELECT_BOOK: 'SELECTING_BOOK',
-                UPDATE_BOOK_HIGHLIGHTS: 'UPDATING_BOOK_HIGHLIGHTS',
-            },
+                INITIALIZE: 'INITIALIZING',
+            }
         },
 
         INITIALIZING: {
             invoke: {
                 src: 'initializerActor',
-                onDone: 'IDLE',
+                onDone: 'LOADING_LAST_SELECTED_BOOK',
                 onError: {
-                    target: 'IDLE',
+                    target: 'LOADING_LAST_SELECTED_BOOK',
                     actions: [
                         assign(({ event }) => ({
                             errorMessage: event.error?.toString(),
@@ -80,37 +72,13 @@ export const libraryStateMachine = setup({
             invoke: {
                 src: 'lastSelectedBookLoaderActor',
                 onDone: {
-                    target: 'IDLE',
+                    target: 'INITIALIZED',
                     actions: assign(({ event }) => ({
                         lastSelectedBook: event.output,
                     })),
                 },
                 onError: {
-                    target: 'IDLE',
-                    actions: [
-                        assign(({ event }) => ({
-                            errorMessage: event.error?.toString(),
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
-                },
-            },
-        },
-        
-        LOADING_BOOKS: {
-            invoke: {
-                src: 'booksLoaderActor',
-                input: ({ context }) => ({
-                    lastSelectedBook: context.lastSelectedBook,
-                }),
-                onDone: {
-                    target: 'IDLE',
-                    actions: assign(({ event }) => ({
-                        storedBooks: event.output,
-                    })),
-                },
-                onError: {
-                    target: 'IDLE',
+                    target: 'INITIALIZED',
                     actions: [
                         assign(({ event }) => ({
                             errorMessage: event.error?.toString(),
@@ -121,96 +89,139 @@ export const libraryStateMachine = setup({
             },
         },
 
-        OPENING_FILE: {
-            invoke: {
-                src: 'fileOpenerActor',
-                input: ({ event }) => ({
-                    file: (event as OpenFileEvent).file,
-                }),
-                onDone: {
-                    target: 'SELECTING_BOOK',
-                    actions: enqueueActions(addOpenedBookAction),
-                },
-                onError: {
-                    target: 'IDLE',
-                    actions: [
-                        assign(({ event }) => ({
-                            errorMessage: event.error?.toString(),
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
-                },
-            },
-        },
+        INITIALIZED: {
+            initial: 'IDLE',
 
-        SELECTING_BOOK: {
-            invoke: {
-                src: 'bookSelectorActor',
-                input: ({ context, event }) => ({
-                    book: event.type === 'SELECT_BOOK'
-                        ? event.book
-                        : context.storedBooks[0]
-                }),
-                onDone: {
-                    target: 'IDLE',
-                    actions: enqueueActions(selectBookAction),
+            states: {
+                IDLE: {
+                    on: {
+                        LOAD_BOOKS: 'LOADING_BOOKS',
+                        OPEN_FILE: 'OPENING_FILE',
+                        REMOVE_BOOK: 'REMOVING_BOOK',
+                        CLOSE_ERROR_TOAST: {
+                            actions: assign(() => ({ errorMessage: undefined })),
+                        },
+                        SELECT_BOOK: 'SELECTING_BOOK',
+                        UPDATE_BOOK_HIGHLIGHTS: 'UPDATING_BOOK_HIGHLIGHTS',
+                    },
                 },
-                onError: {
-                    target: 'IDLE',
-                    actions: [
-                        assign(({ event }) => ({
-                            errorMessage: event.error?.toString(),
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
-                },
-            },
-        },
 
-        REMOVING_BOOK: {
-            invoke: {
-                src: 'bookRemoverActor',
-                input: ({ event }) => ({
-                    bookAttributes: (event as RemoveBookEvent).book,
-                }),
-                onDone: {
-                    target: 'IDLE',
-                    actions: assign(({ event, context }) => ({
-                        storedBooks: context.storedBooks.filter(
-                            (book) => book.eisbn !== event.output.eisbn,
-                        ),
-                    })),
+                LOADING_BOOKS: {
+                    invoke: {
+                        src: 'booksLoaderActor',
+                        input: ({ context }) => ({
+                            lastSelectedBook: context.lastSelectedBook,
+                        }),
+                        onDone: {
+                            target: 'IDLE',
+                            actions: assign(({ event }) => ({
+                                storedBooks: event.output,
+                            })),
+                        },
+                        onError: {
+                            target: 'IDLE',
+                            actions: [
+                                assign(({ event }) => ({
+                                    errorMessage: event.error?.toString(),
+                                })),
+                                xStateUtils.stateErrorTraceAction,
+                            ],
+                        },
+                    },
                 },
-                onError: {
-                    target: 'IDLE',
-                    actions: [
-                        assign(({ event }) => ({
-                            errorMessage: event.error?.toString(),
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
-                },
-            },
-        },
 
-        UPDATING_BOOK_HIGHLIGHTS: {
-            invoke: {
-                src: 'highlightUpdaterActor',
-                input: ({ event }) => ({
-                    book: (event as UpdateBookHighlightsEvent).book,
-                }),
-                onDone: {
-                    target: 'IDLE',
-                    actions: enqueueActions(updateBookHighlightsAction),
+                OPENING_FILE: {
+                    invoke: {
+                        src: 'fileOpenerActor',
+                        input: ({ event }) => ({
+                            file: (event as OpenFileEvent).file,
+                        }),
+                        onDone: {
+                            target: 'SELECTING_BOOK',
+                            actions: enqueueActions(addOpenedBookAction),
+                        },
+                        onError: {
+                            target: 'IDLE',
+                            actions: [
+                                assign(({ event }) => ({
+                                    errorMessage: event.error?.toString(),
+                                })),
+                                xStateUtils.stateErrorTraceAction,
+                            ],
+                        },
+                    },
                 },
-                onError: {
-                    target: 'IDLE',
-                    actions: [
-                        assign(({ event }) => ({
-                            errorMessage: event.error?.toString(),
-                        })),
-                        xStateUtils.stateErrorTraceAction,
-                    ],
+
+                SELECTING_BOOK: {
+                    invoke: {
+                        src: 'bookSelectorActor',
+                        input: ({ context, event }) => ({
+                            book: event.type === 'SELECT_BOOK'
+                                ? event.book
+                                : context.storedBooks[0]
+                        }),
+                        onDone: {
+                            target: 'IDLE',
+                            actions: enqueueActions(selectBookAction),
+                        },
+                        onError: {
+                            target: 'IDLE',
+                            actions: [
+                                assign(({ event }) => ({
+                                    errorMessage: event.error?.toString(),
+                                })),
+                                xStateUtils.stateErrorTraceAction,
+                            ],
+                        },
+                    },
+                },
+
+                REMOVING_BOOK: {
+                    invoke: {
+                        src: 'bookRemoverActor',
+                        input: ({ event }) => ({
+                            bookAttributes: (event as RemoveBookEvent).book,
+                        }),
+                        onDone: {
+                            target: 'IDLE',
+                            actions: assign(({ event, context }) => ({
+                                storedBooks: context.storedBooks.filter(
+                                    (book) => book.eisbn !== event.output.eisbn,
+                                ),
+                            })),
+                        },
+                        onError: {
+                            target: 'IDLE',
+                            actions: [
+                                assign(({ event }) => ({
+                                    errorMessage: event.error?.toString(),
+                                })),
+                                xStateUtils.stateErrorTraceAction,
+                            ],
+                        },
+                    },
+                },
+
+                UPDATING_BOOK_HIGHLIGHTS: {
+                    invoke: {
+                        src: 'highlightUpdaterActor',
+                        input: ({ event }) => ({
+                            book: (event as UpdateBookHighlightsEvent).book,
+                        }),
+                        onDone: {
+                            target: 'IDLE',
+                            actions: enqueueActions(updateBookHighlightsAction),
+                        },
+                        onError: {
+                            target: 'IDLE',
+                            actions: [
+                                assign(({ event }) => ({
+                                    errorMessage: event.error?.toString(),
+                                })),
+                                xStateUtils.stateErrorTraceAction,
+                            ],
+                        },
+                    },
                 },
             },
         },

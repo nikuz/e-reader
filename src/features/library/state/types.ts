@@ -10,6 +10,8 @@ export interface LibraryStateContext {
     errorMessage?: string,
 }
 
+interface InitializeEvent { type: 'INITIALIZE' }
+
 interface SetNavigatorEvent {
     type: 'SET_NAVIGATOR',
     navigator: NavigateFunction,
@@ -42,6 +44,7 @@ export interface UpdateBookHighlightsEvent {
 }
 
 export type LibraryStateEvents =
+    | InitializeEvent
     | SetNavigatorEvent
     | LoadLastSelectedBookEvent
     | LoadBooksEvent

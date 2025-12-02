@@ -2,48 +2,41 @@ import { useRef, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Paper } from 'src/design-system/components';
 import { ThemeProvider, darkTheme } from 'src/design-system/styles';
-import { libraryStateMachineActor } from 'src/features/library/state';
+import { useLibraryStateSelect } from 'src/features/library/state';
 import { bookFrameStateMachineActor } from 'src/features/book-frame/state';
 import { screenStateMachineActor } from 'src/features/screen/state';
+import { OrientationChangeWatcher } from 'src/features/screen/daemons';
 import { RouterPath } from 'src/router/constants';
 import Debug from './features/debug';
-import { OrientationChangeWatcher } from './features/screen/daemons';
 import './App.css';
 
 export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
-    const initialRedirectFinished = useRef(false);
-    
-    useEffect(() => {
-        const libraryStateChangeSubscription = libraryStateMachineActor.subscribe((snapshot) => {
-            if (initialRedirectFinished.current || location.pathname === RouterPath.LIBRARY) {
-                initialRedirectFinished.current = true;
-                return;
-            }
-            if (snapshot.context.lastSelectedBook) {
-                bookFrameStateMachineActor.send({
-                    type: 'LOAD_BOOK',
-                    book: snapshot.context.lastSelectedBook,
-                });
-                if (location.pathname !== RouterPath.BOOK) {
-                    navigate(RouterPath.BOOK, { replace: true });
-                }
-                initialRedirectFinished.current = true;
-            } else if (snapshot.matches('IDLE')) {
-                navigate(RouterPath.LIBRARY, { replace: true });
-                initialRedirectFinished.current = true;
-            }
-        });
-        return () => {
-            libraryStateChangeSubscription.unsubscribe();
-        };
-    }, [location, navigate]);
+    const lastSelectedBook = useLibraryStateSelect('lastSelectedBook');
+    const hasPerformedInitialRedirect = useRef(false);
 
     useEffect(() => {
-        libraryStateMachineActor.send({ type: 'LOAD_LAST_SELECTED_BOOK' });
-    }, []);
-    
+        if (hasPerformedInitialRedirect.current) {
+            return;
+        }
+        hasPerformedInitialRedirect.current = true;
+
+        if (lastSelectedBook) {
+            bookFrameStateMachineActor.send({
+                type: 'LOAD_BOOK',
+                book: lastSelectedBook,
+            });
+        }
+        
+        if (location.pathname === RouterPath.HOME) {
+            navigate(
+                lastSelectedBook ? RouterPath.BOOK : RouterPath.LIBRARY,
+                { replace: true }
+            );
+        }
+    }, [lastSelectedBook, location, navigate]);
+
     useEffect(() => {
         screenStateMachineActor.send({ type: 'KEEP_AWAKE' });
 

@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box, AppBar, Toolbar, Typography, PageLoader, Toast } from 'src/design-system/components';
 import { DictionaryInvokeButton } from 'src/features/dictionary/components';
 import { statusBarStateMachineActor } from 'src/features/status-bar/state';
@@ -12,12 +12,10 @@ import {
 
 export default function Library() {
     const isInitiating = useLibraryStateMatch(['INITIALIZING']);
-    const isOpeningFile = useLibraryStateMatch(['OPENING_FILE']);
-    const isLoadingLastBook = useLibraryStateMatch(['LOADING_LAST_SELECTED_BOOK']);
-    const isRemovingBook = useLibraryStateMatch(['REMOVING_BOOK']);
+    const isOpeningFile = useLibraryStateMatch([{ INITIALIZED: 'OPENING_FILE' }]);
+    const isRemovingBook = useLibraryStateMatch([{ INITIALIZED: 'REMOVING_BOOK' }]);
     const storedBooks = useLibraryStateSelect('storedBooks');
     const errorMessage = useLibraryStateSelect('errorMessage');
-    const booksRequested = useRef(false);
     const isLoading = isInitiating || isOpeningFile || isRemovingBook;
     
     const closeErrorHandler = () => {
@@ -25,12 +23,8 @@ export default function Library() {
     };
 
     useEffect(() => {
-        if (isInitiating || isLoadingLastBook || booksRequested.current) {
-            return;
-        }
-        booksRequested.current = true;
         libraryStateMachineActor.send({ type: 'LOAD_BOOKS' });
-    }, [isInitiating, isLoadingLastBook]);
+    }, []);
 
     useEffect(() => {
         statusBarStateMachineActor.send({ type: 'SHOW' });

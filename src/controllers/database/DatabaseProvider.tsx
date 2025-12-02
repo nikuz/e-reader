@@ -2,11 +2,11 @@ import { useRef, useEffect, useState } from 'react';
 import { PageLoader } from 'src/design-system/components/page-loader/PageLoader';
 import { initializeDatabase } from './instance';
 
-interface DatabaseProviderProps {
+interface Props {
     children: React.ReactElement;
 }
 
-export function DatabaseProvider({ children }: DatabaseProviderProps) {
+export function DatabaseProvider({ children }: Props) {
     const [isInitialized, setIsInitialized] = useState(false);
     const initializationRequested = useRef(false);
 
