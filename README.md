@@ -1,2 +1,2 @@
-# e-reader
+# My Reader
 

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">e-reader</string>
-    <string name="title_activity_main">e-reader</string>
+    <string name="app_name">My Reader</string>
+    <string name="title_activity_main">My Reader</string>
     <string name="package_name">com.nikuz.ereader</string>
     <string name="custom_url_scheme">com.nikuz.ereader</string>
 </resources>
