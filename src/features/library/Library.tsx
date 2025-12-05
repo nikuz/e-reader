@@ -48,7 +48,7 @@ export default function Library() {
 
             {isLoading && <PageLoader />}
 
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
+            <div className="grid gap-4 p-4 grid-cols-[repeat(auto-fill,minmax(150px,1fr))]">
                 {storedBooks.map((item) => (
                     <BookCard key={item.eisbn} book={item} />
                 ))}
